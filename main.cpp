@@ -5,15 +5,17 @@
 #include <fstream>
 #include <cstdlib>
 
+// Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.1 for macOS\nby mikeph_ 2025\n";
+    std::cout << "BioGenie 0.1.0 for macOS\nby mikeph_ 2025\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
 
+// Arg Classes
 class GCCalc {
-private:
+  private:
         double GCContent(const std::string& sequence) {
             int gcCount = 0;
             int validBases = 0;
@@ -34,7 +36,7 @@ private:
             return (static_cast<double>(gcCount) / validBases) * 100.0;
         }
 
-public:
+  public:
       void FASTA_loader(const std::string& filename) {
             std::ifstream fastaFile(filename);
             if (!fastaFile.is_open()) {
@@ -75,16 +77,151 @@ public:
         }
 };
     
+class DNAcomplimentary{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'C': return 'G';
+                case 'G': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+        //DNA complement strand init
+        std::string ComplementStrand(const std::string& sequence) const {
+            std::string complement;
+            complement.reserve(sequence.size());
+            for (char base : sequence) {
+                complement += Complement(base);
+            }
+            return complement;
+        }
 
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string complement = ComplementStrand(sequence);
+                        std::cout << ">" << header << " (complement)\n" << complement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                std::string complement = ComplementStrand(sequence);
+                std::cout << ">" << header << " (complement)\n" << complement << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
+class Transcription{
+    private:
+        char transRNA(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'A';
+                case 'T': return 'U';
+                case 'G': return 'G';
+                case 'C': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+    
+        std::string RNAStrand(const std::string& sequence) const {
+            std::string RNAseq;
+            RNAseq.reserve(sequence.size());
+            for (char base : sequence) {
+                RNAseq += transRNA(base);
+            }
+            return RNAseq;
+        }
+
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string complement = RNAStrand(sequence);
+                        std::cout << ">" << header << "RNA:\n" << complement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                std::string complement = RNAStrand(sequence);
+                std::cout << ">" << header << "RNA:\n" << complement << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
+// Main Function 
 int main(int argc, char* argv[]){
     if (argc != 2){
+        std::cout << "-----------------------\n";
+        std::cout << "BioGenie 0.1.0 for macOS\nby mikeph_ 2025\n";
         std::cerr << "Usage: gcgenie <FASTA_file_path>\n";
         return 1;
     }
     
     title();
     std::string filename = argv[1];
-    GCCalc GCcalculator;
-    GCcalculator.FASTA_loader(filename);
+    //GCCalc GCcalculator;
+    //GCcalculator.FASTA_loader(filename);
+
+    //DNAcomplimentary DNAcomp;
+    //DNAcomp.FASTA_loader(filename);
+
+    Transcription transciptedRNA;
+    transciptedRNA.FASTA_loader(filename);
+
+
+
     return 0;
 }
