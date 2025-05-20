@@ -205,7 +205,7 @@ class Transcription{
 int main(int argc, char* argv[]){
     if (argc != 2){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.1.4 for macOS\nby mikeph_ 2025\n";
+        std::cout << "BioGenie 0.2.3 for macOS\nby mikeph_ 2025\n";
         std::cerr << "Usage: gcgenie <FASTA_file_path>\n";
         return 1;
     }
