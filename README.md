@@ -19,6 +19,8 @@ sudo mv biogenie /usr/local/bin/biogenie
 ```
 
 ### Changelog:
+- 0.3.0:
+Number of codone calculator added.
 - 0.2.3:
 GC calculator, complimentary DNA and transcripted RNA functions added.
 - 0.1.0:
