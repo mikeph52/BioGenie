@@ -4,11 +4,12 @@
 #include <iomanip> 
 #include <fstream>
 #include <cstdlib>
+#include <algorithm>
 
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.1.0 for macOS\nby mikeph_ 2025\n";
+    std::cout << "BioGenie 0.4.0 for macOS\nby mikeph_ 2025\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -139,6 +140,69 @@ class DNAcomplimentary{
         }
 };
 
+class ReverseComplementDNA{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'C': return 'G';
+                case 'G': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+       
+        std::string ReverseComplementStrand(const std::string& sequence) const {
+            std::string revComplement;
+            revComplement.reserve(sequence.size());
+            for (auto it = sequence.rbegin(); it != sequence.rend(); ++it) {
+                revComplement += Complement(*it);
+            }
+            return revComplement;
+        }
+
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string revComplement = ReverseComplementStrand(sequence);
+                        std::cout << ">" << header << " (reverse complement)\n" << revComplement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                std::string revComplement = ReverseComplementStrand(sequence);
+                std::cout << ">" << header << " (reverse complement)\n" << revComplement << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+
+};
+
 class Transcription{
     private:
         char transRNA(char base) const {
@@ -201,25 +265,88 @@ class Transcription{
         }
 };
 
+class CodonNumber{
+    private:
+    int CodonCount(const std::string& sequence) const {
+        int validBases = 0;
+
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            if (upper == 'A' || upper == 'T' || upper == 'C' || upper == 'G') {
+                validBases++;
+            }
+        }
+        return validBases / 3;
+    }
+
+    public:
+    void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        int codons = CodonCount(sequence);
+                        std::cout << ">" << header << "Codon count:\n" << codons << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                int codons = CodonCount(sequence);
+                std::cout << ">" << header << "Codon count:\n" << codons << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+
+};
+
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 2){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.2.3 for macOS\nby mikeph_ 2025\n";
+        std::cout << "BioGenie 0.4.0 for macOS\nby mikeph_ 2025\n";
         std::cerr << "Usage: gcgenie <FASTA_file_path>\n";
         return 1;
     }
     
     title();
     std::string filename = argv[1];
-    //GCCalc GCcalculator;
-    //GCcalculator.FASTA_loader(filename);
 
-    //DNAcomplimentary DNAcomp;
-    //DNAcomp.FASTA_loader(filename);
+   /* GCCalc GCcalculator;
+    GCcalculator.FASTA_loader(filename);
+
+    DNAcomplimentary DNAcomp;
+    DNAcomp.FASTA_loader(filename);
 
     Transcription transciptedRNA;
-    transciptedRNA.FASTA_loader(filename);
+    transciptedRNA.FASTA_loader(filename); 
+
+    ReverseComplementDNA revDNA;
+    revDNA.FASTA_loader(filename);*/
+
+    CodonNumber codoncounter;
+    codoncounter.FASTA_loader(filename);
 
 
 
