@@ -1,3 +1,4 @@
+// BioGenie by mikeph_ 2025
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -9,7 +10,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.4.0 for macOS\nby mikeph_ 2025\n";
+    std::cout << "BioGenie 0.5.0 for macOS\nby mikeph_ 2025\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -323,32 +324,36 @@ class CodonNumber{
 
 // Main Function 
 int main(int argc, char* argv[]){
-    if (argc != 2){
+    if (argc != 3){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.4.0 for macOS\nby mikeph_ 2025\n";
-        std::cerr << "Usage: gcgenie <FASTA_file_path>\n";
+        std::cout << "BioGenie 0.5.0 for macOS\nby mikeph_ 2025\n\n";
+        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n";
         return 1;
     }
     
     title();
-    std::string filename = argv[1];
+    std::string filename = argv[2];
+    std::string function = argv[1];
 
-   /* GCCalc GCcalculator;
-    GCcalculator.FASTA_loader(filename);
-
-    DNAcomplimentary DNAcomp;
-    DNAcomp.FASTA_loader(filename);
-
-    Transcription transciptedRNA;
-    transciptedRNA.FASTA_loader(filename); 
-
-    ReverseComplementDNA revDNA;
-    revDNA.FASTA_loader(filename);*/
-
-    CodonNumber codoncounter;
-    codoncounter.FASTA_loader(filename);
-
-
+    if (function == "-gc"){
+        GCCalc GCcalculator;
+        GCcalculator.FASTA_loader(filename);
+    } else if (function == "-nc"){
+        CodonNumber codoncounter;
+        codoncounter.FASTA_loader(filename);
+    } else if (function == "-c"){
+        DNAcomplimentary DNAcomp;
+        DNAcomp.FASTA_loader(filename);
+    } else if (function == "-rc"){
+        ReverseComplementDNA revDNA;
+        revDNA.FASTA_loader(filename);
+    } else if (function == "-t"){
+        Transcription transciptedRNA;
+        transciptedRNA.FASTA_loader(filename);
+    } else {
+        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n";
+        return 1;
+    }
 
     return 0;
 }
