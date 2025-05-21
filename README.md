@@ -33,6 +33,9 @@ sudo mv biogenie /usr/local/bin/biogenie
 ```
 
 ### Changelog:
+- 0.6.0:
+(https://github.com/mikeph52/BioGenie/issues/3)
+Documentation added
 - 0.5.0:
 (https://github.com/mikeph52/BioGenie/issues/2)
 Function operator added.
@@ -43,4 +46,4 @@ Number of codone calculator added.
 - 0.2.3:
 GC calculator, complimentary DNA and transcripted RNA functions added.
 - 0.1.0:
-First Version
+First Version.
