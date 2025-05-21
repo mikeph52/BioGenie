@@ -10,7 +10,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.5.0 for macOS\nby mikeph_ 2025\n";
+    std::cout << "BioGenie 0.6.0 for macOS\nby mikeph_ 2025\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -326,8 +326,11 @@ class CodonNumber{
 int main(int argc, char* argv[]){
     if (argc != 3){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.5.0 for macOS\nby mikeph_ 2025\n\n";
-        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n";
+        std::cout << "BioGenie 0.6.0 for macOS\nby mikeph_ 2025\n\n";
+        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
+        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
+        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n\n";
+        std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
     }
     
@@ -351,9 +354,13 @@ int main(int argc, char* argv[]){
         Transcription transciptedRNA;
         transciptedRNA.FASTA_loader(filename);
     } else {
-        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n";
+        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
+        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
+        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n\n";
+        std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
     }
+
 
     return 0;
 }
