@@ -20,11 +20,7 @@ sudo mv biogenie /usr/local/bin/biogenie
 
 ### Changelog:
 - 0.4.0:
-<<<<<<< HEAD
 (https://github.com/mikeph52/BioGenie/issues/1)   Reverse complement DNA function added.
-=======
-(https://github.com/mikeph52/BioGenie/issues/1) Reverse complement DNA function added.
->>>>>>> e4d97d99f56e5bf8d675bbde21699595d55135a0
 - 0.3.0:
 Number of codone calculator added.
 - 0.2.3:
