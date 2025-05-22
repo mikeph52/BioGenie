@@ -10,9 +10,21 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.6.0 for macOS\nby mikeph_ 2025\n";
+    std::cout << "BioGenie 0.7.0 for macOS\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
    
+}
+
+void helpme(){
+    std::cout << "-----------------------DOCUMENTATION-----------------------\n";
+    std::cout << "BioGenie uses functions to execute different tools for different applications.\n";
+    std::cout << "Get the complement DNA sequence --> '-c'.\n";
+    std::cout << "Get the reverse complement DNA sequence --> '-rc'.\n";
+    std::cout << "Get the codon number --> '-nc'.\n";
+    std::cout << "Get the mRNA --> '-t'.\n";
+    std::cout << "GC percentage calculation --> '-gc'.\n";
+    std::cout << "More functions will be added in the future.\n";
+    std::cout << "-----------------------------------------------------------\n";
 }
 
 // Arg Classes
@@ -326,10 +338,11 @@ class CodonNumber{
 int main(int argc, char* argv[]){
     if (argc != 3){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.6.0 for macOS\nby mikeph_ 2025\n\n";
+        std::cout << "BioGenie 0.7.0 for macOS\nby mikeph_ 2025\n\n";
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
-        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n\n";
+        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n";
+        std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
     }
@@ -353,10 +366,13 @@ int main(int argc, char* argv[]){
     } else if (function == "-t"){
         Transcription transciptedRNA;
         transciptedRNA.FASTA_loader(filename);
-    } else {
+    } else if(function == "-help"){
+        helpme();
+    }else {
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
-        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n\n";
+        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n";
+        std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
     }
