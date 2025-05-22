@@ -35,6 +35,8 @@ sudo mv biogenie /usr/local/bin/biogenie
 ```
 
 ### Changelog:
+- 0.8.0:
+Protein chain option added and minor bugs fixed.
 - 0.7.0:
 (https://github.com/mikeph52/BioGenie/issues/4)
 Documentation fixed.

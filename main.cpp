@@ -6,11 +6,12 @@
 #include <fstream>
 #include <cstdlib>
 #include <algorithm>
+#include <unordered_map>
 
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.7.0 for macOS\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.8.0 for macOS\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -26,6 +27,26 @@ void helpme(){
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
 }
+
+//Genetic code
+const std::unordered_map<std::string, char> codonTable = {
+    {"ATA",'I'}, {"ATC",'I'}, {"ATT",'I'}, {"ATG",'M'},
+    {"ACA",'T'}, {"ACC",'T'}, {"ACG",'T'}, {"ACT",'T'},
+    {"AAC",'N'}, {"AAT",'N'}, {"AAA",'K'}, {"AAG",'K'},
+    {"AGC",'S'}, {"AGT",'S'}, {"AGA",'R'}, {"AGG",'R'},
+    {"CTA",'L'}, {"CTC",'L'}, {"CTG",'L'}, {"CTT",'L'},
+    {"CCA",'P'}, {"CCC",'P'}, {"CCG",'P'}, {"CCT",'P'},
+    {"CAC",'H'}, {"CAT",'H'}, {"CAA",'Q'}, {"CAG",'Q'},
+    {"CGA",'R'}, {"CGC",'R'}, {"CGG",'R'}, {"CGT",'R'},
+    {"GTA",'V'}, {"GTC",'V'}, {"GTG",'V'}, {"GTT",'V'},
+    {"GCA",'A'}, {"GCC",'A'}, {"GCG",'A'}, {"GCT",'A'},
+    {"GAC",'D'}, {"GAT",'D'}, {"GAA",'E'}, {"GAG",'E'},
+    {"GGA",'G'}, {"GGC",'G'}, {"GGG",'G'}, {"GGT",'G'},
+    {"TCA",'S'}, {"TCC",'S'}, {"TCG",'S'}, {"TCT",'S'},
+    {"TTC",'F'}, {"TTT",'F'}, {"TTA",'L'}, {"TTG",'L'},
+    {"TAC",'Y'}, {"TAT",'Y'}, {"TAA",'*'}, {"TAG",'*'},
+    {"TGC",'C'}, {"TGT",'C'}, {"TGA",'*'}, {"TGG",'W'}
+};
 
 // Arg Classes
 class GCCalc {
@@ -91,7 +112,7 @@ class GCCalc {
         }
 };
     
-class DNAcomplimentary{
+class DNAcomplementary{
     private:
         char Complement(char base) const {
             switch (std::toupper(static_cast<unsigned char>(base))) {
@@ -334,11 +355,71 @@ class CodonNumber{
 
 };
 
+class ProteinChain{
+    private:
+        std::string translateToAminoAcids(const std::string& sequence) {
+            std::string protein;
+
+            for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
+                std::string codon = sequence.substr(i, 3);
+                for (char& c : codon) c = std::toupper(c);
+
+                if (codonTable.count(codon)) {
+                    protein += codonTable.at(codon);
+                } else {
+                    protein += 'X';  // Unknown codon
+                }
+            }
+
+        return protein;
+    }
+
+    public:
+        void FASTA_loader(const std::string& filename)  {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string protein = translateToAminoAcids(sequence);
+                        std::cout << ">" << header << "Protein:\n" << protein<< "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                std::string complement = translateToAminoAcids(sequence);
+                std::cout << ">" << header << "RNA:\n" << complement << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.7.0 for macOS\nby mikeph_ 2025\n\n";
+        std::cout << "BioGenie 0.8.0 for macOS\nby mikeph_ 2025\n\n";
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator]\n";
@@ -358,7 +439,7 @@ int main(int argc, char* argv[]){
         CodonNumber codoncounter;
         codoncounter.FASTA_loader(filename);
     } else if (function == "-c"){
-        DNAcomplimentary DNAcomp;
+        DNAcomplementary DNAcomp;
         DNAcomp.FASTA_loader(filename);
     } else if (function == "-rc"){
         ReverseComplementDNA revDNA;
@@ -368,6 +449,10 @@ int main(int argc, char* argv[]){
         transciptedRNA.FASTA_loader(filename);
     } else if(function == "-help"){
         helpme();
+    } else if(function == "-p"){
+        ProteinChain protein;
+        protein.FASTA_loader(filename);
+
     }else {
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
