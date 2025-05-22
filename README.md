@@ -35,6 +35,9 @@ sudo mv biogenie /usr/local/bin/biogenie
 ```
 
 ### Changelog:
+- 0.7.0:
+(https://github.com/mikeph52/BioGenie/issues/4)
+Documentation fixed.
 - 0.6.0:
 (https://github.com/mikeph52/BioGenie/issues/3)
 Documentation added
