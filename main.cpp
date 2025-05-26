@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.8.0 for macOS\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.8.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -420,7 +420,7 @@ class ProteinChain{
 int main(int argc, char* argv[]){
     if (argc != 3){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.8.0 for macOS\nby mikeph_ 2025\n\n";
+        std::cout << "BioGenie 0.8.0 \nby mikeph_ 2025\n\n";
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
