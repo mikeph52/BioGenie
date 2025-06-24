@@ -1,0 +1,51 @@
+# Ignore object files
+*.o
+*.obj
+
+# Ignore compiled binaries
+*.exe
+*.out
+*.app
+
+# Ignore libraries
+*.lib
+*.a
+*.dll
+*.so
+
+# Ignore debug files
+*.dSYM/
+*.pdb
+
+# Ignore build directories
+/build/
+/bin/
+/Debug/
+/Release/
+
+# Ignore temporary files
+*.tmp
+*.temp
+*~
+
+# Ignore editor swap and backup files (for vim, emacs, etc.)
+*.swp
+*.swo
+*.bak
+
+# Ignore CMake generated files (if you use CMake)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore Visual Studio specific files (if you use VS)
+*.vcxproj*
+*.user
+*.sln
+*.opensdf
+*.ipch
+*.VC.db
+
+# Ignore MacOS system files
+.DS_Store
