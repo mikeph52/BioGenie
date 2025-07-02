@@ -352,12 +352,6 @@ class CodonNumber{
             std::cout << "-----------------------------------\n\n\n";
             std::cout << "Process completed.\n";
 
-            //Write output to text file start
-            std::ofstream codon_number;
-            codon_number.open("codon_number.txt");
-            codon_number << CodonCount(sequence);
-            codon_number.close();    
-            //Write output to text file stop
             fastaFile.close();
         }
 
@@ -421,6 +415,13 @@ class ProteinChain{
             std::cout << "Process completed.\n";
             fastaFile.close();
         }
+};
+
+class FASTAChromosomeSeparator{
+    private:
+
+    public:
+    
 };
 
 // Main Function 
