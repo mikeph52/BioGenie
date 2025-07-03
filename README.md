@@ -20,6 +20,8 @@ BioGenie uses functions to execute different tools for different applications.
 - Get the codon number --> "-nc".
 - Get the mRNA --> "-t".
 - GC percentage calculation --> "-gc".
+- Generate the aminoacids(Protein chain) ---> '-p'.
+- Separate different sequencies in a FASTA file ---> '-ss'
 
 More functions will be added in the future.
 
