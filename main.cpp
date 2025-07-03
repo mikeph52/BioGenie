@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.8.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.9.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -25,6 +25,7 @@ void helpme(){
     std::cout << "Get the mRNA --> '-t'.\n";
     std::cout << "GC percentage calculation --> '-gc'.\n";
     std::cout << "Generate the aminoacids(Protein chain) ---> '-p'.\n";
+    std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
 }
@@ -417,21 +418,87 @@ class ProteinChain{
         }
 };
 
-class FASTAChromosomeSeparator{
-    private:
+class FASTAChromosomeSeparator {
+  public:
+    void FASTA_loader(const std::string& filename) {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
 
-    public:
-    
+        std::string line;
+        std::string header;
+        std::string sequence;
+        int count = 1;
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+               
+                if (!header.empty()) {
+                    WriteSequenceToFile(header, sequence, count++);
+                    sequence.clear();
+                }
+                header = line.substr(1);  
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!header.empty() && !sequence.empty()) {
+            WriteSequenceToFile(header, sequence, count++);
+        }
+
+        std::cout << "\n-----------------------------------\n";
+        std::cout << "Sequences from FASTA file successfully separated into " << count - 1 << " files.\n";
+        std::cout << "-----------------------------------\n\n";
+
+        fastaFile.close();
+    }
+
+  private:
+  // generate title
+    std::string SanitizeHeader(const std::string& header) const {
+        std::string safeHeader = header;
+        std::replace_if(safeHeader.begin(), safeHeader.end(),
+                        [](char c) { return !std::isalnum(c) && c != '_'; }, '_');
+        return safeHeader;
+    }
+
+    void WriteSequenceToFile(const std::string& header, const std::string& sequence, int index) const {
+        std::string safeName = SanitizeHeader(header);
+        std::string outputFilename = "chromosome_" + std::to_string(index) + "_" + safeName + ".fasta";
+
+        std::ofstream outFile(outputFilename);
+        if (!outFile.is_open()) {
+            std::cerr << "Error: Unable to create output file: " << outputFilename << "\n";
+            return;
+        }
+
+        outFile << ">" << header << "\n";
+
+        const int lineLength = 80;
+        for (size_t i = 0; i < sequence.size(); i += lineLength) {
+            outFile << sequence.substr(i, lineLength) << "\n";
+        }
+
+        outFile.close();
+        std::cout << "Saved: " << outputFilename << "\n";
+    }
 };
+
 
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
         std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.8.0 \nby mikeph_ 2025\n\n";
+        std::cout << "BioGenie 0.9.0 \nby mikeph_ 2025\n\n";
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
+        std::cerr << "[-ss FASTA sequencies separator]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
@@ -462,10 +529,14 @@ int main(int argc, char* argv[]){
         ProteinChain protein;
         protein.FASTA_loader(filename);
 
+    }else if(function == "-ss"){
+        FASTAChromosomeSeparator splitter;
+        splitter.FASTA_loader(filename);
     }else {
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
+        std::cerr << "[-ss FASTA sequencies separator]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
