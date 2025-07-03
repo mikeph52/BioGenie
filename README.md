@@ -35,6 +35,8 @@ sudo mv biogenie /usr/local/bin/biogenie
 ```
 
 ### Changelog:
+- 0.9.0:
+Linux support added. FASTA sequencies separator added and minor bugs fixed.
 - 0.8.0:
 Protein chain option added and minor bugs fixed.
 - 0.7.0:
