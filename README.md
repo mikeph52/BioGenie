@@ -1,5 +1,5 @@
 # BioGenie
-BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and MS Windows(Windows 10 or later), written in C++.
+BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and MS Windows (Windows 10 or later), written in C++.
 > [!IMPORTANT]
 > Windows version in Beta. It's not as quick as the other versions.
 <img width="762" alt="Image" src="https://github.com/user-attachments/assets/fb9d961e-e7e4-4a99-a401-95281a9f96e0" />
