@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.9.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.10.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -26,6 +26,8 @@ void helpme(){
     std::cout << "GC percentage calculation --> '-gc'.\n";
     std::cout << "Generate the aminoacids(Protein chain) ---> '-p'.\n";
     std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
+    std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
+    std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).";
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
 }
@@ -453,7 +455,8 @@ class FASTAChromosomeSeparator {
 
         std::cout << "\n-----------------------------------\n";
         std::cout << "Sequences from FASTA file successfully separated into " << count - 1 << " files.\n";
-        std::cout << "-----------------------------------\n\n";
+        std::cout << "-----------------------------------\n\n\n";
+        std::cout << "Process completed.\n";
 
         fastaFile.close();
     }
@@ -488,17 +491,95 @@ class FASTAChromosomeSeparator {
         std::cout << "Saved: " << outputFilename << "\n";
     }
 };
+class FASTASequenceHeader {
+public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
 
+        std::string line;
+        std::cout << "\n--------- Sequence Headers ---------\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+            if (line[0] == '>') {
+                std::cout << line << "\n";
+            }
+        }
+
+        std::cout << "-----------------------------------\n\n\n";
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
+
+class DNATrimmer {
+    private:
+    void printTrimmed(const std::string& header, const std::string& sequence, int start, int end) const {
+        int seqLen = sequence.size();
+        int trimmedStart = std::max(0, start);
+        int trimmedEnd = std::min(seqLen, end);
+
+        if (trimmedStart >= trimmedEnd) {
+            std::cerr << header << "\nInvalid trim range.\n\n";
+            return;
+        }
+
+        std::string trimmed = sequence.substr(trimmedStart, trimmedEnd - trimmedStart);
+        std::cout << header << " (trimmed: " << trimmedStart << "-" << trimmedEnd << ")\n";
+        std::cout << trimmed << "\n\n";
+    }
+
+    public:
+    void FASTA_loader(const std::string& filename, int start, int end) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+
+        std::string line;
+        std::string header;
+        std::string sequence;
+
+        std::cout << "\n-------- Trimmed DNA Sequences --------\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    printTrimmed(header, sequence, start, end);
+                    sequence.clear();
+                }
+                header = line;
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            printTrimmed(header, sequence, start, end);
+        }
+
+        std::cout << "-----------------------------------\n\n\n";
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+    
+};
 
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
-        std::cout << "-----------------------\n";
-        std::cout << "BioGenie 0.9.0 \nby mikeph_ 2025\n\n";
+        title();
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
-        std::cerr << "[-ss FASTA sequencies separator]\n";
+        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
@@ -532,11 +613,26 @@ int main(int argc, char* argv[]){
     }else if(function == "-ss"){
         FASTAChromosomeSeparator splitter;
         splitter.FASTA_loader(filename);
-    }else {
+
+    }else if(function == "-sh"){
+        FASTASequenceHeader headers;
+        headers.FASTA_loader(filename);
+
+    }else if(function == "-tr"){
+        DNATrimmer trim;
+        int start_position, end_position;
+        std::cout << "Enter the starting position:";
+        std::cin >> start_position;
+        std::cout << "Enter the end position:";
+        std::cin >> end_position;
+        trim.FASTA_loader(filename, start_position, end_position);
+
+    }
+    else {
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
-        std::cerr << "[-ss FASTA sequencies separator]\n";
+        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;

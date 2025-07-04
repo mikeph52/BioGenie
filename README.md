@@ -16,13 +16,15 @@ biogenie -gc example.fasta
 
 ### Documentation
 BioGenie uses functions to execute different tools for different applications.
-- Get the complement DNA sequence --> "-c".
-- Get the reverse complement DNA sequence --> "-rc".
-- Get the codon number --> "-nc".
-- Get the mRNA --> "-t".
-- GC percentage calculation --> "-gc".
+- Get the complement DNA sequence ---> "-c".
+- Get the reverse complement DNA sequence ---> "-rc".
+- Get the codon number ---> "-nc".
+- Get the mRNA ---> "-t".
+- GC percentage calculation ---> "-gc".
 - Generate the aminoacids(Protein chain) ---> '-p'.
-- Separate different sequencies in a FASTA file ---> '-ss'
+- Separate different sequencies in a FASTA file ---> '-ss'.
+- Print the different sequence headers from a FASTA file ---> '-sh'.
+- "Trim DNA ---> 'tr'.
 
 More functions will be added in the future.
 
@@ -41,6 +43,9 @@ sudo mv biogenie /usr/local/bin/biogenie
 ```
 
 ### Changelog:
+- 0.10.0:
+(https://github.com/mikeph52/BioGenie/issues/6)
+FASTA sequence header print function added. DNA trimmer function added. Minor bugs fixed and quality of life improvements.
 - 0.9.0:
 Linux support added. FASTA sequencies separator added and minor bugs fixed.
 - 0.8.0:
