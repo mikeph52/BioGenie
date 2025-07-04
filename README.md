@@ -45,7 +45,7 @@ sudo mv biogenie /usr/local/bin/biogenie
 ### Changelog:
 - 0.10.0:
 (https://github.com/mikeph52/BioGenie/issues/6)
-FASTA sequence header print function added. DNA trimmer function added. Minor bugs fixed and quality of life improvements.
+FASTA sequence header print function added. DNA trimmer function added. Windows support added. Minor bugs fixed and quality of life improvements.
 - 0.9.0:
 Linux support added. FASTA sequencies separator added and minor bugs fixed.
 - 0.8.0:
