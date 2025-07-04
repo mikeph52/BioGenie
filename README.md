@@ -26,7 +26,10 @@ BioGenie uses functions to execute different tools for different applications.
 More functions will be added in the future.
 
 ### Installation
-- Download BioGenie from Releases.
+- Download BioGenie from Releases, or with wget for linux systems:
+```
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.9.0/biogenie_linux_0.9.0
+``` 
 - Run "chmod +x" first.
 ```
 sudo chmod +x biogenie
