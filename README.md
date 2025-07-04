@@ -31,7 +31,7 @@ More functions will be added in the future.
 ### Installation
 - Download BioGenie from Releases, or with wget for linux systems:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.9.0/biogenie_linux_0.9.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.10.0/biogenie_linux_0.10.0
 ``` 
 - Run "chmod +x" first.
 ```
