@@ -24,7 +24,7 @@ BioGenie uses functions to execute different tools for different applications.
 - Generate the aminoacids(Protein chain) ---> '-p'.
 - Separate different sequencies in a FASTA file ---> '-ss'.
 - Print the different sequence headers from a FASTA file ---> '-sh'.
-- "Trim DNA ---> 'tr'.
+- Trim DNA sequence ---> 'tr'.
 
 More functions will be added in the future.
 
