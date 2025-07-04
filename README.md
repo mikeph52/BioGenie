@@ -14,7 +14,7 @@ biogenie <function> <filename>
 biogenie -gc example.fasta
 ```
 
-### Documentation
+## Documentation
 BioGenie uses functions to execute different tools for different applications.
 - Get the complement DNA sequence ---> "-c".
 - Get the reverse complement DNA sequence ---> "-rc".
@@ -28,21 +28,40 @@ BioGenie uses functions to execute different tools for different applications.
 
 More functions will be added in the future.
 
-### Installation
-- Download BioGenie from Releases, or with wget for linux systems:
+## Installation
+### GNU Linux
+- Download BioGenie from Releases, or with wget:
 ```
 wget https://github.com/mikeph52/BioGenie/releases/download/v.0.10.0/biogenie_linux_0.10.0
 ``` 
-- Run "chmod +x" first.
+- Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
-sudo chmod +x biogenie
+sudo chmod +x biogenie_linux_0.x.x
 ``` 
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie /usr/local/bin/biogenie
+sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ```
-
-### Changelog:
+### macOS
+- Download BioGenie from Releases, or with curl:
+```
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.10.0/biogenie_macos_0.10.0
+``` 
+- Run "chmod +x" first(Replace 0.x.x with the correct version).
+```
+sudo chmod +x biogenie_macos_0.x.x
+``` 
+- Move it to bin folder by executing the following command:
+```
+sudo mv biogenie_macos_0.x.x /usr/local/bin/biogenie
+```
+### MS Windows
+- Download BioGenie from Releases.
+- Add the executable to PATH(https://stackoverflow.com/questions/44272416/add-a-folder-to-the-path-environment-variable-in-windows-10-with-screenshots)
+- Run from powershell.
+> [!IMPORTANT]
+> Windows version in Beta. Has a lot of room for improvements.
+## Changelog:
 - 0.10.0:
 (https://github.com/mikeph52/BioGenie/issues/6)
 FASTA sequence header print function added. DNA trimmer function added. Windows support added. Minor bugs fixed and quality of life improvements.
