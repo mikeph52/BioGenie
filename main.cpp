@@ -491,6 +491,7 @@ class FASTAChromosomeSeparator {
         std::cout << "Saved: " << outputFilename << "\n";
     }
 };
+
 class FASTASequenceHeader {
 public:
     void FASTA_loader(const std::string& filename) const {
