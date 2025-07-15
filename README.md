@@ -32,7 +32,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.10.0/biogenie_linux_0.10.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.11.0/biogenie_linux_0.11.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -45,7 +45,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.10.0/biogenie_macos_0.10.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.11.0/biogenie_macos_0.11.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -63,6 +63,8 @@ It requires Windows 10 or later.
 > [!IMPORTANT]
 > Windows version in Beta. Has a lot of room for improvements.
 ## Changelog:
+- 0.11.0:
+FASTA file verification and integrity checker added.
 - 0.10.0:
 (https://github.com/mikeph52/BioGenie/issues/6)
 FASTA sequence header print function added. DNA trimmer function added. Windows support added. Minor bugs fixed and quality of life improvements.
