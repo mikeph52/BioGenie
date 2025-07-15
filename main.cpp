@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.10.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.11.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
    
 }
@@ -53,6 +53,66 @@ const std::unordered_map<std::string, char> codonTable = {
 };
 
 // Arg Classes
+class FastaVerifier {
+public:
+    explicit FastaVerifier(const std::string& filePath) : filename(filePath) {}
+
+    bool verify() {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Cannot open file: " << filename << std::endl;
+            return false;
+        }
+
+        std::string line;
+        bool inSequence = false;
+        int lineNumber = 0;
+
+        while (std::getline(fastaFile, line)) {
+            ++lineNumber;
+
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                inSequence = true;
+                if (line.length() == 1) {
+                    reportError(lineNumber, "Empty header (no sequence identifier).");
+                    return false;
+                }
+            } else {
+                if (!inSequence) {
+                    reportError(lineNumber, "Sequence data appears before a header.");
+                    return false;
+                }
+
+                if (!isValidSequenceLine(line)) {
+                    reportError(lineNumber, "Invalid characters found in sequence line.");
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+private:
+    std::string filename;
+
+    bool isValidSequenceLine(const std::string& line) {
+        for (char ch : line) {
+            char upper = std::toupper(ch);
+            if (!(upper == 'A' || upper == 'C' || upper == 'G' || upper == 'T' || upper == 'N')) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void reportError(int lineNumber, const std::string& message) {
+        std::cerr << "Error at line " << lineNumber << ": " << message << std::endl;
+    }
+};
+
 class GCCalc {
   private:
         double GCContent(const std::string& sequence) {
@@ -589,6 +649,15 @@ int main(int argc, char* argv[]){
     title();
     std::string filename = argv[2];
     std::string function = argv[1];
+    
+    //FASTA verifier
+    FastaVerifier verifier(filename);
+    if (verifier.verify()) {
+        std::cout << "FASTA file status  [OK]\n";
+    } else {
+        std::cerr << "FASTA file status  [FAULT]\n";
+    }
+    // Main if body
 
     if (function == "-gc"){
         GCCalc GCcalculator;
