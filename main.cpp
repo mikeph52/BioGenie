@@ -11,9 +11,9 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.11.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.12.0\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
-   
+    
 }
 
 void helpme(){
@@ -27,7 +27,8 @@ void helpme(){
     std::cout << "Generate the aminoacids(Protein chain) ---> '-p'.\n";
     std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
-    std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).";
+    std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
+    std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.";
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
 }
@@ -471,7 +472,7 @@ class ProteinChain{
     
             if (!sequence.empty()) {
                 std::string complement = translateToAminoAcids(sequence);
-                std::cout << ">" << header << "RNA:\n" << complement << "\n";
+                std::cout << ">" << header << "Protein:\n" << complement << "\n";
             }
 
             std::cout << "-----------------------------------\n\n\n";
@@ -633,6 +634,89 @@ class DNATrimmer {
     
 };
 
+class Pipeline1 {
+    /*This is a pipeline that contains the following classes and functions:
+    Classes:GCCalc, CodonNumber.*/
+    private:
+    // GC content function
+        double GCContent1(const std::string& sequence) const {
+            int gcCount = 0;
+            int validBases = 0;
+
+            for (char base : sequence) {
+                char upperBase = std::toupper(base);
+                if (upperBase == 'G' || upperBase == 'C') {
+                    gcCount++;
+                    validBases++;
+                } else if (upperBase == 'A' || upperBase == 'T') {
+                    validBases++;
+                }
+                
+            }
+
+            if (validBases == 0) return 0.0;
+
+            return (static_cast<double>(gcCount) / validBases) * 100.0;
+        }
+    // codon count function
+        int CodonCount(const std::string& sequence) const {
+            int validBases = 0;
+
+            for (char base : sequence) {
+                char upper = std::toupper(static_cast<unsigned char>(base));
+                if (upper == 'A' || upper == 'T' || upper == 'C' || upper == 'G') {
+                    validBases++;
+                }
+            }
+            return validBases / 3;
+        }
+    
+    public:
+    void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                exit(1);
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        int codons = CodonCount(sequence);                      
+                        std::cout << ">" << header << "\nCodon count:" << codons << "\n";
+                        double gcContent = GCContent1(sequence);
+                        std::cout << "GC Content = " << std::fixed << std::setprecision(2) << gcContent << "%\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                int codons = CodonCount(sequence);
+                std::cout << ">" << header << "Codon count:" << codons << "\n";
+                double gc = GCContent1(sequence);
+                std::cout << "GC Content = " << std::fixed << std::setprecision(2) << gc << "%\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+
+            fastaFile.close();
+        }
+};
+
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -641,6 +725,7 @@ int main(int argc, char* argv[]){
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
+        std::cerr << "[-pip1 Preset pipeline 1]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
@@ -697,12 +782,19 @@ int main(int argc, char* argv[]){
         std::cin >> end_position;
         trim.FASTA_loader(filename, start_position, end_position);
 
+    }else if(function == "-pip1"){
+        // THIS IS A TESTING FUNCTION
+        Pipeline1 pipeline1;
+        pipeline1.FASTA_loader(filename);
+        
+
     }
     else {
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
+        std::cerr << "[-pip1 Preset pipeline 1]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
