@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.12.0\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.12.2\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -705,7 +705,7 @@ class Pipeline1 {
     
             if (!sequence.empty()) {
                 int codons = CodonCount(sequence);
-                std::cout << ">" << header << "Codon count:" << codons << "\n";
+                std::cout << ">" << header << "\nCodon count:" << codons << "\n";
                 double gc = GCContent1(sequence);
                 std::cout << "GC Content = " << std::fixed << std::setprecision(2) << gc << "%\n";
             }
