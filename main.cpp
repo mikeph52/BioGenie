@@ -11,14 +11,14 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.12.2\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.13.0\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
 
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
-    std::cout << "BioGenie uses functions to execute different tools for different applications.\n";
+    std::cout << "BioGenie uses functions to execute different tools for different applications.\n\n";
     std::cout << "Get the complement DNA sequence --> '-c'.\n";
     std::cout << "Get the reverse complement DNA sequence --> '-rc'.\n";
     std::cout << "Get the codon number --> '-nc'.\n";
@@ -28,7 +28,10 @@ void helpme(){
     std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
-    std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.";
+    std::cout << "Get the purine/pyrimidine ratio --> '-pp'.\n";
+    std::cout << "Calculate melting temperature (Tm) of DNA sequences --> '-mt'.\n";
+    std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.\n";
+    std::cout << "Preset pipeline 2 ---> -pip2. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
 }
@@ -144,10 +147,8 @@ class GCCalc {
                 exit(1);
             }
 
-            std::string line;
-            std::string sequence;
-            std::string Header;
-
+            std::string line, Header, sequence;
+            
             std::cout << "\n-----------------------------------\n";
 
             while (std::getline(fastaFile, line)) {
@@ -634,6 +635,135 @@ class DNATrimmer {
     
 };
 
+class PurinePyrimidineRatioAnalyzer {
+    private:
+    void calculateRatio(const std::string& header, const std::string& sequence) const{
+        int purines = 0, pyrimidines = 0;
+       
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            switch (upper) {
+                case 'A':
+                case 'G':
+                    purines++;
+                    break;
+                case 'C':
+                case 'T':
+                    pyrimidines++;
+                    break;
+                default:
+                    break; // Skip 'N' or unknown bases
+            }
+        }
+
+        std::cout << ">" << header << "\n";
+        std::cout << "Purines: " << purines << "\n";
+        std::cout << "Pyrimidines: " << pyrimidines << "\n";
+
+        if (pyrimidines == 0) {
+            std::cout << "Purine/Pyrimidine Ratio: Undefined (pyrimidines = 0)\n";
+        } else {
+            double ratio = static_cast<double>(purines) / pyrimidines;
+            std::cout << "Purine/Pyrimidine Ratio: " << std::fixed << std::setprecision(3) << ratio << "\n";
+        }
+        std::cout << "\n-----------------------------------\n";
+    }
+    public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        std::cout << "\n----- Purine/Pyrimidine Analysis -----\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    calculateRatio(header, sequence);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            calculateRatio(header, sequence);
+        }
+
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
+
+class MeltingTempCalculator {
+private:
+    void calculateTm(const std::string& header, const std::string& sequence) const {
+        int a = 0, t = 0, g = 0, c = 0;
+
+        for (char base : sequence) {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': ++a; break;
+                case 'T': ++t; break;
+                case 'G': ++g; break;
+                case 'C': ++c; break;
+                default: break; // Skip N
+            }
+        }
+
+        int total = a + t + g + c;
+        if (total == 0) {
+            std::cout << ">" << header << "\nNo valid bases found. Skipping...\n";
+            return;
+        }
+
+        int tm = 2 * (a + t) + 4 * (g + c);
+
+        std::cout << ">" << header << "\n";
+        std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
+        std::cout << "Melting Temperature (Tm): " << tm << "°C\n";
+        std::cout << "-----------------------------------\n";
+    }
+    public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        std::cout << "\n----- Melting Temperature Analysis -----\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    calculateTm(header, sequence);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            calculateTm(header, sequence);
+        }
+
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
+
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
@@ -717,6 +847,130 @@ class Pipeline1 {
         }
 };
 
+class Pipeline2 {
+     /*This is a pipeline that contains the following classes and functions:
+    Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator, GCCalc.*/
+    private:
+    void ppRatio(const std::string& header, const std::string& sequence) const{
+        int purines = 0, pyrimidines = 0;
+       
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            switch (upper) {
+                case 'A':
+                case 'G':
+                    purines++;
+                    break;
+                case 'C':
+                case 'T':
+                    pyrimidines++;
+                    break;
+                default:
+                    break; // Skip 'N' or unknown bases
+            }
+        }
+
+        std::cout << ">" << header << "\n";
+        std::cout << "-----------------------------------\n";
+        std::cout << "Purines: " << purines << "\n";
+        std::cout << "Pyrimidines: " << pyrimidines << "\n";
+
+        if (pyrimidines == 0) {
+            std::cout << "Purine/Pyrimidine Ratio: Undefined (pyrimidines = 0)\n";
+        } else {
+            double ratio = static_cast<double>(purines) / pyrimidines;
+            std::cout << "Purine/Pyrimidine Ratio: " << std::fixed << std::setprecision(3) << ratio << "\n";
+        }
+        //std::cout << "\n-----------------------------------\n";
+    }
+    void TmCalc(const std::string& header, const std::string& sequence) const {
+        int a = 0, t = 0, g = 0, c = 0;
+
+        for (char base : sequence) {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': ++a; break;
+                case 'T': ++t; break;
+                case 'G': ++g; break;
+                case 'C': ++c; break;
+                default: break; // Skip N
+            }
+        }
+        int total = a + t + g + c;
+        if (total == 0) {
+            std::cout << ">" << header << "\nNo valid bases found. Skipping...\n";
+            return;
+        }
+
+        int tm = 2 * (a + t) + 4 * (g + c);
+
+        //std::cout << ">" << header << "\n";
+        std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
+        std::cout << "Melting Temperature (Tm): " << tm << "°C\n";
+    }
+    double GCCon(const std::string& sequence)const {
+            int gcCount = 0;
+            int validBases = 0;
+
+            for (char base : sequence) {
+                char upperBase = std::toupper(base);
+                if (upperBase == 'G' || upperBase == 'C') {
+                    gcCount++;
+                    validBases++;
+                } else if (upperBase == 'A' || upperBase == 'T') {
+                    validBases++;
+                }
+                
+            }
+
+            if (validBases == 0) return 0.0;
+
+            return (static_cast<double>(gcCount) / validBases) * 100.0;
+    }
+
+    public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        std::cout << "\n-----"<< filename<<"------\n";
+        //std::cout << "\n-----------------------\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    ppRatio(header, sequence);
+                    TmCalc(header, sequence);
+                    double GCContent = GCCon(sequence);
+                    std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
+                    std::cout << "-----------------------------------\n";
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            ppRatio(header, sequence);
+            TmCalc(header, sequence);
+            double GCContent = GCCon(sequence);
+            std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
+            std::cout << "-----------------------------------\n";
+        }
+
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+
+};
+
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -725,7 +979,8 @@ int main(int argc, char* argv[]){
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
-        std::cerr << "[-pip1 Preset pipeline 1]";
+        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-pip1 Preset pipeline 1]\n";
+        std::cerr << "[-pip2 Preset pipeline 2]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;
@@ -743,7 +998,6 @@ int main(int argc, char* argv[]){
         std::cerr << "FASTA file status  [FAULT]\n";
     }
     // Main if body
-
     if (function == "-gc"){
         GCCalc GCcalculator;
         GCcalculator.FASTA_loader(filename);
@@ -788,13 +1042,25 @@ int main(int argc, char* argv[]){
         pipeline1.FASTA_loader(filename);
         
 
+    }else if(function == "-pp"){
+        PurinePyrimidineRatioAnalyzer ppanalyzer;
+        ppanalyzer.FASTA_loader(filename);
+
+    }else if(function == "-mt"){
+        MeltingTempCalculator mtcalc;
+        mtcalc.FASTA_loader(filename);
+
+    }else if(function == "-pip2"){
+        Pipeline2 pipeline2;
+        pipeline2.FASTA_loader(filename);
     }
     else {
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
-        std::cerr << "[-pip1 Preset pipeline 1]";
+        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-pip1 Preset pipeline 1]\n";
+        std::cerr << "[-pip2 Preset pipeline 2]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
         return 1;

@@ -25,7 +25,10 @@ BioGenie uses functions to execute different tools for different applications.
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
+- Get the purine/pyrimidine ratio --> "-pp".
+- Calculate melting temperature (Tm) of DNA sequences ---> "-mt".
 - Custom preset pipeline 1 ---> "-pip1".
+- Custom preset pipeline 2 ---> "-pip2".
 
 More functions will be added in the future.
 
@@ -33,7 +36,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.12.0/biogenie_linux_0.12.2
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.13.0/biogenie_linux_0.13.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -46,7 +49,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.12.0/biogenie_macos_0.12.2
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.13.0/biogenie_macos_0.13.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -64,6 +67,8 @@ It requires Windows 10 or later.
 > [!IMPORTANT]
 > Windows version in Beta. Has a lot of room for improvements.
 ## Changelog:
+- 0.13.0:
+Purine/pyrimidine ratio and Melting temperature(Tm) calculator functions added. Preset Pipeline 2 added. Minor format fixes.
 - 0.12.2:
 Minor format fixes.
 - 0.12.0:
