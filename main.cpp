@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.13.0\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.14.0\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -30,10 +30,22 @@ void helpme(){
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
     std::cout << "Get the purine/pyrimidine ratio --> '-pp'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences --> '-mt'.\n";
+    std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
     std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> -pip2. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
+}
+
+void message(){
+        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
+        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
+        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
+        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
+        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-cc cDNA coloured\n";
+        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
+        std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
+        std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
 
 //Genetic code
@@ -971,18 +983,83 @@ class Pipeline2 {
 
 };
 
+class DNAcomp_colour{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'C': return 'G';
+                case 'G': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+        std::string ColorBase(char base) const {
+        switch (base) {
+            case 'A': return "\033[42mA\033[0m"; // Green background
+            case 'T': return "\033[41mT\033[0m"; // Red background
+            case 'G': return "\033[44mG\033[0m"; // Blue background
+            case 'C': return "\033[40mC\033[0m"; // Black background
+            default:  return "\033[47mN\033[0m"; // Gray background
+            }
+        }
+        //DNA complement strand init
+        std::string ComplementStrandColored(const std::string& sequence) const {
+        std::string result;
+        for (char base : sequence) {
+            char comp = Complement(base);
+            result += ColorBase(comp);
+        }
+        return result;
+        }
+
+
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string complement = ComplementStrandColored(sequence);
+                        std::cout << ">" << header << " (complement)\n" << complement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                std::string complement = ComplementStrandColored(sequence);
+                std::cout << ">" << header << " (complement)\n" << complement << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
         title();
-        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
-        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
-        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
-        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
-        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-pip1 Preset pipeline 1]\n";
-        std::cerr << "[-pip2 Preset pipeline 2]";
-        std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
-        std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
+        message();
         return 1;
     }
     
@@ -1050,19 +1127,16 @@ int main(int argc, char* argv[]){
         MeltingTempCalculator mtcalc;
         mtcalc.FASTA_loader(filename);
 
-    }else if(function == "-pip2"){
+    }else if(function == "-cc"){
+        DNAcomp_colour dnacolour;
+        dnacolour.FASTA_loader(filename);
+
+    }    else if(function == "-pip2"){
         Pipeline2 pipeline2;
         pipeline2.FASTA_loader(filename);
     }
     else {
-        std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
-        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
-        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
-        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
-        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-pip1 Preset pipeline 1]\n";
-        std::cerr << "[-pip2 Preset pipeline 2]";
-        std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
-        std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
+        message();
         return 1;
     }
 

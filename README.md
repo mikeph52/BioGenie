@@ -67,6 +67,8 @@ It requires Windows 10 or later.
 > [!IMPORTANT]
 > Windows version in Beta. Has a lot of room for improvements.
 ## Changelog:
+- 0.14.0:
+Coloured cDNA sequence. Minor adjustments made and bugs fixed.
 - 0.13.0:
 Purine/pyrimidine ratio and Melting temperature(Tm) calculator functions added. Preset Pipeline 2 added. Minor format fixes.
 - 0.12.2:
