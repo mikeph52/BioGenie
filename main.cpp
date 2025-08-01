@@ -42,7 +42,7 @@ void message(){
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
-        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-cc cDNA coloured\n";
+        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-cc cDNA coloured]\n";
         std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
