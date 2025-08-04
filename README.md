@@ -1,7 +1,7 @@
 # BioGenie
 BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and MS Windows, written in C++.
 > [!IMPORTANT]
-> Windows CLI version in Beta. It's not as quick as the other versions. GUI version is available in alpha, but it's still not usable. Available in Releases(https://github.com/mikeph52/BioGenie/releases/tag/testing)
+> _Windows CLI version in Beta. It's not as quick as the other versions. GUI version is available in alpha, but it's still not usable. Available in Releases(https://github.com/mikeph52/BioGenie/releases/tag/testing)_
 
 <img width="874" height="724" alt="Image" src="https://github.com/user-attachments/assets/7f65593b-35c1-4092-bd2c-bf581854e6fa" />
 
@@ -30,6 +30,7 @@ BioGenie uses functions to execute different tools for different applications.
 - Calculate melting temperature (Tm) of DNA sequences ---> "-mt".
 - Custom preset pipeline 1 ---> "-pip1".
 - Custom preset pipeline 2 ---> "-pip2".
+- Coloured cDNA sequence ---> "-cc".
 
 More functions will be added in the future.
 
@@ -65,8 +66,11 @@ It requires Windows 10 or later.
 - Download BioGenie from Releases.
 - Add the executable to PATH(https://stackoverflow.com/questions/44272416/add-a-folder-to-the-path-environment-variable-in-windows-10-with-screenshots)
 - Run from powershell.
+There's also a GUI Version Available on Alpha testing.
+> [!CAUTION]
+> This is an Alpha testing version. It is not functional. Not for scientific use.
 > [!IMPORTANT]
-> Windows version in Beta. Has a lot of room for improvements.
+> _Windows version in Beta. Has a lot of room for improvements. In MS Windows Home Edition, there's a reported bug, causing an exception handle(https://github.com/mikeph52/BioGenie/issues/8)._
 ## Changelog:
 - 0.14.0:
 Coloured cDNA sequence. Minor adjustments made and bugs fixed.
