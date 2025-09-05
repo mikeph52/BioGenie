@@ -76,7 +76,8 @@ There's also a GUI Version Available on Alpha testing.
 > _Windows version in Beta. Has a lot of room for improvements. In MS Windows Home Edition, there's a reported bug, causing an exception handle(https://github.com/mikeph52/BioGenie/issues/8)._
 ## Changelog:
 - 0.15.0:
-Fixed Melting Temperature Calculator functiion. SantaLucia 1998 nearest-neighbor method added as "-mt2". Pipeline 2 function also fixed. Now uses SantaLucia 1998 nearest-neighbor method for more accurate calculations.
+(https://github.com/mikeph52/BioGenie/issues/9)
+Fixed Melting Temperature Calculator functiion. SantaLucia 1998 nearest-neighbor method added as "-mt2". Pipeline 2 function also fixed. Now uses SantaLucia 1998 nearest-neighbor method for more accurate calculations. Minor bugs fixed.
 - 0.14.0:
 Coloured cDNA sequence. Minor adjustments made and bugs fixed.
 - 0.13.0:
