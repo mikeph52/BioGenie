@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <unordered_map>
+#include <cmath>
 
 // Public Functions 
 void title(){
