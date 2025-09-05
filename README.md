@@ -28,7 +28,8 @@ BioGenie uses functions to execute different tools for different applications.
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
 - Get the purine/pyrimidine ratio --> "-pp".
-- Calculate melting temperature (Tm) of DNA sequences ---> "-mt".
+- Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
+- Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method ---> "-mt2".
 - Custom preset pipeline 1 ---> "-pip1".
 - Custom preset pipeline 2 ---> "-pip2".
 - Coloured cDNA sequence ---> "-cc".
@@ -74,6 +75,8 @@ There's also a GUI Version Available on Alpha testing.
 > [!IMPORTANT]
 > _Windows version in Beta. Has a lot of room for improvements. In MS Windows Home Edition, there's a reported bug, causing an exception handle(https://github.com/mikeph52/BioGenie/issues/8)._
 ## Changelog:
+- 0.15.0:
+Fixed Melting Temperature Calculator functiion. SantaLucia 1998 nearest-neighbor method added as "-mt2". Pipeline 2 function also fixed. Now uses SantaLucia 1998 nearest-neighbor method for more accurate calculations.
 - 0.14.0:
 Coloured cDNA sequence. Minor adjustments made and bugs fixed.
 - 0.13.0:

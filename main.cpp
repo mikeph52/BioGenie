@@ -11,7 +11,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.14.0\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.15.0\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -29,7 +29,8 @@ void helpme(){
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
     std::cout << "Get the purine/pyrimidine ratio --> '-pp'.\n";
-    std::cout << "Calculate melting temperature (Tm) of DNA sequences --> '-mt'.\n";
+    std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) --> '-mt1'.\n";
+    std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
     std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> -pip2. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
@@ -42,8 +43,8 @@ void message(){
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
-        std::cerr << "[-pp purine/pyrimidine ratio][-mt melting temp. calculator][-cc cDNA coloured]\n";
-        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
+        std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
+        std::cerr << "[-cc cDNA coloured][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -714,7 +715,7 @@ class PurinePyrimidineRatioAnalyzer {
     }
 };
 
-class MeltingTempCalculator {
+class MeltingTempCalculator1 {
 private:
     void calculateTm(const std::string& header, const std::string& sequence) const {
         int a = 0, t = 0, g = 0, c = 0;
@@ -775,6 +776,132 @@ private:
         fastaFile.close();
     }
 };
+
+class MeltingTempCalculator2 {
+    private:
+        struct ThermoParams {
+            double dH; // kcal/mol
+            double dS; // cal/(mol*K)
+        };
+
+        // SantaLucia 1998 parameters
+        const std::unordered_map<std::string, ThermoParams> nnParams = {
+            {"AA", {-7.9, -22.2}}, {"TT", {-7.9, -22.2}},
+            {"AT", {-7.2, -20.4}}, {"TA", {-7.2, -21.3}},
+            {"CA", {-8.5, -22.7}}, {"TG", {-8.5, -22.7}},
+            {"GT", {-8.4, -22.4}}, {"AC", {-8.4, -22.4}},
+            {"CT", {-7.8, -21.0}}, {"AG", {-7.8, -21.0}},
+            {"GA", {-8.2, -22.2}}, {"TC", {-8.2, -22.2}},
+            {"CG", {-10.6, -27.2}},{"GC", {-9.8, -24.4}},
+            {"GG", {-8.0, -19.9}}, {"CC", {-8.0, -19.9}}
+        };
+
+        double R = 1.987; // cal/(K*mol)
+
+        double calculateTmNN(const std::string& sequence, double strandConc = 5e-7, double NaConc = 0.05) const {
+            if (sequence.size() < 2) return 0.0;
+
+            double dH = 0.0; // kcal/mol
+            double dS = 0.0; // cal/(mol*K)
+
+            // initiation correction
+            dH += 0.2;
+            dS += -5.7;
+
+            // nearest-neighbor summation
+            for (size_t i = 0; i < sequence.size() - 1; i++) {
+                std::string pair;
+                pair += std::toupper(sequence[i]);
+                pair += std::toupper(sequence[i+1]);
+
+                auto it = nnParams.find(pair);
+                if (it != nnParams.end()) {
+                    dH += it->second.dH;
+                    dS += it->second.dS;
+                }
+            }
+
+            // symmetry correction if self-complementary
+            bool symmetric = true;
+            for (size_t i = 0; i < sequence.size() / 2; i++) {
+                if (std::toupper(sequence[i]) != complement(sequence[sequence.size() - 1 - i])) {
+                    symmetric = false;
+                    break;
+                }
+            }
+            if (symmetric) dS -= 1.4;
+
+            // salt correction
+            dS += 0.368 * (sequence.size() - 1) * std::log(NaConc);
+
+            // calculate Tm
+            double tm = (1000 * dH) / (dS + R * std::log(strandConc/4.0)) - 273.15;
+            return tm;
+        }
+
+        static char complement(char base) {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'G': return 'C';
+                case 'C': return 'G';
+                default: return 'N';
+            }
+        }
+
+        void calculateTm(const std::string& header, const std::string& sequence) const {
+            double tm = calculateTmNN(sequence);
+
+            int a=0,t=0,g=0,c=0;
+            for (char base : sequence) {
+                switch (std::toupper(static_cast<unsigned char>(base))) {
+                    case 'A': ++a; break;
+                    case 'T': ++t; break;
+                    case 'G': ++g; break;
+                    case 'C': ++c; break;
+                }
+            }
+
+            std::cout << ">" << header << "\n";
+            std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
+            std::cout << "Melting Temperature (NN model): " << tm << " °C\n";
+            std::cout << "-----------------------------------\n";
+        }
+
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file: " << filename << "\n";
+                return;
+            }
+
+            std::string line, header, sequence;
+            std::cout << "\n----- Melting Temperature Analysis (Nearest Neighbor Model) -----\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        calculateTm(header, sequence);
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+
+            if (!sequence.empty()) {
+                calculateTm(header, sequence);
+            }
+
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
 
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -861,7 +988,7 @@ class Pipeline1 {
 
 class Pipeline2 {
      /*This is a pipeline that contains the following classes and functions:
-    Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator, GCCalc.*/
+    Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc.*/
     private:
     void ppRatio(const std::string& header, const std::string& sequence) const{
         int purines = 0, pyrimidines = 0;
@@ -895,31 +1022,96 @@ class Pipeline2 {
         }
         //std::cout << "\n-----------------------------------\n";
     }
-    void TmCalc(const std::string& header, const std::string& sequence) const {
-        int a = 0, t = 0, g = 0, c = 0;
+        struct ThermoParams {
+            double dH; // kcal/mol
+            double dS; // cal/(mol*K)
+        };
 
-        for (char base : sequence) {
+        // SantaLucia 1998 parameters
+        const std::unordered_map<std::string, ThermoParams> nnParams = {
+            {"AA", {-7.9, -22.2}}, {"TT", {-7.9, -22.2}},
+            {"AT", {-7.2, -20.4}}, {"TA", {-7.2, -21.3}},
+            {"CA", {-8.5, -22.7}}, {"TG", {-8.5, -22.7}},
+            {"GT", {-8.4, -22.4}}, {"AC", {-8.4, -22.4}},
+            {"CT", {-7.8, -21.0}}, {"AG", {-7.8, -21.0}},
+            {"GA", {-8.2, -22.2}}, {"TC", {-8.2, -22.2}},
+            {"CG", {-10.6, -27.2}},{"GC", {-9.8, -24.4}},
+            {"GG", {-8.0, -19.9}}, {"CC", {-8.0, -19.9}}
+        };
+
+        double R = 1.987; // cal/(K*mol)
+
+        double calculateTmNN(const std::string& sequence, double strandConc = 5e-7, double NaConc = 0.05) const {
+            if (sequence.size() < 2) return 0.0;
+
+            double dH = 0.0; // kcal/mol
+            double dS = 0.0; // cal/(mol*K)
+
+            // initiation correction
+            dH += 0.2;
+            dS += -5.7;
+
+            // nearest-neighbor summation
+            for (size_t i = 0; i < sequence.size() - 1; i++) {
+                std::string pair;
+                pair += std::toupper(sequence[i]);
+                pair += std::toupper(sequence[i+1]);
+
+                auto it = nnParams.find(pair);
+                if (it != nnParams.end()) {
+                    dH += it->second.dH;
+                    dS += it->second.dS;
+                }
+            }
+
+            // symmetry correction if self-complementary
+            bool symmetric = true;
+            for (size_t i = 0; i < sequence.size() / 2; i++) {
+                if (std::toupper(sequence[i]) != complement(sequence[sequence.size() - 1 - i])) {
+                    symmetric = false;
+                    break;
+                }
+            }
+            if (symmetric) dS -= 1.4;
+
+            // salt correction
+            dS += 0.368 * (sequence.size() - 1) * std::log(NaConc);
+
+            // calculate Tm
+            double tm = (1000 * dH) / (dS + R * std::log(strandConc/4.0)) - 273.15;
+            return tm;
+        }
+
+        static char complement(char base) {
             switch (std::toupper(static_cast<unsigned char>(base))) {
-                case 'A': ++a; break;
-                case 'T': ++t; break;
-                case 'G': ++g; break;
-                case 'C': ++c; break;
-                default: break; // Skip N
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'G': return 'C';
+                case 'C': return 'G';
+                default: return 'N';
             }
         }
-        int total = a + t + g + c;
-        if (total == 0) {
-            std::cout << ">" << header << "\nNo valid bases found. Skipping...\n";
-            return;
+
+        void TmCalc(const std::string& header, const std::string& sequence) const {
+            double tm = calculateTmNN(sequence);
+
+            int a=0,t=0,g=0,c=0;
+            for (char base : sequence) {
+                switch (std::toupper(static_cast<unsigned char>(base))) {
+                    case 'A': ++a; break;
+                    case 'T': ++t; break;
+                    case 'G': ++g; break;
+                    case 'C': ++c; break;
+                }
+            }
+
+            std::cout << ">" << header << "\n";
+            std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
+            std::cout << "Melting Temperature (NN model): " << tm << " °C\n";
+            // std::cout << "-----------------------------------\n";
         }
-
-        int tm = 2 * (a + t) + 4 * (g + c);
-
-        //std::cout << ">" << header << "\n";
-        std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
-        std::cout << "Melting Temperature (Tm): " << tm << "°C\n";
-    }
-    double GCCon(const std::string& sequence)const {
+    
+    double GCCon(const std::string& sequence) const {
             int gcCount = 0;
             int validBases = 0;
 
@@ -1114,7 +1306,6 @@ int main(int argc, char* argv[]){
         trim.FASTA_loader(filename, start_position, end_position);
 
     }else if(function == "-pip1"){
-        // THIS IS A TESTING FUNCTION
         Pipeline1 pipeline1;
         pipeline1.FASTA_loader(filename);
         
@@ -1123,9 +1314,9 @@ int main(int argc, char* argv[]){
         PurinePyrimidineRatioAnalyzer ppanalyzer;
         ppanalyzer.FASTA_loader(filename);
 
-    }else if(function == "-mt"){
-        MeltingTempCalculator mtcalc;
-        mtcalc.FASTA_loader(filename);
+    }else if(function == "-mt1"){
+        MeltingTempCalculator1 mtcalc1;
+        mtcalc1.FASTA_loader(filename);
 
     }else if(function == "-cc"){
         DNAcomp_colour dnacolour;
@@ -1135,7 +1326,11 @@ int main(int argc, char* argv[]){
         Pipeline2 pipeline2;
         pipeline2.FASTA_loader(filename);
     }
-    else {
+    else if(function == "-mt2"){
+        MeltingTempCalculator2 mtcalc2;
+        mtcalc2.FASTA_loader(filename);
+
+    }else {
         message();
         return 1;
     }
