@@ -8,11 +8,12 @@
 #include <algorithm>
 #include <unordered_map>
 #include <cmath>
+#include <vector>
 
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.15.0\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.16.0\nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -33,6 +34,7 @@ void helpme(){
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) --> '-mt1'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
+    std::cout << "Get the Open Reading Frame(ORF) ---> -orf.";
     std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> -pip2. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "More functions will be added in the future.\n";
@@ -45,7 +47,7 @@ void message(){
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
-        std::cerr << "[-cc cDNA coloured][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
+        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -903,6 +905,95 @@ class MeltingTempCalculator2 {
         }
 };
 
+class ORFFinder {
+    private:
+        const std::vector<std::string> stopCodons = {"TAA", "TAG", "TGA"};
+
+        bool isStopCodon(const std::string& codon) const {
+            return std::find(stopCodons.begin(), stopCodons.end(), codon) != stopCodons.end();
+        }
+
+        std::vector<std::tuple<int,int,std::string>> findORFsInFrame(const std::string& sequence, int frame) const {
+            std::vector<std::tuple<int,int,std::string>> orfs;
+            for (size_t i = frame; i + 2 < sequence.size(); i += 3) {
+                std::string codon = sequence.substr(i, 3);
+                for (char &c : codon) c = std::toupper(c);
+
+                if (codon == "ATG") { // start codon found
+                    size_t start = i;
+                    size_t j = i + 3;
+                    for (; j + 2 < sequence.size(); j += 3) {
+                        std::string nextCodon = sequence.substr(j, 3);
+                        for (char &c : nextCodon) c = std::toupper(c);
+                        if (isStopCodon(nextCodon)) {
+                            orfs.emplace_back(start, j+2, sequence.substr(start, j+3-start));
+                            break;
+                        }
+                    }
+                    i = j; // move to next after stop codon
+                }
+            }
+            return orfs;
+        }
+
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line, header, sequence;
+            std::cout << "\n----- ORF Finder -----\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        for (int frame = 0; frame < 3; ++frame) {
+                            auto orfs = findORFsInFrame(sequence, frame);
+                            std::cout << ">" << header << " - Frame " << frame+1 << "\n";
+                            if (orfs.empty()) {
+                                std::cout << "No ORFs found.\n";
+                            } else {
+                                for (auto &[start, end, seq] : orfs) {
+                                    std::cout << "Start: " << start << ", End: " << end
+                                            << ", Length (codons): " << (end-start+1)/3 << "\n";
+                                }
+                            }
+                            std::cout << "-----------------------------------\n";
+                        }
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+
+            if (!sequence.empty()) {
+                for (int frame = 0; frame < 3; ++frame) {
+                    auto orfs = findORFsInFrame(sequence, frame);
+                    std::cout << ">" << header << " - Frame " << frame+1 << "\n";
+                    if (orfs.empty()) {
+                        std::cout << "No ORFs found.\n";
+                    } else {
+                        for (auto &[start, end, seq] : orfs) {
+                            std::cout << "Start: " << start << ", End: " << end
+                                    << ", Length (codons): " << (end-start+1)/3 << "\n";
+                        }
+                    }
+                    std::cout << "-----------------------------------\n";
+                }
+            }
+
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
 
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -1330,6 +1421,10 @@ int main(int argc, char* argv[]){
     else if(function == "-mt2"){
         MeltingTempCalculator2 mtcalc2;
         mtcalc2.FASTA_loader(filename);
+
+    }else if(function == "-orf"){
+        ORFFinder orffinder;
+        orffinder.FASTA_loader(filename);
 
     }else {
         message();
