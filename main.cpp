@@ -34,9 +34,9 @@ void helpme(){
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) --> '-mt1'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
-    std::cout << "Get the Open Reading Frame(ORF) ---> -orf.";
-    std::cout << "Preset pipeline 1 ---> -pip1. Returns the codon number and GC%.\n";
-    std::cout << "Preset pipeline 2 ---> -pip2. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
+    std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.";
+    std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
+    std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "More functions will be added in the future.\n";
     std::cout << "-----------------------------------------------------------\n";
 }
@@ -930,7 +930,8 @@ class ORFFinder {
                             break;
                         }
                     }
-                    i = j; // move to next after stop codon
+                    // move to next orf after stop codon
+                    i = j;
                 }
             }
             return orfs;

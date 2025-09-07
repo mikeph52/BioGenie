@@ -33,6 +33,7 @@ BioGenie uses functions to execute different tools for different applications.
 - Custom preset pipeline 1 ---> "-pip1".
 - Custom preset pipeline 2 ---> "-pip2".
 - Coloured cDNA sequence ---> "-cc".
+- Get the Open Reading Frame(ORF) ---> "-orf".
 
 More functions will be added in the future.
 
@@ -40,7 +41,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.14.0/biogenie_linux_0.14.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.16.0/biogenie_linux_0.16.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -53,7 +54,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.14.0/biogenie_macos_0.14.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.16.0/biogenie_macos_0.16.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -75,6 +76,8 @@ There's also a GUI Version Available on Alpha testing.
 > [!IMPORTANT]
 > _Windows version in Beta. Has a lot of room for improvements. In MS Windows Home Edition, there's a reported bug, causing an exception handle(https://github.com/mikeph52/BioGenie/issues/8)._
 ## Changelog:
+- 0.16.0:
+Open Reading Frames finder function added. Minor bugs fixed.
 - 0.15.0:
 (https://github.com/mikeph52/BioGenie/issues/9)
 Fixed Melting Temperature Calculator functiion. SantaLucia 1998 nearest-neighbor method added as "-mt2". Pipeline 2 function also fixed. Now uses SantaLucia 1998 nearest-neighbor method for more accurate calculations. Minor bugs fixed.
