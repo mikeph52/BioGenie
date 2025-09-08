@@ -35,6 +35,7 @@ void helpme(){
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
     std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.";
+    std::cout << "Generate cDNA sequence FASTA ---> '-cw'.";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "More functions will be added in the future.\n";
@@ -47,7 +48,7 @@ void message(){
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
-        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta]\n";
+        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta]\n";
         std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
@@ -1069,6 +1070,79 @@ public:
     }
 };
 
+class ReverseComplementDNAToFile{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'C': return 'G';
+                case 'G': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+       
+        std::string ReverseComplementStrand(const std::string& sequence) const {
+            std::string revComplement;
+            revComplement.reserve(sequence.size());
+            for (auto it = sequence.rbegin(); it != sequence.rend(); ++it) {
+                revComplement += Complement(*it);
+            }
+            return revComplement;
+        }
+
+        // Wrap sequence into lines of 'width' characters
+        void WriteWrappedSequence(std::ofstream& outFile, const std::string& sequence, std::size_t width = 70) const {
+            for (std::size_t i = 0; i < sequence.size(); i += width) {
+                outFile << sequence.substr(i, width) << "\n";
+            }
+        }
+
+    public:
+        void FASTA_writer(const std::string& inputFilename, const std::string& outputFilename) const {
+            std::ifstream fastaFile(inputFilename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open input file " << inputFilename << "\n";
+                return;
+            }
+
+            std::ofstream outFile(outputFilename);
+            if (!outFile.is_open()) {
+                std::cerr << "Error: Unable to open output file " << outputFilename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string revComplement = ReverseComplementStrand(sequence);
+                        outFile << ">" << header << " (complement)\n";
+                        WriteWrappedSequence(outFile, revComplement);
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+            std::string complement = ReverseComplementStrand(sequence);
+            outFile << ">" << header << " (complement)\n";
+            WriteWrappedSequence(outFile, complement);
+             }
+
+            fastaFile.close();
+            outFile.close();
+            std::cout << "Complement sequences written to " << outputFilename << "\n";
+    }
+};
+
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
@@ -1506,6 +1580,13 @@ int main(int argc, char* argv[]){
         std::cin >> outputFile;
         DNAcompToFile writecomplimentary;
         writecomplimentary.FASTA_writer(filename, outputFile);
+
+    }else if(function == "-rcw" && !filename.empty()){
+        std::string outputFile;
+        std::cout << "Enter output filename: ";
+        std::cin >> outputFile;
+        ReverseComplementDNAToFile writereverse;
+        writereverse.FASTA_writer(filename, outputFile);
 
     }else {
         message();
