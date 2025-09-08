@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.16.0\nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.17.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -47,7 +47,8 @@ void message(){
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
-        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]";
+        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta]\n";
+        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -995,6 +996,78 @@ class ORFFinder {
         }
 };
 
+class DNAcompToFile {
+private:
+    char Complement(char base) const {
+        switch (std::toupper(static_cast<unsigned char>(base))) {
+            case 'A': return 'T';
+            case 'T': return 'A';
+            case 'C': return 'G';
+            case 'G': return 'C';
+            default:  return 'N'; // Unknown base
+        }
+    }
+
+    std::string ComplementStrand(const std::string& sequence) const {
+        std::string complement;
+        complement.reserve(sequence.size());
+        for (char base : sequence) {
+            complement += Complement(base);
+        }
+        return complement;
+    }
+
+    // Wrap sequence into lines of 'width' characters
+    void WriteWrappedSequence(std::ofstream& outFile, const std::string& sequence, std::size_t width = 70) const {
+        for (std::size_t i = 0; i < sequence.size(); i += width) {
+            outFile << sequence.substr(i, width) << "\n";
+        }
+    }
+public:
+    void FASTA_writer(const std::string& inputFilename, const std::string& outputFilename) const {
+        std::ifstream fastaFile(inputFilename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open input file " << inputFilename << "\n";
+            return;
+        }
+
+        std::ofstream outFile(outputFilename);
+        if (!outFile.is_open()) {
+            std::cerr << "Error: Unable to open output file " << outputFilename << "\n";
+            return;
+        }
+
+        std::string line;
+        std::string header;
+        std::string sequence;
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    std::string complement = ComplementStrand(sequence);
+                    outFile << ">" << header << " (complement)\n";
+                    WriteWrappedSequence(outFile, complement);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            std::string complement = ComplementStrand(sequence);
+            outFile << ">" << header << " (complement)\n";
+            WriteWrappedSequence(outFile, complement);
+        }
+
+        fastaFile.close();
+        outFile.close();
+        std::cout << "Complement sequences written to " << outputFilename << "\n";
+    }
+};
 
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -1426,6 +1499,13 @@ int main(int argc, char* argv[]){
     }else if(function == "-orf"){
         ORFFinder orffinder;
         orffinder.FASTA_loader(filename);
+
+    }else if (function == "-cw" && !filename.empty()) {
+        std::string outputFile;
+        std::cout << "Enter output filename: ";
+        std::cin >> outputFile;
+        DNAcompToFile writecomplimentary;
+        writecomplimentary.FASTA_writer(filename, outputFile);
 
     }else {
         message();
