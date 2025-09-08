@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.17.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.17.2 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -36,9 +36,11 @@ void helpme(){
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
     std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.";
     std::cout << "Generate cDNA sequence FASTA ---> '-cw'.";
+    std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
-    std::cout << "More functions will be added in the future.\n";
+    std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie\n";
+    std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
 }
 

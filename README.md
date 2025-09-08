@@ -44,7 +44,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.17.0/biogenie_linux_0.17.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.17.2/biogenie_linux_0.17.2
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -57,7 +57,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.17.0/biogenie_macos_0.17.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.17.2/biogenie_macos_0.17.2
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -79,6 +79,9 @@ There's also a GUI Version Available on Alpha testing.
 > [!IMPORTANT]
 > _Windows version in Beta. Has a lot of room for improvements. In MS Windows Home Edition, there's a reported bug, causing an exception handle(https://github.com/mikeph52/BioGenie/issues/8)._
 ## Changelog:
+- 0.17.2:
+(https://github.com/mikeph52/BioGenie/issues/12)
+Issue Fixed.
 - 0.17.0:
 Generate cDNA FASTA and reverse compliment FASTA function added.
 - 0.16.0:
