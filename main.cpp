@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.17.2 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.17.3 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -34,9 +34,9 @@ void helpme(){
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) --> '-mt1'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
-    std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.";
-    std::cout << "Generate cDNA sequence FASTA ---> '-cw'.";
-    std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.";
+    std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.\n";
+    std::cout << "Generate cDNA sequence FASTA ---> '-cw'.\n";
+    std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie\n";
