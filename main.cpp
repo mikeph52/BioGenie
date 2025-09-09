@@ -39,7 +39,7 @@ void helpme(){
     std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
-    std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie\n";
+    std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
 }
