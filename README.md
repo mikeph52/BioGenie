@@ -4,7 +4,7 @@ BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and
 <img width="874" height="724" alt="Image" src="https://github.com/user-attachments/assets/7f65593b-35c1-4092-bd2c-bf581854e6fa" />
 
 > [!IMPORTANT]
-> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0)._
+> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 
 It currently supports fasta formats(.fasta, .fa).
@@ -79,7 +79,7 @@ There's also a GUI Version Available on Alpha testing.
 > This is an Alpha testing version. It is not functional. Not for scientific use.
 
 > [!IMPORTANT]
-> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0)._
+> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
 - 0.18.0:
