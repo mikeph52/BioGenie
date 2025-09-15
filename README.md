@@ -4,7 +4,8 @@ BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and
 <img width="874" height="724" alt="Image" src="https://github.com/user-attachments/assets/7f65593b-35c1-4092-bd2c-bf581854e6fa" />
 
 > [!IMPORTANT]
-> _Windows CLI version in Beta. It's not as quick as the other versions. GUI version is available in alpha, but it's still not usable. Available in Releases(https://github.com/mikeph52/BioGenie/releases/tag/testing)_
+> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0)._
+
 
 It currently supports fasta formats(.fasta, .fa).
 - To run the app, simply type:
@@ -78,7 +79,8 @@ There's also a GUI Version Available on Alpha testing.
 > This is an Alpha testing version. It is not functional. Not for scientific use.
 
 > [!IMPORTANT]
-> _Windows version in Beta. Has a lot of room for improvements. In MS Windows Home Edition, there's a reported bug, causing an exception handle(https://github.com/mikeph52/BioGenie/issues/8)._
+> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0)._
+
 ## Changelog:
 - 0.18.0:
 Generate mRNA FASTA added. Minor format bugs fixed.
