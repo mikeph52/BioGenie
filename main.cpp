@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.17.3 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.18.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -37,6 +37,7 @@ void helpme(){
     std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.\n";
     std::cout << "Generate cDNA sequence FASTA ---> '-cw'.\n";
     std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.\n";
+    std::cout << "Generate mRNA sequence FASTA ---> '-tw'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
@@ -50,7 +51,7 @@ void message(){
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
-        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta]\n";
+        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
@@ -1145,6 +1146,78 @@ class ReverseComplementDNAToFile{
     }
 };
 
+class TranscriptionToFile{
+    private:
+        char transRNA(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'A';
+                case 'T': return 'U';
+                case 'G': return 'G';
+                case 'C': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+    
+        std::string RNAStrand(const std::string& sequence) const {
+            std::string RNAseq;
+            RNAseq.reserve(sequence.size());
+            for (char base : sequence) {
+                RNAseq += transRNA(base);
+            }
+            return RNAseq;
+        }
+        
+        void WriteWrappedSequence(std::ofstream& outFile, const std::string& sequence, std::size_t width = 70) const {
+            for (std::size_t i = 0; i < sequence.size(); i += width) {
+                outFile << sequence.substr(i, width) << "\n";
+            }
+        }
+
+    public:
+        void FASTA_writer(const std::string& inputFilename, const std::string& outputFilename) const {
+            std::ifstream fastaFile(inputFilename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open input file " << inputFilename << "\n";
+                return;
+            }
+
+            std::ofstream outFile(outputFilename);
+            if (!outFile.is_open()) {
+                std::cerr << "Error: Unable to open output file " << outputFilename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string RNAseq = RNAStrand(sequence);
+                        outFile << ">" << header << " (RNA)\n";
+                        WriteWrappedSequence(outFile, RNAseq);
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+            std::string RNAseq = RNAStrand(sequence);
+            outFile << ">" << header << " (RNA)\n";
+            WriteWrappedSequence(outFile, RNAseq);
+             }
+
+            fastaFile.close();
+            outFile.close();
+            std::cout << "RNA sequence written to " << outputFilename << "\n";
+    }
+};
+
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
@@ -1347,7 +1420,7 @@ class Pipeline2 {
                 }
             }
 
-            std::cout << ">" << header << "\n";
+            //std::cout << ">" << header << "\n";   <--- fix
             std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
             std::cout << "Melting Temperature (NN model): " << tm << " °C\n";
             // std::cout << "-----------------------------------\n";
@@ -1589,6 +1662,13 @@ int main(int argc, char* argv[]){
         std::cin >> outputFile;
         ReverseComplementDNAToFile writereverse;
         writereverse.FASTA_writer(filename, outputFile);
+
+    }else if(function == "-tw" && !filename.empty()){
+        std::string outputFile;
+        std::cout << "Enter output filename: ";
+        std::cin >> outputFile;
+        TranscriptionToFile writeRNA;
+        writeRNA.FASTA_writer(filename, outputFile);
 
     }else {
         message();
