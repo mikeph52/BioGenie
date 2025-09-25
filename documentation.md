@@ -26,7 +26,7 @@ Get the Purine/Pyrimidine ratio using the "-pp" flag according to the Chargaff's
 - ### Melting Temperature (Tm) of DNA sequences (Wallace Rule).
 Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule for short DNA oligonucleotides (approximately 14-20bp) with the "-mt1" flag. The formula is shown bellow(Thein 1986): 
 
-![Tm formula](https://latex.codecogs.com/svg.latex?\bg_black\color{White}Tm\=\{2(A+T)}{4(G+C)})
+![Tm formula](https://latex.codecogs.com/svg.latex?\bg_black\color{White}Tm\=\{2(A+T)+4(G+C)})
 
 *Note!: While it provides a quick estimate and is useful for primers 14–20 nucleotides in length, it is less accurate than more complex thermodynamic or nearest-neighbor methods and doesn't account for factors like salt concentration or Base stacking interactions.*
 
