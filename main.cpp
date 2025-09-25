@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.19.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.20.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -38,6 +38,8 @@ void helpme(){
     std::cout << "Generate cDNA sequence FASTA ---> '-cw'.\n";
     std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.\n";
     std::cout << "Generate mRNA sequence FASTA ---> '-tw'.\n";
+    std::cout << "Calculate Codon Usage Bias(CUB) ---> '-cub'.\n";
+    std::cout << "Export Codon Usage Bias(CUB) to CSV file ---> '-wcub'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
@@ -52,7 +54,7 @@ void message(){
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
-        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
+        std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -1218,6 +1220,212 @@ class TranscriptionToFile{
     }
 };
 
+class CodonUsageBias {
+private:
+    std::unordered_map<std::string, std::string> codonTable;
+    std::unordered_map<std::string, int> codonCounts;
+    std::unordered_map<std::string, std::vector<std::string>> aaToCodons;
+
+    void initCodonTable() {
+        codonTable = {
+            {"TTT","F"},{"TTC","F"},{"TTA","L"},{"TTG","L"},{"CTT","L"},{"CTC","L"},{"CTA","L"},{"CTG","L"},
+            {"ATT","I"},{"ATC","I"},{"ATA","I"},{"ATG","M"},{"GTT","V"},{"GTC","V"},{"GTA","V"},{"GTG","V"},
+            {"TCT","S"},{"TCC","S"},{"TCA","S"},{"TCG","S"},{"CCT","P"},{"CCC","P"},{"CCA","P"},{"CCG","P"},
+            {"ACT","T"},{"ACC","T"},{"ACA","T"},{"ACG","T"},{"GCT","A"},{"GCC","A"},{"GCA","A"},{"GCG","A"},
+            {"TAT","Y"},{"TAC","Y"},{"TAA","*"},{"TAG","*"},{"CAT","H"},{"CAC","H"},{"CAA","Q"},{"CAG","Q"},
+            {"AAT","N"},{"AAC","N"},{"AAA","K"},{"AAG","K"},{"GAT","D"},{"GAC","D"},{"GAA","E"},{"GAG","E"},
+            {"TGT","C"},{"TGC","C"},{"TGA","*"},{"TGG","W"},{"CGT","R"},{"CGC","R"},{"CGA","R"},{"CGG","R"},
+            {"AGT","S"},{"AGC","S"},{"AGA","R"},{"AGG","R"},{"GGT","G"},{"GGC","G"},{"GGA","G"},{"GGG","G"}
+        };
+
+        // Build AA -> Codons map
+        for (auto &kv : codonTable) {
+            if (kv.second != "*") // skip stops
+                aaToCodons[kv.second].push_back(kv.first);
+        }
+    }
+
+    void countCodons(const std::string& sequence) {
+        for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
+            std::string codon = sequence.substr(i, 3);
+            for (auto &c : codon) c = std::toupper(c);
+            if (codonTable.count(codon)) {
+                codonCounts[codon]++;
+            }
+        }
+    }
+
+    void printResults() const {
+        std::cout << "\n----- Codon Usage Bias -----\n";
+        std::cout << "Codon\tAA\tCount\tRSCU\n";
+
+        // Compute RSCU for each amino acid
+        for (auto &aaEntry : aaToCodons) {
+            const std::string& aa = aaEntry.first;
+            const auto& codons = aaEntry.second;
+
+            double total = 0.0;
+            for (const auto& codon : codons) {
+                auto it = codonCounts.find(codon);
+                if (it != codonCounts.end())
+                    total += it->second;
+            }
+
+            for (const auto& codon : codons) {
+                int count = codonCounts.count(codon) ? codonCounts.at(codon) : 0;
+                double rscu = (total > 0) ? (count * codons.size() / total) : 0.0;
+                std::cout << codon << "\t" << aa << "\t" << count << "\t" << rscu << "\n";
+            }
+        }
+    }
+
+public:
+    CodonUsageBias() {
+        initCodonTable();
+    }
+
+    void FASTA_loader(const std::string& filename) {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    countCodons(sequence);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+        if (!sequence.empty()) {
+            countCodons(sequence);
+        }
+
+        printResults();
+    }
+};
+
+class CodonUsageBiasCSV {
+private:
+    std::unordered_map<std::string, std::string> codonTable;
+    std::unordered_map<std::string, int> codonCounts;
+    std::unordered_map<std::string, std::vector<std::string>> aaToCodons;
+
+    void initCodonTable() {
+        codonTable = {
+            {"TTT","F"},{"TTC","F"},{"TTA","L"},{"TTG","L"},{"CTT","L"},{"CTC","L"},{"CTA","L"},{"CTG","L"},
+            {"ATT","I"},{"ATC","I"},{"ATA","I"},{"ATG","M"},{"GTT","V"},{"GTC","V"},{"GTA","V"},{"GTG","V"},
+            {"TCT","S"},{"TCC","S"},{"TCA","S"},{"TCG","S"},{"CCT","P"},{"CCC","P"},{"CCA","P"},{"CCG","P"},
+            {"ACT","T"},{"ACC","T"},{"ACA","T"},{"ACG","T"},{"GCT","A"},{"GCC","A"},{"GCA","A"},{"GCG","A"},
+            {"TAT","Y"},{"TAC","Y"},{"TAA","*"},{"TAG","*"},{"CAT","H"},{"CAC","H"},{"CAA","Q"},{"CAG","Q"},
+            {"AAT","N"},{"AAC","N"},{"AAA","K"},{"AAG","K"},{"GAT","D"},{"GAC","D"},{"GAA","E"},{"GAG","E"},
+            {"TGT","C"},{"TGC","C"},{"TGA","*"},{"TGG","W"},{"CGT","R"},{"CGC","R"},{"CGA","R"},{"CGG","R"},
+            {"AGT","S"},{"AGC","S"},{"AGA","R"},{"AGG","R"},{"GGT","G"},{"GGC","G"},{"GGA","G"},{"GGG","G"}
+        };
+
+        // Build AA -> Codons map (skip stops)
+        for (auto &kv : codonTable) {
+            if (kv.second != "*")
+                aaToCodons[kv.second].push_back(kv.first);
+        }
+    }
+
+    void countCodons(const std::string& sequence) {
+        for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
+            std::string codon = sequence.substr(i, 3);
+            for (auto &c : codon) c = std::toupper(c);
+            if (codonTable.count(codon)) {
+                codonCounts[codon]++;
+            }
+        }
+    }
+
+    void printResults(const std::string& outFile) const {
+        std::ofstream csv(outFile);
+        if (!csv.is_open()) {
+            std::cerr << "Error: Could not open " << outFile << " for writing.\n";
+            return;
+        }
+
+        std::cout << "\n----- Codon Usage Bias -----\n";
+        std::cout << "Codon\tAA\tCount\tRSCU\n";
+
+        csv << "Codon,AA,Count,RSCU\n"; // CSV header
+
+        // Compute RSCU for each amino acid
+        for (auto &aaEntry : aaToCodons) {
+            const std::string& aa = aaEntry.first;
+            const auto& codons = aaEntry.second;
+
+            double total = 0.0;
+            for (const auto& codon : codons) {
+                auto it = codonCounts.find(codon);
+                if (it != codonCounts.end())
+                    total += it->second;
+            }
+
+            for (const auto& codon : codons) {
+                int count = codonCounts.count(codon) ? codonCounts.at(codon) : 0;
+                double rscu = (total > 0) ? (count * codons.size() / total) : 0.0;
+
+                std::cout << codon << "\t" << aa << "\t" << count << "\t" 
+                          << std::fixed << std::setprecision(2) << rscu << "\n";
+
+                csv << codon << "," << aa << "," << count << "," 
+                    << std::fixed << std::setprecision(2) << rscu << "\n";
+            }
+        }
+
+        csv.close();
+        std::cout << "\nResults saved to " << outFile << "\n";
+    }
+
+public:
+    CodonUsageBiasCSV() {
+        initCodonTable();
+    }
+
+    void FASTA_loader(const std::string& filename) {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    countCodons(sequence);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+        if (!sequence.empty()) {
+            countCodons(sequence);
+        }
+
+        fastaFile.close();
+
+        // Save CUB as CSV
+        std::string outFile = filename + "_cub.csv";
+        printResults(outFile);
+    }
+};
+
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
@@ -1669,6 +1877,14 @@ int main(int argc, char* argv[]){
         std::cin >> outputFile;
         TranscriptionToFile writeRNA;
         writeRNA.FASTA_writer(filename, outputFile);
+
+    }else if(function == "-cub"){
+        CodonUsageBias cub;
+        cub.FASTA_loader(filename);
+
+    }else if(function == "-wcub"){
+        CodonUsageBiasCSV cubcsv;
+        cubcsv.FASTA_loader(filename);
 
     }else {
         message();
