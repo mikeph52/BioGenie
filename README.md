@@ -36,6 +36,8 @@ BioGenie uses functions to execute different tools for different applications.
 - Generate cDNA sequence FASTA ---> "-cw".
 - Generate Reverse cDNA sequence FASTA ---> "-rcw".
 - Generate mRNA sequence FASTA ---> "-tw".
+- Calculate Codon Usage Bias(CUB) ---> "-cub".
+- Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
 - Custom preset pipeline 1 ---> "-pip1".
 - Custom preset pipeline 2 ---> "-pip2".
 
@@ -46,7 +48,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.19.0/biogenie_linux_0.19.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.20.0/biogenie_linux_0.20.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -59,7 +61,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.19.0/biogenie_macos_0.19.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.20.0/biogenie_macos_0.20.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -82,6 +84,8 @@ There's also a GUI Version Available on Alpha testing.
 > _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
+- 0.20.0:
+Codon Usage Bias(CUB) calculation and export to csv function added.
 - 0.19.0:
 (https://github.com/mikeph52/BioGenie/issues/15)
 Minor bugs fixed.
