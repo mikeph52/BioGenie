@@ -46,7 +46,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.18.0/biogenie_linux_0.18.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.19.0/biogenie_linux_0.19.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -59,7 +59,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.18.0/biogenie_macos_0.18.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.19.0/biogenie_macos_0.19.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -82,6 +82,9 @@ There's also a GUI Version Available on Alpha testing.
 > _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
+- 0.19.0:
+(https://github.com/mikeph52/BioGenie/issues/15)
+Minor bugs fixed.
 - 0.18.0:
 Generate mRNA FASTA added. Minor format bugs fixed.
 - 0.17.3:

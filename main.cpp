@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.18.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.19.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -1407,7 +1407,7 @@ class Pipeline2 {
             }
         }
 
-        void TmCalc(const std::string& header, const std::string& sequence) const {
+        void TmCalc(const std::string& /*header*/, const std::string& sequence) const {
             double tm = calculateTmNN(sequence);
 
             int a=0,t=0,g=0,c=0;
