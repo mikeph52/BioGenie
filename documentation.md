@@ -76,6 +76,8 @@ https://doi.org/10.1016/j.ymeth.2004.07.012.
 
 - Mahajan, S., & Agashe, D. (2022). *Evolutionary jumps in bacterial GC content.* G3 (Bethesda, Md.), 12(8), jkac108. https://doi.org/10.1093/g3journal/jkac108
 
+- ISO/IEC. (2014). ISO International Standard ISO/IEC 14882:2014(E) – *Programming Language C++.* [Working draft]. Geneva, Switzerland: International Organization for Standardization (ISO). Retrieved from https://isocpp.org/std/the-standard
+
 - Madigan, MT. and Martinko JM. (2003). *Brock biology of microorganisms (10th ed.)*. Pearson-Prentice Hall. ISBN 978-84-205-3679-8.
 
 - Yanofsky C (9 March 2007). *Establishing the Triplet Nature of the Genetic Code*. Cell. 128 (5): 815–818. doi:10.1016/j.cell.2007.02.029. PMID 17350564. S2CID 14249277.
