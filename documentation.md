@@ -1,5 +1,6 @@
 # Documentation
 BioGenie uses functions to execute different tools for different applications. References are provided.
+## Biological Functions
 - ###  Get the complement DNA sequence.
 Biogenie returns the complement DNA sequence (cDNA) from the whole FASTA sequence according to the rules of Complementarity (Watson et al. 2014) , by typing the "-c" flag. N nucleotides are trimmed in order to save space. Complementary DNA (cDNA) refers to a laboratory-synthesized DNA molecule that is a complementary copy of the messenger RNA (mRNA). It is distinct from genomic DNA as it lacks promoters and introns, representing the actively expressed genes at the time of harvesting (Pelley 2007). Also, with "-cw" flag the cDNA sequence FASTA can be generated and with the "-cc" flag, a coloured cDNA sequence can be printed using the common ab1 file colours for each nucleotide (NWABR 2012).
 
@@ -35,6 +36,19 @@ Calculate melting temperature (Tm) of DNA sequences using the SantaLucia Nearest
 
 ![Tm formula](https://latex.codecogs.com/svg.latex?\bg_black\color{White}Tm=\frac{\Delta&space;H^\circ}{\Delta&space;S^\circ&plus;R\cdot\ln(C)}-273.15&plus;16.6\cdot\log_{10}[Na^&plus;])
 
+- ### Get the Open Reading Frame (ORF).
+An Open Reading Frame (ORF) is a sequence of adjacent codons that starts with a start codon, followed by a series of codons for amino acids, and ends with a stop codon. This sequence has the potential to be translated into a polypeptide product (Maloy 2013). With the "-orf" flag, biogenie returns the *start* and *stop* codon positions of ORFs in a selected frame and the codon length of each sequence.
+
+- ### Calculate Codon Usage Bias (CUB).
+Codon usage bias is the preferential or non-random use of synonymous codons. Genome composition, GC content, expression level and length of genes, position and context of codons in the genes, recombination rates, mRNA folding, and tRNA abundance and interactions are some factors influencing codon bias (Parvarthy 2022). Biogenie calculates CUB with the "-cub" flag and exports the results into CSV file with the "-wcub" flag. Biogenie returns the number of each codon used, the number of each aminoacid used and the Relative synonymous codon usage (RSCU) using the following formula:
+
+![RSCU formula](https://latex.codecogs.com/svg.latex?\bg_black\color{White}RSCU_{ij}=\frac{n_i}{\sum_{j=1}^{n_i}X_{ij}}X_{ij})
+
+## Utility functions
+- ### Separate different sequencies in a FASTA file ---> "-ss".
+
+- ### Print the different sequence headers from a FASTA file ---> "-sh".
+- ### Trim DNA sequence ---> "-tr".
 
 ## References
 - Watson, James, Cold Spring Harbor Laboratory, Tania A. Baker, Massachusetts Institute of Technology, Stephen P. Bell, Massachusetts Institute of Technology, Alexander Gann, Cold Spring Harbor Laboratory, Michael Levine, University of California, Berkeley, Richard Losik, Harvard University ; with Stephen C. Harrison, Harvard Medical (2014). *Molecular biology of the gene (Seventh ed.)* . Boston: Benjamin-Cummings Publishing Company. ISBN 978-0-32176243-6.
@@ -75,3 +89,17 @@ https://doi.org/10.1016/j.ymeth.2004.07.012.
 - Thein S. L., Lynch J. R., Weatherall D. J., et al. *Direct detection of haemoglobin E with synthetic oligonucleotides.* The Lancet, 1986, 327(8472): 93.
 
 - SantaLucia J., Jr (1998). *A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics.* Proceedings of the National Academy of Sciences of the United States of America, 95(4), 1460–1465. https://doi.org/10.1073/pnas.95.4.1460
+
+- S. Maloy,
+Coding Sequences,
+Editor(s): Stanley Maloy, Kelly Hughes,
+*Brenner's Encyclopedia of Genetics (Second Edition)*,
+Academic Press,
+2013,
+Page 61,
+ISBN 9780080961569,
+https://doi.org/10.1016/B978-0-12-374984-0.00276-X.
+(https://www.sciencedirect.com/science/article/pii/B978012374984000276X)
+Keywords: Exon; Intron; Open reading frame; Stop codon
+
+- Parvathy, S. T., Udayasuriyan, V., & Bhadana, V. (2022). *Codon usage bias*. Molecular biology reports, 49(1), 539–565. https://doi.org/10.1007/s11033-021-06749-4
