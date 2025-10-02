@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.20.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.21.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -30,7 +30,7 @@ void helpme(){
     std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
-    std::cout << "Get the purine/pyrimidine ratio --> '-pp'.\n";
+    std::cout << "Get the purine/pyrimidine ratio ---> '-pp'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) --> '-mt1'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
     std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
@@ -40,6 +40,7 @@ void helpme(){
     std::cout << "Generate mRNA sequence FASTA ---> '-tw'.\n";
     std::cout << "Calculate Codon Usage Bias(CUB) ---> '-cub'.\n";
     std::cout << "Export Codon Usage Bias(CUB) to CSV file ---> '-wcub'.\n";
+    std::cout << "Calculate the Number of Base Pairs(bp) ---> '-bp'.";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
@@ -51,7 +52,7 @@ void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
         std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
-        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer]\n";
+        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
@@ -1426,6 +1427,57 @@ public:
     }
 };
 
+class BasePairCounter {
+private:
+    int CountBases(const std::string& sequence) const {
+        int count = 0;
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            if (upper == 'A' || upper == 'T' || upper == 'C' || upper == 'G' || upper == 'N') {
+                count++;
+            }
+        }
+        return count;
+    }
+
+public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        std::cout << "\n----- Base Pair Counter -----\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    int bpCount = CountBases(sequence);
+                    std::cout << ">" << header << "\nBase pairs: " << bpCount << "\n";
+                    std::cout << "-----------------------------------\n";
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            int bpCount = CountBases(sequence);
+            std::cout << ">" << header << "\nBase pairs: " << bpCount << "\n";
+            std::cout << "-----------------------------------\n";
+        }
+
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
+
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
@@ -1886,11 +1938,13 @@ int main(int argc, char* argv[]){
         CodonUsageBiasCSV cubcsv;
         cubcsv.FASTA_loader(filename);
 
-    }else {
+    }else if(function == "-bp"){
+        BasePairCounter bpcounter;
+        bpcounter.FASTA_loader(filename);
+
+    } else {
         message();
         return 1;
     }
-
-
     return 0;
 }
