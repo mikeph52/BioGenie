@@ -1597,6 +1597,17 @@ class Pipeline2 {
         }
         //std::cout << "\n-----------------------------------\n";
     }
+
+    int CountBases(const std::string& sequence) const {
+        int count = 0;
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            if (upper == 'A' || upper == 'T' || upper == 'C' || upper == 'G' || upper == 'N') {
+                count++;
+            }
+        }
+        return count;
+    }
         struct ThermoParams {
             double dH; // kcal/mol
             double dS; // cal/(mol*K)
