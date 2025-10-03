@@ -29,6 +29,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
+- Calculate the Number of Base Pairs(bp) ---> "-bp".
 - Get the purine/pyrimidine ratio --> "-pp".
 - Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
 - Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method ---> "-mt2".
@@ -49,7 +50,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.20.0/biogenie_linux_0.20.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.21.0/biogenie_linux_0.21.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -62,7 +63,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.20.0/biogenie_macos_0.20.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.21.0/biogenie_macos_0.21.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -85,6 +86,8 @@ There's also a GUI Version Available on Alpha testing.
 > _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
+- 0.21.0:
+Base Pair calculation added. Minor bugs fixed.
 - 0.20.0:
 Codon Usage Bias(CUB) calculation and export to csv function added.
 - 0.19.0:
