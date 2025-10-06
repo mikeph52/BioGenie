@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.21.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.22.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -42,7 +42,7 @@ void helpme(){
     std::cout << "Export Codon Usage Bias(CUB) to CSV file ---> '-wcub'.\n";
     std::cout << "Calculate the Number of Base Pairs(bp) ---> '-bp'.";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
-    std::cout << "Preset pipeline 2 ---> '-pip2'. Returns the purine/pyrimidine ratio, GC% and Melting temperature.\nIdeal for Primer design.\n\n";
+    std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
