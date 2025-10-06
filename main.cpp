@@ -1563,7 +1563,7 @@ class Pipeline1 {
 
 class Pipeline2 {
      /*This is a pipeline that contains the following classes and functions:
-    Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc.*/
+    Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc, BasePairCounter.*/
     private:
     void ppRatio(const std::string& header, const std::string& sequence) const{
         int purines = 0, pyrimidines = 0;
@@ -1735,6 +1735,8 @@ class Pipeline2 {
             if (line[0] == '>') {
                 if (!sequence.empty()) {
                     ppRatio(header, sequence);
+                    int bpCount = CountBases(sequence);
+                    std::cout << "Base pairs: " << bpCount << "\n";
                     TmCalc(header, sequence);
                     double GCContent = GCCon(sequence);
                     std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
@@ -1749,6 +1751,8 @@ class Pipeline2 {
 
         if (!sequence.empty()) {
             ppRatio(header, sequence);
+            int bpCount = CountBases(sequence);
+            std::cout << "Base pairs: " << bpCount << "\n";
             TmCalc(header, sequence);
             double GCContent = GCCon(sequence);
             std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
