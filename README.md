@@ -34,6 +34,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
 - Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method ---> "-mt2".
 - Coloured cDNA sequence ---> "-cc".
+- Coloured DNA sequence ---> "-sc".
 - Get the Open Reading Frame(ORF) ---> "-orf".
 - Generate cDNA sequence FASTA ---> "-cw".
 - Generate Reverse cDNA sequence FASTA ---> "-rcw".
@@ -50,7 +51,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.22.0/biogenie_linux_0.22.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.23.0/biogenie_linux_0.23.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -63,7 +64,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.22.0/biogenie_macos_0.22.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.23.0/biogenie_macos_0.23.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -86,6 +87,8 @@ There's also a GUI Version Available on Alpha testing.
 > _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
+- 0.23.0:
+DNA sequence with color added.
 - 0.22.0:
 Base Pair calculation added to Pipeline 2. Minor bugs fixed.
 - 0.21.0:

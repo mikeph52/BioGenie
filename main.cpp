@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.22.0 \nby mikeph_ 2025\n\n";
+    std::cout << "BioGenie 0.23.0 \nby mikeph_ 2025\n\n";
     //std::cout << "-----------------------------------\n\n";
     
 }
@@ -33,7 +33,8 @@ void helpme(){
     std::cout << "Get the purine/pyrimidine ratio ---> '-pp'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) --> '-mt1'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method --> '-mt2'.\n";
-    std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-c'.\n";
+    std::cout << "Get the DNA sequence with colour(EXPERIMENTAL) --> '-sc'.\n";
+    std::cout << "Get the complement DNA sequence with colour(EXPERIMENTAL) --> '-cc'.\n";
     std::cout << "Get the Open Reading Frame(ORF) ---> '-orf'.\n";
     std::cout << "Generate cDNA sequence FASTA ---> '-cw'.\n";
     std::cout << "Generate Reverse cDNA sequence FASTA ---> '-rcw'.\n";
@@ -55,7 +56,8 @@ void message(){
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
-        std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
+        std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence]\n";
+        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -1765,7 +1767,7 @@ class Pipeline2 {
 
 };
 
-class DNAcomp_colour{
+class cDNA_colour{
     private:
         char Complement(char base) const {
             switch (std::toupper(static_cast<unsigned char>(base))) {
@@ -1829,6 +1831,78 @@ class DNAcomp_colour{
             if (!sequence.empty()) {
                 std::string complement = ComplementStrandColored(sequence);
                 std::cout << ">" << header << " (complement)\n" << complement << "\n";
+            }
+
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+
+class Seq_colour{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'A';
+                case 'T': return 'T';
+                case 'C': return 'C';
+                case 'G': return 'G';
+                default:  return 'N'; // Unknown base
+            }
+        }
+        std::string ColorBase(char base) const {
+        switch (base) {
+            case 'A': return "\033[42mA\033[0m"; // Green background
+            case 'T': return "\033[41mT\033[0m"; // Red background
+            case 'G': return "\033[44mG\033[0m"; // Blue background
+            case 'C': return "\033[40mC\033[0m"; // Black background
+            default:  return "\033[47mN\033[0m"; // Gray background
+            }
+        }
+        //DNA complement strand init
+        std::string ComplementStrandColored(const std::string& sequence) const {
+        std::string result;
+        for (char base : sequence) {
+            char comp = Complement(base);
+            result += ColorBase(comp);
+        }
+        return result;
+        }
+
+
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line;
+            std::string header;
+            std::string sequence;
+
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string complement = ComplementStrandColored(sequence);
+                        std::cout << ">" << header << "\n" << complement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+    
+            if (!sequence.empty()) {
+                std::string complement = ComplementStrandColored(sequence);
+                std::cout << ">" << header << "\n" << complement << "\n";
             }
 
             std::cout << "-----------------------------------\n\n\n";
@@ -1909,7 +1983,7 @@ int main(int argc, char* argv[]){
         mtcalc1.FASTA_loader(filename);
 
     }else if(function == "-cc"){
-        DNAcomp_colour dnacolour;
+        cDNA_colour dnacolour;
         dnacolour.FASTA_loader(filename);
 
     }    else if(function == "-pip2"){
@@ -1956,6 +2030,10 @@ int main(int argc, char* argv[]){
     }else if(function == "-bp"){
         BasePairCounter bpcounter;
         bpcounter.FASTA_loader(filename);
+
+    }else if(function == "-sc"){
+        Seq_colour seqcolour;
+        seqcolour.FASTA_loader(filename);
 
     } else {
         message();
