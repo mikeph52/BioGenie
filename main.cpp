@@ -1,4 +1,5 @@
 // BioGenie by mikeph_ 2025
+// Current version 0.23 
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -9,7 +10,6 @@
 #include <unordered_map>
 #include <cmath>
 #include <vector>
-
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
@@ -81,7 +81,6 @@ const std::unordered_map<std::string, char> codonTable = {
     {"TAC",'Y'}, {"TAT",'Y'}, {"TAA",'*'}, {"TAG",'*'},
     {"TGC",'C'}, {"TGT",'C'}, {"TGA",'*'}, {"TGG",'W'}
 };
-
 // Arg Classes
 class FastaVerifier {
 public:
@@ -1973,7 +1972,6 @@ int main(int argc, char* argv[]){
         Pipeline1 pipeline1;
         pipeline1.FASTA_loader(filename);
         
-
     }else if(function == "-pp"){
         PurinePyrimidineRatioAnalyzer ppanalyzer;
         ppanalyzer.FASTA_loader(filename);
