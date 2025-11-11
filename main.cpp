@@ -61,7 +61,6 @@ void message(){
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
-
 //Genetic code
 const std::unordered_map<std::string, char> codonTable = {
     {"ATA",'I'}, {"ATC",'I'}, {"ATT",'I'}, {"ATG",'M'},
@@ -1795,8 +1794,6 @@ class cDNA_colour{
         }
         return result;
         }
-
-
     public:
         void FASTA_loader(const std::string& filename) const {
             std::ifstream fastaFile(filename);
@@ -1804,13 +1801,10 @@ class cDNA_colour{
                 std::cerr << "Error: Unable to open file " << filename << "\n";
                 return;
             }
-
             std::string line;
             std::string header;
             std::string sequence;
-
             std::cout << "\n-----------------------------------\n";
-
             while (std::getline(fastaFile, line)) {
                 if (line.empty()) continue;
 
@@ -1826,12 +1820,10 @@ class cDNA_colour{
                     sequence += line;
                 }
             }
-    
             if (!sequence.empty()) {
                 std::string complement = ComplementStrandColored(sequence);
                 std::cout << ">" << header << " (complement)\n" << complement << "\n";
             }
-
             std::cout << "-----------------------------------\n\n\n";
             std::cout << "Process completed.\n";
             fastaFile.close();
@@ -1876,11 +1868,9 @@ class Seq_colour{
                 std::cerr << "Error: Unable to open file " << filename << "\n";
                 return;
             }
-
             std::string line;
             std::string header;
             std::string sequence;
-
             std::cout << "\n-----------------------------------\n";
 
             while (std::getline(fastaFile, line)) {
@@ -1898,18 +1888,15 @@ class Seq_colour{
                     sequence += line;
                 }
             }
-    
             if (!sequence.empty()) {
                 std::string complement = ComplementStrandColored(sequence);
                 std::cout << ">" << header << "\n" << complement << "\n";
             }
-
             std::cout << "-----------------------------------\n\n\n";
             std::cout << "Process completed.\n";
             fastaFile.close();
         }
 };
-
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
