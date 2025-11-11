@@ -13,9 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.24.0 pre-release \nby mikeph_ 2025\n\n";
-    //std::cout << "-----------------------------------\n\n";
-    
+    std::cout << "BioGenie 0.24.0 pre-release \nby mikeph_ 2025\n\n";    
 }
 
 void helpme(){
@@ -927,7 +925,7 @@ class ORFFinder {
                 std::string codon = sequence.substr(i, 3);
                 for (char &c : codon) c = std::toupper(c);
 
-                if (codon == "ATG") { // start codon found
+                if (codon == "ATG") { // find start codon
                     size_t start = i;
                     size_t j = i + 3;
                     for (; j + 2 < sequence.size(); j += 3) {
@@ -938,7 +936,7 @@ class ORFFinder {
                             break;
                         }
                     }
-                    // move to next orf after stop codon
+                    // go to next ORF
                     i = j;
                 }
             }
@@ -1011,7 +1009,7 @@ private:
             case 'T': return 'A';
             case 'C': return 'G';
             case 'G': return 'C';
-            default:  return 'N'; // Unknown base
+            default:  return 'N'; 
         }
     }
 
@@ -1084,7 +1082,7 @@ class ReverseComplementDNAToFile{
                 case 'T': return 'A';
                 case 'C': return 'G';
                 case 'G': return 'C';
-                default:  return 'N'; // Unknown base
+                default:  return 'N'; 
             }
         }
        
@@ -1157,7 +1155,7 @@ class TranscriptionToFile{
                 case 'T': return 'U';
                 case 'G': return 'G';
                 case 'C': return 'C';
-                default:  return 'N'; // Unknown base
+                default:  return 'N'; 
             }
         }
     
@@ -1239,7 +1237,6 @@ private:
             {"AGT","S"},{"AGC","S"},{"AGA","R"},{"AGG","R"},{"GGT","G"},{"GGC","G"},{"GGA","G"},{"GGG","G"}
         };
 
-        // Build AA -> Codons map
         for (auto &kv : codonTable) {
             if (kv.second != "*") // skip stops
                 aaToCodons[kv.second].push_back(kv.first);
@@ -1332,7 +1329,6 @@ private:
             {"AGT","S"},{"AGC","S"},{"AGA","R"},{"AGG","R"},{"GGT","G"},{"GGC","G"},{"GGA","G"},{"GGG","G"}
         };
 
-        // Build AA -> Codons map (skip stops)
         for (auto &kv : codonTable) {
             if (kv.second != "*")
                 aaToCodons[kv.second].push_back(kv.first);
@@ -1421,7 +1417,7 @@ public:
 
         fastaFile.close();
 
-        // Save CUB as CSV
+        // export cub as csv
         std::string outFile = filename + "_cub.csv";
         printResults(outFile);
     }
@@ -1580,7 +1576,7 @@ class Pipeline2 {
                     pyrimidines++;
                     break;
                 default:
-                    break; // Skip 'N' or unknown bases
+                    break; // Skip N
             }
         }
 
@@ -1595,7 +1591,6 @@ class Pipeline2 {
             double ratio = static_cast<double>(purines) / pyrimidines;
             std::cout << "Purine/Pyrimidine Ratio: " << std::fixed << std::setprecision(3) << ratio << "\n";
         }
-        //std::cout << "\n-----------------------------------\n";
     }
 
     int CountBases(const std::string& sequence) const {
@@ -1649,7 +1644,6 @@ class Pipeline2 {
                     dS += it->second.dS;
                 }
             }
-
             // symmetry correction if self-complementary
             bool symmetric = true;
             for (size_t i = 0; i < sequence.size() / 2; i++) {
@@ -1690,11 +1684,8 @@ class Pipeline2 {
                     case 'C': ++c; break;
                 }
             }
-
-            //std::cout << ">" << header << "\n";   <--- fix
             std::cout << "A: " << a << ", T: " << t << ", G: " << g << ", C: " << c << "\n";
             std::cout << "Melting Temperature (NN model): " << tm << " °C\n";
-            // std::cout << "-----------------------------------\n";
         }
     
     double GCCon(const std::string& sequence) const {
@@ -1711,12 +1702,9 @@ class Pipeline2 {
                 }
                 
             }
-
             if (validBases == 0) return 0.0;
-
             return (static_cast<double>(gcCount) / validBases) * 100.0;
     }
-
     public:
     void FASTA_loader(const std::string& filename) const {
         std::ifstream fastaFile(filename);
@@ -1727,8 +1715,6 @@ class Pipeline2 {
 
         std::string line, header, sequence;
         std::cout << "\n-----"<< filename<<"------\n";
-        //std::cout << "\n-----------------------\n";
-
         while (std::getline(fastaFile, line)) {
             if (line.empty()) continue;
 
@@ -1748,7 +1734,6 @@ class Pipeline2 {
                 sequence += line;
             }
         }
-
         if (!sequence.empty()) {
             ppRatio(header, sequence);
             int bpCount = CountBases(sequence);
@@ -1758,13 +1743,10 @@ class Pipeline2 {
             std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
             std::cout << "-----------------------------------\n";
         }
-
         std::cout << "Process completed.\n";
         fastaFile.close();
     }
-
 };
-
 class cDNA_colour{
     private:
         char Complement(char base) const {
@@ -1794,6 +1776,7 @@ class cDNA_colour{
         }
         return result;
         }
+
     public:
         void FASTA_loader(const std::string& filename) const {
             std::ifstream fastaFile(filename);
@@ -1838,16 +1821,16 @@ class Seq_colour{
                 case 'T': return 'T';
                 case 'C': return 'C';
                 case 'G': return 'G';
-                default:  return 'N'; // Unknown base
+                default:  return 'N'; 
             }
         }
         std::string ColorBase(char base) const {
         switch (base) {
-            case 'A': return "\033[42mA\033[0m"; // Green background
-            case 'T': return "\033[41mT\033[0m"; // Red background
-            case 'G': return "\033[44mG\033[0m"; // Blue background
-            case 'C': return "\033[40mC\033[0m"; // Black background
-            default:  return "\033[47mN\033[0m"; // Gray background
+            case 'A': return "\033[42mA\033[0m"; // Green 
+            case 'T': return "\033[41mT\033[0m"; // Red 
+            case 'G': return "\033[44mG\033[0m"; // Blue 
+            case 'C': return "\033[40mC\033[0m"; // Black 
+            default:  return "\033[47mN\033[0m"; // Gray 
             }
         }
         //DNA complement strand init
@@ -1859,8 +1842,6 @@ class Seq_colour{
         }
         return result;
         }
-
-
     public:
         void FASTA_loader(const std::string& filename) const {
             std::ifstream fastaFile(filename);
@@ -1937,15 +1918,12 @@ int main(int argc, char* argv[]){
     } else if(function == "-p"){
         ProteinChain protein;
         protein.FASTA_loader(filename);
-
     }else if(function == "-ss"){
         FASTAChromosomeSeparator splitter;
         splitter.FASTA_loader(filename);
-
     }else if(function == "-sh"){
         FASTASequenceHeader headers;
         headers.FASTA_loader(filename);
-
     }else if(function == "-tr"){
         DNATrimmer trim;
         int start_position, end_position;
@@ -1954,23 +1932,18 @@ int main(int argc, char* argv[]){
         std::cout << "Enter the end position:";
         std::cin >> end_position;
         trim.FASTA_loader(filename, start_position, end_position);
-
     }else if(function == "-pip1"){
         Pipeline1 pipeline1;
-        pipeline1.FASTA_loader(filename);
-        
+        pipeline1.FASTA_loader(filename);  
     }else if(function == "-pp"){
         PurinePyrimidineRatioAnalyzer ppanalyzer;
         ppanalyzer.FASTA_loader(filename);
-
     }else if(function == "-mt1"){
         MeltingTempCalculator1 mtcalc1;
         mtcalc1.FASTA_loader(filename);
-
     }else if(function == "-cc"){
         cDNA_colour dnacolour;
         dnacolour.FASTA_loader(filename);
-
     }    else if(function == "-pip2"){
         Pipeline2 pipeline2;
         pipeline2.FASTA_loader(filename);
@@ -1978,48 +1951,39 @@ int main(int argc, char* argv[]){
     else if(function == "-mt2"){
         MeltingTempCalculator2 mtcalc2;
         mtcalc2.FASTA_loader(filename);
-
     }else if(function == "-orf"){
         ORFFinder orffinder;
         orffinder.FASTA_loader(filename);
-
     }else if (function == "-cw" && !filename.empty()) {
         std::string outputFile;
         std::cout << "Enter output filename: ";
         std::cin >> outputFile;
         DNAcompToFile writecomplimentary;
         writecomplimentary.FASTA_writer(filename, outputFile);
-
     }else if(function == "-rcw" && !filename.empty()){
         std::string outputFile;
         std::cout << "Enter output filename: ";
         std::cin >> outputFile;
         ReverseComplementDNAToFile writereverse;
         writereverse.FASTA_writer(filename, outputFile);
-
     }else if(function == "-tw" && !filename.empty()){
         std::string outputFile;
         std::cout << "Enter output filename: ";
         std::cin >> outputFile;
         TranscriptionToFile writeRNA;
         writeRNA.FASTA_writer(filename, outputFile);
-
     }else if(function == "-cub"){
         CodonUsageBias cub;
         cub.FASTA_loader(filename);
-
     }else if(function == "-wcub"){
         CodonUsageBiasCSV cubcsv;
         cubcsv.FASTA_loader(filename);
-
     }else if(function == "-bp"){
         BasePairCounter bpcounter;
         bpcounter.FASTA_loader(filename);
-
     }else if(function == "-sc"){
         Seq_colour seqcolour;
         seqcolour.FASTA_loader(filename);
-
     } else {
         message();
         return 1;
