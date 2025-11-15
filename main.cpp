@@ -1474,6 +1474,66 @@ public:
     }
 };
 
+class MotifFinder {
+    private:
+        void searchMotif(const std::string& header, const std::string& sequence, const std::string& motif) {
+            std::string seqUpper = toUpper(sequence);
+            std::string motifUpper = toUpper(motif);
+            std::vector<size_t> positions;
+            size_t pos = seqUpper.find(motifUpper, 0);
+            while (pos != std::string::npos) {
+                positions.push_back(pos);
+                pos = seqUpper.find(motifUpper, pos + 1);
+            }
+            std::cout << header << std::endl;
+            if (positions.empty()) {
+                std::cout << "Motif not found." << std::endl;
+            } else {
+                std::cout << "Motif found at positions: ";
+                for (auto p : positions) std::cout << p << " ";
+                std::cout << std::endl;
+            }
+            std::cout << "-----------------------------------" << std::endl;
+        }
+
+        std::string toUpper(const std::string& str) {
+            std::string result = str;
+            std::transform(result.begin(), result.end(), result.begin(), ::toupper);
+            return result;
+        }
+    public:
+        void FASTAloader(const std::string& filename, const std::string& motif) {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error Unable to open file " << filename << std::endl;
+                return;
+            }
+            if (motif.empty()) {
+                std::cerr << "Error Motif string is empty." << std::endl;
+                return;
+            }
+            std::string line, header, sequence;
+            std::cout << "----- Motif Search -----" << std::endl;
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        searchMotif(header, sequence, motif);
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+                searchMotif(header, sequence, motif);
+            }
+            std::cout << "----- Process completed. -----" << std::endl;
+            fastaFile.close();
+        }
+};
+// Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
@@ -1984,6 +2044,12 @@ int main(int argc, char* argv[]){
     }else if(function == "-sc"){
         Seq_colour seqcolour;
         seqcolour.FASTA_loader(filename);
+    }else if(function == "-mf"){
+        MotifFinder mfinder;
+        std::string motif;
+        std::cout << "Enter motif: ";
+        std::cin >> motif;
+        mfinder.FASTAloader(filename, motif);
     } else {
         message();
         return 1;
