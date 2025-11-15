@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025
-// Current version 0.23 
+// Current version 0.24 pre-release
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -15,7 +15,6 @@ void title(){
     std::cout << "-----------------------\n";
     std::cout << "BioGenie 0.24.0 pre-release \nby mikeph_ 2025\n\n";    
 }
-
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
     std::cout << "BioGenie uses functions to execute different tools for different applications.\n\n";
@@ -40,6 +39,7 @@ void helpme(){
     std::cout << "Calculate Codon Usage Bias(CUB) ---> '-cub'.\n";
     std::cout << "Export Codon Usage Bias(CUB) to CSV file ---> '-wcub'.\n";
     std::cout << "Calculate the Number of Base Pairs(bp) ---> '-bp'.\n";
+    std::cout << "Search MOTIFs ---> '-mf'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
@@ -54,7 +54,7 @@ void message(){
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
-        std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence]\n";
+        std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
         std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
@@ -80,65 +80,55 @@ const std::unordered_map<std::string, char> codonTable = {
 };
 // Arg Classes
 class FastaVerifier {
-public:
-    explicit FastaVerifier(const std::string& filePath) : filename(filePath) {}
-
-    bool verify() {
-        std::ifstream fastaFile(filename);
-        if (!fastaFile.is_open()) {
-            std::cerr << "Error: Cannot open file: " << filename << std::endl;
-            return false;
-        }
-
-        std::string line;
-        bool inSequence = false;
-        int lineNumber = 0;
-
-        while (std::getline(fastaFile, line)) {
-            ++lineNumber;
-
-            if (line.empty()) continue;
-
-            if (line[0] == '>') {
-                inSequence = true;
-                if (line.length() == 1) {
-                    reportError(lineNumber, "Empty header (no sequence identifier).");
-                    return false;
-                }
-            } else {
-                if (!inSequence) {
-                    reportError(lineNumber, "Sequence data appears before a header.");
-                    return false;
-                }
-
-                if (!isValidSequenceLine(line)) {
-                    reportError(lineNumber, "Invalid characters found in sequence line.");
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-private:
-    std::string filename;
-
-    bool isValidSequenceLine(const std::string& line) {
-        for (char ch : line) {
-            char upper = std::toupper(ch);
-            if (!(upper == 'A' || upper == 'C' || upper == 'G' || upper == 'T' || upper == 'N')) {
+    public:
+        explicit FastaVerifier(const std::string& filePath) : filename(filePath) {}
+        bool verify() {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Cannot open file: " << filename << std::endl;
                 return false;
             }
+            std::string line;
+            bool inSequence = false;
+            int lineNumber = 0;
+
+            while (std::getline(fastaFile, line)) {
+                ++lineNumber;
+                if (line.empty()) continue;
+                if (line[0] == '>') {
+                    inSequence = true;
+                    if (line.length() == 1) {
+                        reportError(lineNumber, "Empty header (no sequence identifier).");
+                        return false;
+                    }
+                } else {
+                    if (!inSequence) {
+                        reportError(lineNumber, "Sequence data appears before a header.");
+                        return false;
+                    }
+                    if (!isValidSequenceLine(line)) {
+                        reportError(lineNumber, "Invalid characters found in sequence line.");
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
-        return true;
-    }
-
-    void reportError(int lineNumber, const std::string& message) {
-        std::cerr << "Error at line " << lineNumber << ": " << message << std::endl;
-    }
+    private:
+        std::string filename;
+        bool isValidSequenceLine(const std::string& line) {
+            for (char ch : line) {
+                char upper = std::toupper(ch);
+                if (!(upper == 'A' || upper == 'C' || upper == 'G' || upper == 'T' || upper == 'N')) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        void reportError(int lineNumber, const std::string& message) {
+            std::cerr << "Error at line " << lineNumber << ": " << message << std::endl;
+        }
 };
-
 class GCCalc {
   private:
         double GCContent(const std::string& sequence) {
