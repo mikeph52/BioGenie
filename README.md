@@ -87,6 +87,8 @@ There's also a GUI Version Available on Alpha testing.
 > _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
+- v.0.24.0:
+Add motif search. Issues https://github.com/mikeph52/BioGenie/issues/19, https://github.com/mikeph52/BioGenie/issues/21, https://github.com/mikeph52/BioGenie/issues/23, https://github.com/mikeph52/BioGenie/issues/24 fixed. Minor formating issues fixed.
 - 0.23.0:
 DNA sequence with color added.
 - 0.22.0:
