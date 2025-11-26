@@ -1465,64 +1465,103 @@ public:
 };
 
 class MotifFinder {
-    private:
-        void searchMotif(const std::string& header, const std::string& sequence, const std::string& motif) {
-            std::string seqUpper = toUpper(sequence);
-            std::string motifUpper = toUpper(motif);
-            std::vector<size_t> positions;
-            size_t pos = seqUpper.find(motifUpper, 0);
-            while (pos != std::string::npos) {
-                positions.push_back(pos);
-                pos = seqUpper.find(motifUpper, pos + 1);
+private:
+    std::string toUpper(const std::string& str) {
+        std::string result = str;
+        std::transform(result.begin(), result.end(), result.begin(), ::toupper);
+        return result;
+    }
+    // reverse complement function
+    std::string reverseComplement(const std::string& seq) {
+        std::string rc;
+        rc.reserve(seq.size());
+
+        for (int i = seq.size() - 1; i >= 0; --i) {
+            switch (toupper(seq[i])) {
+                case 'A': rc.push_back('T'); break;
+                case 'T': rc.push_back('A'); break;
+                case 'C': rc.push_back('G'); break;
+                case 'G': rc.push_back('C'); break;
+                default:  rc.push_back('N'); break;
             }
-            std::cout << header << std::endl;
-            if (positions.empty()) {
-                std::cout << "Motif not found." << std::endl;
-            } else {
-                std::cout << "Motif found at positions: ";
-                for (auto p : positions) std::cout << p << " ";
+        }
+        return rc;
+    }
+    // Find all motifs
+    std::vector<size_t> findPositions(const std::string& seq, const std::string& motif) {
+        std::vector<size_t> positions;
+        std::string seqUpper = toUpper(seq);
+        std::string motifUpper = toUpper(motif);
+
+        size_t pos = seqUpper.find(motifUpper, 0);
+        while (pos != std::string::npos) {
+            positions.push_back(pos + 1);  // 0-based indexing, +1 for biological indexing
+            pos = seqUpper.find(motifUpper, pos + 1);
+        }
+        return positions;
+    }
+    void searchMotif(const std::string& header, const std::string& sequence, const std::string& motif) {
+        std::cout << header << std::endl;
+        // Forward motif
+        auto forwardHits = findPositions(sequence, motif);
+        // Reverse-complement motif
+        std::string rc = reverseComplement(motif);
+        auto rcHits = findPositions(sequence, rc);
+
+        if (forwardHits.empty() && rcHits.empty()) {
+            std::cout << "Motif not found (forward or reverse complement)." << std::endl;
+        } else {
+            if (!forwardHits.empty()) {
+                std::cout << "Forward motif found at positions: ";
+                for (auto p : forwardHits) std::cout << p << " ";
                 std::cout << std::endl;
             }
-            std::cout << "-----------------------------------" << std::endl;
+            if (!rcHits.empty()) {
+                std::cout << "Reverse-complement motif (" << rc << ") found at positions: ";
+                for (auto p : rcHits) std::cout << p << " ";
+                std::cout << std::endl;
+            }
+        }
+        std::cout << "-----------------------------------" << std::endl;
+    }
+public:
+    void FASTAloader(const std::string& filename, const std::string& motif) {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << std::endl;
+            return;
+        }
+        if (motif.empty()) {
+            std::cerr << "Error: Motif string is empty." << std::endl;
+            return;
         }
 
-        std::string toUpper(const std::string& str) {
-            std::string result = str;
-            std::transform(result.begin(), result.end(), result.begin(), ::toupper);
-            return result;
-        }
-    public:
-        void FASTAloader(const std::string& filename, const std::string& motif) {
-            std::ifstream fastaFile(filename);
-            if (!fastaFile.is_open()) {
-                std::cerr << "Error Unable to open file " << filename << std::endl;
-                return;
-            }
-            if (motif.empty()) {
-                std::cerr << "Error Motif string is empty." << std::endl;
-                return;
-            }
-            std::string line, header, sequence;
-            std::cout << "----- Motif Search -----" << std::endl;
-            while (std::getline(fastaFile, line)) {
-                if (line.empty()) continue;
-                if (line[0] == '>') {
-                    if (!sequence.empty()) {
-                        searchMotif(header, sequence, motif);
-                        sequence.clear();
-                    }
-                    header = line.substr(1);
-                } else {
-                    sequence += line;
+        std::string line, header, sequence;
+        std::cout << "\n----- Motif Search -----" << std::endl;
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    searchMotif(header, sequence, motif);
+                    sequence.clear();
                 }
+                header = line.substr(1);
+            } else {
+                sequence += line;
             }
-            if (!sequence.empty()) {
-                searchMotif(header, sequence, motif);
-            }
-            std::cout << "----- Process completed. -----" << std::endl;
-            fastaFile.close();
         }
+
+        if (!sequence.empty()) {
+            searchMotif(header, sequence, motif);
+        }
+
+        std::cout << "----- Process completed. -----" << std::endl;
+        fastaFile.close();
+    }
 };
+
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
