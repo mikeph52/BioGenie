@@ -24,6 +24,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Get the reverse complement DNA sequence ---> "-rc".
 - Get the codon number ---> "-nc".
 - Get the mRNA ---> "-t".
+- Motif search ---> "-mf".
 - GC percentage calculation ---> "-gc".
 - Generate the aminoacids(Protein chain) ---> "-p".
 - Separate different sequencies in a FASTA file ---> "-ss".
@@ -51,7 +52,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.23.0/biogenie_linux_0.23.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.24.0/biogenie_linux_0.24.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -64,7 +65,7 @@ sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.23.0/biogenie_macos_0.23.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.24.0/biogenie_macos_0.24.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -87,8 +88,8 @@ There's also a GUI Version Available on Alpha testing.
 > _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 
 ## Changelog:
-- v.0.24.0:
-Add motif search. Issues https://github.com/mikeph52/BioGenie/issues/19, https://github.com/mikeph52/BioGenie/issues/21, https://github.com/mikeph52/BioGenie/issues/23, https://github.com/mikeph52/BioGenie/issues/24 fixed. Minor formating issues fixed.
+- 0.24.0:
+Add motif search. Issues https://github.com/mikeph52/BioGenie/issues/19, https://github.com/mikeph52/BioGenie/issues/21, https://github.com/mikeph52/BioGenie/issues/23, https://github.com/mikeph52/BioGenie/issues/24 fixed. Minor formatting issues fixed.
 - 0.23.0:
 DNA sequence with color added.
 - 0.22.0:
