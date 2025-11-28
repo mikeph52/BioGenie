@@ -1539,6 +1539,74 @@ public:
         fastaFile.close();
     }
 };
+class MolecularWeightCalculator {
+private:
+    const std::unordered_map<char, double> aaMasses = {
+        {'A', 71.0788}, {'R', 156.1875}, {'N', 114.1039}, {'D', 115.0886},
+        {'C', 103.1388}, {'E', 129.1155}, {'Q', 128.1307}, {'G', 57.0519},
+        {'H', 137.1411}, {'I', 113.1594}, {'L', 113.1594}, {'K', 128.1741},
+        {'M', 131.1986}, {'F', 147.1766}, {'P', 97.1167}, {'S', 87.0782},
+        {'T', 101.1051}, {'W', 186.2132}, {'Y', 163.1760}, {'V', 99.1326},
+        {'X', 110.0} 
+    };
+    std::string translateToAminoAcids(const std::string& sequence) {
+        std::string protein;
+        for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
+            std::string codon = sequence.substr(i, 3);
+            for (char& c : codon) c = std::toupper(c);
+            if (codonTable.count(codon)) {
+                protein += codonTable.at(codon);
+            } else {
+                protein += 'X';
+            }
+        }
+        return protein;
+    }
+    double calculateMolecularWeight(const std::string& protein) {
+        double totalMass = 0.0;
+        for (char aa : protein) {
+            char upperAA = std::toupper(aa);
+            auto it = aaMasses.find(upperAA);
+            totalMass += (it != aaMasses.end()) ? it->second : 110.0;
+        }
+        return totalMass;
+    }
+public:
+    void FASTAloader(const std::string& filename) {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << std::endl;
+            return;
+        }
+        std::string line, header, sequence;
+        std::cout << "----- Protein Molecular Weight (kDa) -----" << std::endl;
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    std::string protein = translateToAminoAcids(sequence);
+                    double mw = calculateMolecularWeight(protein);
+                    std::cout << header << "\n\nProtein: " << protein.size() << " AA" << std::endl;
+                    std::cout << "Molecular Weight: " << std::fixed << std::setprecision(1) << mw*1000 << " kDa" << std::endl;
+                    std::cout << "-----------------------------------" << std::endl;
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+        if (!sequence.empty()) {
+            std::string protein = translateToAminoAcids(sequence);
+            double mw = calculateMolecularWeight(protein);
+            std::cout << header << "\n\nProtein: " << protein.size() << " AA" << std::endl;
+            std::cout << "Molecular Weight: " << std::fixed << std::setprecision(1) << mw*1000 << " kDa" << std::endl;
+            std::cout << "-----------------------------------" << std::endl;
+        }
+        std::cout << "Process completed." << std::endl;
+        fastaFile.close();
+    }
+};
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -2054,7 +2122,10 @@ int main(int argc, char* argv[]){
         std::cout << "Enter motif: ";
         std::cin >> motif;
         mfinder.FASTAloader(filename, motif);
-    } else {
+    } else if(function == "-mw"){
+        MolecularWeightCalculator mwcalc;
+        mwcalc.FASTAloader(filename);
+    }else {
         message();
         return 1;
     }
