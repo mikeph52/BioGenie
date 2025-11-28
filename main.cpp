@@ -1587,7 +1587,7 @@ public:
                     std::string protein = translateToAminoAcids(sequence);
                     double mw = calculateMolecularWeight(protein);
                     std::cout << header << "\n\nProtein: " << protein.size() << " AA" << std::endl;
-                    std::cout << "Molecular Weight: " << std::fixed << std::setprecision(1) << mw*1000 << " kDa" << std::endl;
+                    std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << mw/1000 << " kDa" << std::endl;
                     std::cout << "-----------------------------------" << std::endl;
                     sequence.clear();
                 }
@@ -1600,7 +1600,7 @@ public:
             std::string protein = translateToAminoAcids(sequence);
             double mw = calculateMolecularWeight(protein);
             std::cout << header << "\n\nProtein: " << protein.size() << " AA" << std::endl;
-            std::cout << "Molecular Weight: " << std::fixed << std::setprecision(1) << mw*1000 << " kDa" << std::endl;
+            std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << mw/1000 << " kDa" << std::endl;
             std::cout << "-----------------------------------" << std::endl;
         }
         std::cout << "Process completed." << std::endl;
