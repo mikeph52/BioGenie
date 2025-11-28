@@ -1194,15 +1194,13 @@ class TranscriptionToFile{
 };
 class CodonUsageBias {
 private:
-    //std::unordered_map<std::string, std::string> codonTable;
+    std::unordered_map<std::string, std::string> codonTable;
     std::unordered_map<std::string, int> codonCounts;
     std::unordered_map<std::string, std::vector<std::string>> aaToCodons;
-    static const std::unordered_map<std::string, char> codonTable;
+    //static const std::unordered_map<std::string, char> codonTable; <-- remove it later
 
-
-// REMOVE THAT
     void initCodonTable() {
-        /*codonTable = {
+        codonTable = {
             {"TTT","F"},{"TTC","F"},{"TTA","L"},{"TTG","L"},{"CTT","L"},{"CTC","L"},{"CTA","L"},{"CTG","L"},
             {"ATT","I"},{"ATC","I"},{"ATA","I"},{"ATG","M"},{"GTT","V"},{"GTC","V"},{"GTA","V"},{"GTG","V"},
             {"TCT","S"},{"TCC","S"},{"TCA","S"},{"TCG","S"},{"CCT","P"},{"CCC","P"},{"CCA","P"},{"CCG","P"},
@@ -1211,16 +1209,13 @@ private:
             {"AAT","N"},{"AAC","N"},{"AAA","K"},{"AAG","K"},{"GAT","D"},{"GAC","D"},{"GAA","E"},{"GAG","E"},
             {"TGT","C"},{"TGC","C"},{"TGA","*"},{"TGG","W"},{"CGT","R"},{"CGC","R"},{"CGA","R"},{"CGG","R"},
             {"AGT","S"},{"AGC","S"},{"AGA","R"},{"AGG","R"},{"GGT","G"},{"GGC","G"},{"GGA","G"},{"GGG","G"}
-        };*/
+        };
 
-        for (const auto &kv : codonTable) {
-            char aa = kv.second;
-            if (aa == '*') continue;
-            std::string aaStr(1, aa);
-            aaToCodons[aaStr].push_back(kv.first);
+        for (auto &kv : codonTable) {
+            if (kv.second != "*")
+                aaToCodons[kv.second].push_back(kv.first);
         }
     }
-
     void countCodons(const std::string& sequence) {
         for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
             std::string codon = sequence.substr(i, 3);
@@ -1230,7 +1225,6 @@ private:
             }
         }
     }
-
     void printResults() const {
         std::cout << "\n----- Codon Usage Bias -----\n";
         std::cout << "Codon\tAA\tCount\tRSCU\n";
@@ -1254,7 +1248,6 @@ private:
             }
         }
     }
-
 public:
     CodonUsageBias() {
         initCodonTable();
