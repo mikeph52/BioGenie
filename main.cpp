@@ -13,7 +13,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.24.0 \nby mikeph_ 2025\n\n";    
+    std::cout << "BioGenie 0.25.0 pre-release \nby mikeph_ 2025\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
@@ -46,7 +46,6 @@ void helpme(){
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
 }
-
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
@@ -60,7 +59,7 @@ void message(){
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
 //Genetic code
-const std::unordered_map<std::string, char> codonTable = {
+const std::unordered_map<std::string, char>codonTable = {
     {"ATA",'I'}, {"ATC",'I'}, {"ATT",'I'}, {"ATG",'M'},
     {"ACA",'T'}, {"ACC",'T'}, {"ACG",'T'}, {"ACT",'T'},
     {"AAC",'N'}, {"AAT",'N'}, {"AAA",'K'}, {"AAG",'K'},
@@ -189,7 +188,6 @@ class GCCalc {
             fastaFile.close();
         }
 };
-    
 class DNAcomplementary{
     private:
         char Complement(char base) const {
@@ -251,7 +249,6 @@ class DNAcomplementary{
             fastaFile.close();
         }
 };
-
 class ReverseComplementDNA{
     private:
         char Complement(char base) const {
@@ -314,7 +311,6 @@ class ReverseComplementDNA{
         }
 
 };
-
 class Transcription{
     private:
         char transRNA(char base) const {
@@ -376,7 +372,6 @@ class Transcription{
             fastaFile.close();
         }
 };
-
 class CodonNumber{
     private:
     int CodonCount(const std::string& sequence) const {
@@ -433,7 +428,6 @@ class CodonNumber{
         }
 
 };
-
 class ProteinChain{
     private:
         std::string translateToAminoAcids(const std::string& sequence) {
@@ -493,7 +487,6 @@ class ProteinChain{
             fastaFile.close();
         }
 };
-
 class FASTAChromosomeSeparator {
   public:
     void FASTA_loader(const std::string& filename) {
@@ -565,7 +558,6 @@ class FASTAChromosomeSeparator {
         std::cout << "Saved: " << outputFilename << "\n";
     }
 };
-
 class FASTASequenceHeader {
 public:
     void FASTA_loader(const std::string& filename) const {
@@ -590,7 +582,6 @@ public:
         fastaFile.close();
     }
 };
-
 class DNATrimmer {
     private:
     void printTrimmed(const std::string& header, const std::string& sequence, int start, int end) const {
@@ -646,7 +637,6 @@ class DNATrimmer {
     }
     
 };
-
 class PurinePyrimidineRatioAnalyzer {
     private:
     void calculateRatio(const std::string& header, const std::string& sequence) const{
@@ -713,7 +703,6 @@ class PurinePyrimidineRatioAnalyzer {
         fastaFile.close();
     }
 };
-
 class MeltingTempCalculator1 {
 private:
     void calculateTm(const std::string& header, const std::string& sequence) const {
@@ -775,7 +764,6 @@ private:
         fastaFile.close();
     }
 };
-
 class MeltingTempCalculator2 {
     private:
         struct ThermoParams {
@@ -900,7 +888,6 @@ class MeltingTempCalculator2 {
             fastaFile.close();
         }
 };
-
 class ORFFinder {
     private:
         const std::vector<std::string> stopCodons = {"TAA", "TAG", "TGA"};
@@ -990,7 +977,6 @@ class ORFFinder {
             fastaFile.close();
         }
 };
-
 class DNAcompToFile {
 private:
     char Complement(char base) const {
@@ -1063,7 +1049,6 @@ public:
         std::cout << "Complement sequences written to " << outputFilename << "\n";
     }
 };
-
 class ReverseComplementDNAToFile{
     private:
         char Complement(char base) const {
@@ -1136,7 +1121,6 @@ class ReverseComplementDNAToFile{
             std::cout << "Complement sequences written to " << outputFilename << "\n";
     }
 };
-
 class TranscriptionToFile{
     private:
         char transRNA(char base) const {
@@ -1208,12 +1192,12 @@ class TranscriptionToFile{
             std::cout << "RNA sequence written to " << outputFilename << "\n";
     }
 };
-
 class CodonUsageBias {
 private:
     std::unordered_map<std::string, std::string> codonTable;
     std::unordered_map<std::string, int> codonCounts;
     std::unordered_map<std::string, std::vector<std::string>> aaToCodons;
+    //static const std::unordered_map<std::string, char> codonTable; <-- remove it later
 
     void initCodonTable() {
         codonTable = {
@@ -1228,11 +1212,10 @@ private:
         };
 
         for (auto &kv : codonTable) {
-            if (kv.second != "*") // skip stops
+            if (kv.second != "*")
                 aaToCodons[kv.second].push_back(kv.first);
         }
     }
-
     void countCodons(const std::string& sequence) {
         for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
             std::string codon = sequence.substr(i, 3);
@@ -1242,7 +1225,6 @@ private:
             }
         }
     }
-
     void printResults() const {
         std::cout << "\n----- Codon Usage Bias -----\n";
         std::cout << "Codon\tAA\tCount\tRSCU\n";
@@ -1266,7 +1248,6 @@ private:
             }
         }
     }
-
 public:
     CodonUsageBias() {
         initCodonTable();
@@ -1300,7 +1281,6 @@ public:
         printResults();
     }
 };
-
 class CodonUsageBiasCSV {
 private:
     std::unordered_map<std::string, std::string> codonTable;
@@ -1412,7 +1392,6 @@ public:
         printResults(outFile);
     }
 };
-
 class BasePairCounter {
 private:
     int CountBases(const std::string& sequence) const {
@@ -1463,7 +1442,6 @@ public:
         fastaFile.close();
     }
 };
-
 class MotifFinder {
 private:
     std::string toUpper(const std::string& str) {
@@ -1561,7 +1539,6 @@ public:
         fastaFile.close();
     }
 };
-
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -1645,7 +1622,6 @@ class Pipeline1 {
             fastaFile.close();
         }
 };
-
 class Pipeline2 {
      /*This is a pipeline that contains the following classes and functions:
     Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc, BasePairCounter.*/
@@ -1901,7 +1877,6 @@ class cDNA_colour{
             fastaFile.close();
         }
 };
-
 class Seq_colour{
     private:
         char Complement(char base) const {
