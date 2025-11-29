@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <cmath>
 #include <vector>
+#include <functional> 
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
@@ -42,6 +43,7 @@ void helpme(){
     std::cout << "Search MOTIFs ---> '-mf'.\n";
     std::cout << "Calculate the Isoelectric Point of a protein ---> '-pi'.\n";
     std::cout << "Calculate the molecular weight of a protein(kDa) ---> '-mw'.\n";
+    std::cout << "Calculate the Extinction Coefficient of a protein ---> '-ec'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
@@ -56,7 +58,7 @@ void message(){
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
-        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
+        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -1574,7 +1576,7 @@ private:
         return totalMass;
     }
 public:
-    void FASTAloader(const std::string& filename) {
+    void FASTA_loader(const std::string& filename) {
         std::ifstream fastaFile(filename);
         if (!fastaFile.is_open()) {
             std::cerr << "Error: Unable to open file " << filename << std::endl;
@@ -1715,7 +1717,7 @@ private:
     }
 
 public:
-    void FASTAloader(const std::string& filename) {
+    void FASTA_loader(const std::string& filename) {
         std::ifstream fastaFile(filename);
         if (!fastaFile.is_open()) {
             std::cerr << "Error: Unable to open file " << filename << std::endl;
@@ -1803,7 +1805,7 @@ private:
     }
 
 public:
-    void FASTAloader(const std::string& filename) {
+    void FASTA_loader(const std::string& filename) {
         std::ifstream fastaFile(filename);
         if (!fastaFile.is_open()) {
             std::cerr << "Error: Unable to open file " << filename << std::endl;
@@ -2265,109 +2267,142 @@ int main(int argc, char* argv[]){
     } else {
         std::cerr << "FASTA file status  [FAULT]\n";
     }
-    // Main if body
-    if (function == "-gc"){
-        GCCalc GCcalculator;
-        GCcalculator.FASTA_loader(filename);
-    } else if (function == "-nc"){
-        CodonNumber codoncounter;
-        codoncounter.FASTA_loader(filename);
-    } else if (function == "-c"){
-        DNAcomplementary DNAcomp;
-        DNAcomp.FASTA_loader(filename);
-    } else if (function == "-rc"){
-        ReverseComplementDNA revDNA;
-        revDNA.FASTA_loader(filename);
-    } else if (function == "-t"){
-        Transcription transciptedRNA;
-        transciptedRNA.FASTA_loader(filename);
-    } else if(function == "-help"){
-        helpme();
-    } else if(function == "-p"){
-        ProteinChain protein;
-        protein.FASTA_loader(filename);
-    }else if(function == "-ss"){
-        FASTAChromosomeSeparator splitter;
-        splitter.FASTA_loader(filename);
-    }else if(function == "-sh"){
-        FASTASequenceHeader headers;
-        headers.FASTA_loader(filename);
-    }else if(function == "-tr"){
-        DNATrimmer trim;
-        int start_position, end_position;
-        std::cout << "Enter the starting position:";
-        std::cin >> start_position;
-        std::cout << "Enter the end position:";
-        std::cin >> end_position;
-        trim.FASTA_loader(filename, start_position, end_position);
-    }else if(function == "-pip1"){
-        Pipeline1 pipeline1;
-        pipeline1.FASTA_loader(filename);  
-    }else if(function == "-pp"){
-        PurinePyrimidineRatioAnalyzer ppanalyzer;
-        ppanalyzer.FASTA_loader(filename);
-    }else if(function == "-mt1"){
-        MeltingTempCalculator1 mtcalc1;
-        mtcalc1.FASTA_loader(filename);
-    }else if(function == "-cc"){
-        cDNA_colour dnacolour;
-        dnacolour.FASTA_loader(filename);
-    }    else if(function == "-pip2"){
-        Pipeline2 pipeline2;
-        pipeline2.FASTA_loader(filename);
-    }
-    else if(function == "-mt2"){
-        MeltingTempCalculator2 mtcalc2;
-        mtcalc2.FASTA_loader(filename);
-    }else if(function == "-orf"){
-        ORFFinder orffinder;
-        orffinder.FASTA_loader(filename);
-    }else if (function == "-cw" && !filename.empty()) {
-        std::string outputFile;
-        std::cout << "Enter output filename: ";
-        std::cin >> outputFile;
-        DNAcompToFile writecomplimentary;
-        writecomplimentary.FASTA_writer(filename, outputFile);
-    }else if(function == "-rcw" && !filename.empty()){
-        std::string outputFile;
-        std::cout << "Enter output filename: ";
-        std::cin >> outputFile;
-        ReverseComplementDNAToFile writereverse;
-        writereverse.FASTA_writer(filename, outputFile);
-    }else if(function == "-tw" && !filename.empty()){
-        std::string outputFile;
-        std::cout << "Enter output filename: ";
-        std::cin >> outputFile;
-        TranscriptionToFile writeRNA;
-        writeRNA.FASTA_writer(filename, outputFile);
-    }else if(function == "-cub"){
-        CodonUsageBias cub;
-        cub.FASTA_loader(filename);
-    }else if(function == "-wcub"){
-        CodonUsageBiasCSV cubcsv;
-        cubcsv.FASTA_loader(filename);
-    }else if(function == "-bp"){
-        BasePairCounter bpcounter;
-        bpcounter.FASTA_loader(filename);
-    }else if(function == "-sc"){
-        Seq_colour seqcolour;
-        seqcolour.FASTA_loader(filename);
-    }else if(function == "-mf"){
-        MotifFinder mfinder;
-        std::string motif;
-        std::cout << "Enter motif: ";
-        std::cin >> motif;
-        mfinder.FASTAloader(filename, motif);
-    } else if(function == "-mw"){
-        MolecularWeightCalculator mwcalc;
-        mwcalc.FASTAloader(filename);
-    }else if(function == "-pi") {
-        ProteinIsoelectricPoint pIcalc;
-        pIcalc.FASTAloader(filename);
-    }else if(function == "-ec"){
-        ProteinExtinctionCoefficient eccalc;
-        eccalc.FASTAloader(filename);
-    }else {
+    // Main dispatch map
+    std::unordered_map<std::string, std::function<void()>> dispatch {
+
+        {"-gc", [&]() {
+            GCCalc GCcalculator;
+            GCcalculator.FASTA_loader(filename);
+        }},
+        {"-nc", [&]() {
+            CodonNumber codoncounter;
+            codoncounter.FASTA_loader(filename);
+        }},
+        {"-c", [&]() {
+            DNAcomplementary DNAcomp;
+            DNAcomp.FASTA_loader(filename);
+        }},
+        {"-rc", [&]() {
+            ReverseComplementDNA revDNA;
+            revDNA.FASTA_loader(filename);
+        }},
+        {"-t", [&]() {
+            Transcription x;
+            x.FASTA_loader(filename);
+        }},
+        {"-help", [&]() { helpme(); }},
+        {"-p", [&]() {
+            ProteinChain protein;
+            protein.FASTA_loader(filename);
+        }},
+        {"-ss", [&]() {
+            FASTAChromosomeSeparator splitter;
+            splitter.FASTA_loader(filename);
+        }},
+        {"-sh", [&]() {
+            FASTASequenceHeader header;
+            header.FASTA_loader(filename);
+        }},
+        {"-tr", [&]() {
+            DNATrimmer trim;
+            int start_position, end_position;
+            std::cout << "Enter the starting position:";
+            std::cin >> start_position;
+            std::cout << "Enter the end position:";
+            std::cin >> end_position;
+            trim.FASTA_loader(filename, start_position, end_position);
+        }},
+        {"-pip1", [&]() {
+            Pipeline1 pipeline1;
+            pipeline1.FASTA_loader(filename);
+        }},
+        {"-pp", [&]() {
+            PurinePyrimidineRatioAnalyzer ppanalyzer;
+            ppanalyzer.FASTA_loader(filename);
+        }},
+        {"-mt1", [&]() {
+            MeltingTempCalculator1 mt1;
+            mt1.FASTA_loader(filename);
+        }},
+        {"-mt2", [&]() {
+            MeltingTempCalculator2 mt2;
+            mt2.FASTA_loader(filename);
+        }},
+        {"-cc", [&]() {
+            cDNA_colour dnacolour;
+            dnacolour.FASTA_loader(filename);
+        }},
+        {"-pip2", [&]() {
+            Pipeline2 pipeline2;
+            pipeline2.FASTA_loader(filename);
+        }},
+        {"-orf", [&]() {
+            ORFFinder orffinder;
+            orffinder.FASTA_loader(filename);
+        }},
+        {"-cw", [&]() {
+            std::string outputFile;
+            std::cout << "Enter output filename: ";
+            std::cin >> outputFile;
+            DNAcompToFile cdna_fasta;
+            cdna_fasta.FASTA_writer(filename, outputFile);
+        }},
+        {"-rcw", [&]() {
+            std::string outputFile;
+            std::cout << "Enter output filename: ";
+            std::cin >> outputFile;
+            ReverseComplementDNAToFile rev_cdna_fasta;
+            rev_cdna_fasta.FASTA_writer(filename, outputFile);
+        }},
+        {"-tw", [&]() {
+            std::string outputFile;
+            std::cout << "Enter output filename: ";
+            std::cin >> outputFile;
+            TranscriptionToFile writeRNA;
+            writeRNA.FASTA_writer(filename, outputFile);
+        }},
+        {"-mw", [&]() {
+            MolecularWeightCalculator mwcalc;
+            mwcalc.FASTA_loader(filename);
+        }},
+        {"-pi", [&]() {
+            ProteinIsoelectricPoint picalc;
+            picalc.FASTA_loader(filename);
+        }},
+        {"-ec", [&]() {
+            ProteinExtinctionCoefficient eccalc;
+            eccalc.FASTA_loader(filename);
+        }},
+        {"-cub", [&]() {
+            CodonUsageBias cub;
+            cub.FASTA_loader(filename);
+        }},
+        {"-wcub", [&]() {
+            CodonUsageBiasCSV cubcsv;
+            cubcsv.FASTA_loader(filename);
+        }},
+        {"-bp", [&]() {
+            BasePairCounter bpcounter;
+            bpcounter.FASTA_loader(filename);
+        }},
+        {"-sc", [&]() {
+            Seq_colour seqcolour;
+            seqcolour.FASTA_loader(filename);
+        }},
+        {"-mf", [&]() {
+            MotifFinder mfinder;
+            std::string motif;
+            std::cout << "Enter motif: ";
+            std::cin >> motif;
+            mfinder.FASTAloader(filename, motif);
+        }},
+        
+        
+    };
+    // Dispatch
+    if (dispatch.find(function) != dispatch.end()) {
+        dispatch[function]();
+    } else {
         message();
         return 1;
     }
