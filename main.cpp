@@ -45,7 +45,8 @@ void helpme(){
     std::cout << "Calculate the molecular weight of a protein(kDa) ---> '-mw'.\n";
     std::cout << "Calculate the Extinction Coefficient of a protein ---> '-ec'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
-    std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n\n";
+    std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n";
+    std::cout << "Preset pipeline 3 ---> '-pip3'. Protein structural properties.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
@@ -58,8 +59,9 @@ void message(){
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
-        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2]\n";
-        std::cerr << "[Use '-help me' for documentation.]\n\n\n ";
+        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient]\n";
+        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2][-pip3 Preset pipeline 3]\n";
+        std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
 //Genetic code
@@ -153,7 +155,6 @@ class GCCalc {
 
             return (static_cast<double>(gcCount) / validBases) * 100.0;
         }
-
   public:
       void FASTA_loader(const std::string& filename) {
             std::ifstream fastaFile(filename);
@@ -161,11 +162,8 @@ class GCCalc {
                 std::cerr << "Error: Unable to open file: " << filename << "\n";
                 exit(1);
             }
-
             std::string line, Header, sequence;
-            
             std::cout << "\n-----------------------------------\n";
-
             while (std::getline(fastaFile, line)) {
                 if (line.empty()) continue;
 
@@ -181,12 +179,10 @@ class GCCalc {
                     sequence += line;
                 }
             }
-
             if (!sequence.empty()) {
                 double gc = GCContent(sequence);
                 std::cout << Header << ":\nGC Content = " << std::fixed << std::setprecision(2) << gc << "%\n";
             }
-
             std::cout << "-----------------------------------\n\n\n";
             std::cout << "Process completed.\n";
             fastaFile.close();
@@ -1611,7 +1607,6 @@ public:
         fastaFile.close();
     }
 };
-
 class ProteinIsoelectricPoint {
 private:
     // aprox pKa values
@@ -1754,7 +1749,6 @@ public:
         fastaFile.close();
     }
 };
-
 class ProteinExtinctionCoefficient {
 private:
     std::string translateToAminoAcids(const std::string& sequence) {
@@ -1845,8 +1839,136 @@ public:
         fastaFile.close();
     }
 };
+class cDNA_colour{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'T';
+                case 'T': return 'A';
+                case 'C': return 'G';
+                case 'G': return 'C';
+                default:  return 'N'; // Unknown base
+            }
+        }
+        std::string ColorBase(char base) const {
+        switch (base) {
+            case 'A': return "\033[42mA\033[0m"; // Green background
+            case 'T': return "\033[41mT\033[0m"; // Red background
+            case 'G': return "\033[44mG\033[0m"; // Blue background
+            case 'C': return "\033[40mC\033[0m"; // Black background
+            default:  return "\033[47mN\033[0m"; // Gray background
+            }
+        }
+        //DNA complement strand init
+        std::string ComplementStrandColored(const std::string& sequence) const {
+        std::string result;
+        for (char base : sequence) {
+            char comp = Complement(base);
+            result += ColorBase(comp);
+        }
+        return result;
+        }
 
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+            std::string line;
+            std::string header;
+            std::string sequence;
+            std::cout << "\n-----------------------------------\n";
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
 
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string complement = ComplementStrandColored(sequence);
+                        std::cout << ">" << header << " (complement)\n" << complement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+                std::string complement = ComplementStrandColored(sequence);
+                std::cout << ">" << header << " (complement)\n" << complement << "\n";
+            }
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
+class Seq_colour{
+    private:
+        char Complement(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A': return 'A';
+                case 'T': return 'T';
+                case 'C': return 'C';
+                case 'G': return 'G';
+                default:  return 'N'; 
+            }
+        }
+        std::string ColorBase(char base) const {
+        switch (base) {
+            case 'A': return "\033[42mA\033[0m"; // Green 
+            case 'T': return "\033[41mT\033[0m"; // Red 
+            case 'G': return "\033[44mG\033[0m"; // Blue 
+            case 'C': return "\033[40mC\033[0m"; // Black 
+            default:  return "\033[47mN\033[0m"; // Gray 
+            }
+        }
+        //DNA complement strand init
+        std::string ComplementStrandColored(const std::string& sequence) const {
+        std::string result;
+        for (char base : sequence) {
+            char comp = Complement(base);
+            result += ColorBase(comp);
+        }
+        return result;
+        }
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+            std::string line;
+            std::string header;
+            std::string sequence;
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::string complement = ComplementStrandColored(sequence);
+                        std::cout << ">" << header << "\n" << complement << "\n\n";
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+                std::string complement = ComplementStrandColored(sequence);
+                std::cout << ">" << header << "\n" << complement << "\n";
+            }
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -2120,55 +2242,178 @@ class Pipeline2 {
         fastaFile.close();
     }
 };
-class cDNA_colour{
-    private:
-        char Complement(char base) const {
-            switch (std::toupper(static_cast<unsigned char>(base))) {
-                case 'A': return 'T';
-                case 'T': return 'A';
-                case 'C': return 'G';
-                case 'G': return 'C';
-                default:  return 'N'; // Unknown base
+class Pipeline3{
+    /*This is a pipeline for structual analysis. It contains the following classes and functions:
+    ProteinIsoelectricPoint, ProteinExtinctionCoefficient, MolecularWeightCalculator.
+    */
+private:
+    // aprox pKa values
+    const double pKa_N_term = 9.6;
+    const double pKa_C_term = 2.4;
+    const double pKa_K = 10.5;
+    const double pKa_R = 12.5;
+    const double pKa_H = 6.0;
+    const double pKa_D = 3.9;
+    const double pKa_E = 4.1;
+    const double pKa_C = 8.3;
+    const double pKa_Y = 10.1;
+
+    const std::unordered_map<char, double> aaMasses = {
+            {'A', 71.0788}, {'R', 156.1875}, {'N', 114.1039}, {'D', 115.0886},
+            {'C', 103.1388}, {'E', 129.1155}, {'Q', 128.1307}, {'G', 57.0519},
+            {'H', 137.1411}, {'I', 113.1594}, {'L', 113.1594}, {'K', 128.1741},
+            {'M', 131.1986}, {'F', 147.1766}, {'P', 97.1167}, {'S', 87.0782},
+            {'T', 101.1051}, {'W', 186.2132}, {'Y', 163.1760}, {'V', 99.1326},
+            {'X', 110.0} 
+        };
+        std::string translateToAminoAcids(const std::string& sequence) {
+            std::string protein;
+            for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
+                std::string codon = sequence.substr(i, 3);
+                for (char& c : codon) c = std::toupper(c);
+                if (codonTable.count(codon)) {
+                    protein += codonTable.at(codon);
+                } else {
+                    protein += 'X';
+                }
             }
+            return protein;
         }
-        std::string ColorBase(char base) const {
-        switch (base) {
-            case 'A': return "\033[42mA\033[0m"; // Green background
-            case 'T': return "\033[41mT\033[0m"; // Red background
-            case 'G': return "\033[44mG\033[0m"; // Blue background
-            case 'C': return "\033[40mC\033[0m"; // Black background
-            default:  return "\033[47mN\033[0m"; // Gray background
+        double calculateMolecularWeight(const std::string& protein) {
+            double totalMass = 0.0;
+            for (char aa : protein) {
+                char upperAA = std::toupper(aa);
+                auto it = aaMasses.find(upperAA);
+                totalMass += (it != aaMasses.end()) ? it->second : 110.0;
             }
-        }
-        //DNA complement strand init
-        std::string ComplementStrandColored(const std::string& sequence) const {
-        std::string result;
-        for (char base : sequence) {
-            char comp = Complement(base);
-            result += ColorBase(comp);
-        }
-        return result;
+            return totalMass;
         }
 
-    public:
-        void FASTA_loader(const std::string& filename) const {
+        struct Counts {
+        int nterm_len = 0; 
+        int cterm_len = 0;
+        int D = 0, E = 0, C = 0, Y = 0, H = 0, K = 0, R = 0;
+    };
+    Counts countIonizable(const std::string& protein) const {
+        Counts c;
+        c.nterm_len = c.cterm_len = protein.empty() ? 0 : 1;
+        for (char aa : protein) {
+            switch (std::toupper(static_cast<unsigned char>(aa))) {
+                case 'D': c.D++; break;
+                case 'E': c.E++; break;
+                case 'C': c.C++; break;
+                case 'Y': c.Y++; break;
+                case 'H': c.H++; break;
+                case 'K': c.K++; break;
+                case 'R': c.R++; break;
+                default: break;
+            }
+        }
+        return c;
+    }
+    double netChargeAtPH(const Counts& c, double pH) const {
+        const double ten = 10.0;
+
+        auto pos = [&](double pKa, int n) {
+            if (n == 0) return 0.0;
+            double term = 1.0 / (1.0 + std::pow(ten, pH - pKa));
+            return n * term;  // +1 
+        };
+
+        auto neg = [&](double pKa, int n) {
+            if (n == 0) return 0.0;
+            double term = 1.0 / (1.0 + std::pow(ten, pKa - pH));
+            return -n * term; // -1 
+        };
+        double charge = 0.0;
+        // Termini
+        if (c.nterm_len > 0)
+            charge += pos(pKa_N_term, 1);
+        if (c.cterm_len > 0)
+            charge += neg(pKa_C_term, 1);
+        // Side chains
+        charge += pos(pKa_K, c.K);
+        charge += pos(pKa_R, c.R);
+        charge += pos(pKa_H, c.H);
+        charge += neg(pKa_D, c.D);
+        charge += neg(pKa_E, c.E);
+        charge += neg(pKa_C, c.C);
+        charge += neg(pKa_Y, c.Y);
+        return charge;
+    }
+    double computePI(const std::string& protein) const {
+        if (protein.empty()) return 0.0;
+        Counts c = countIonizable(protein);
+        double low = 0.0, high = 14.0;
+        double mid = 7.0;
+        // binary search
+        for (int iter = 0; iter < 50; ++iter) { 
+            mid = (low + high) / 2.0;
+            double q = netChargeAtPH(c, mid);
+            if (q > 0.0) {
+                low = mid;
+            } else {
+                high = mid;
+            }
+        }
+        return (low + high) / 2.0;
+    }
+    double calculateExtinction(const std::string& protein) const {
+            int C = 0, W = 0, Y = 0;
+            for (char aa : protein) {
+                char upper = std::toupper(static_cast<unsigned char>(aa));
+                if (upper == 'C') C++;
+                else if (upper == 'W') W++;
+                else if (upper == 'Y') Y++;
+            }
+
+            // Gill & von Hippel method: singles + all pairwise interactions
+            double epsilon = 0.0;
+            
+            // Single residues
+            epsilon += C * 120.0;
+            epsilon += W * 5500.0;
+            epsilon += Y * 1490.0;
+            
+            // WW pairs
+            epsilon += W * (W - 1) * 11000.0 / 2.0;
+            // WY + YW pairs  
+            epsilon += W * Y * 6990.0;
+            // WC + CW pairs
+            epsilon += W * C * 5620.0;
+            // YY pairs
+            epsilon += Y * (Y - 1) * 2980.0 / 2.0;
+            // YC + CY pairs
+            epsilon += Y * C * 2410.0;
+            // CC pairs
+            epsilon += C * (C - 1) * 120.0 / 2.0;
+
+            return epsilon;
+        }
+public:
+    void FASTA_loader(const std::string& filename) {
             std::ifstream fastaFile(filename);
             if (!fastaFile.is_open()) {
-                std::cerr << "Error: Unable to open file " << filename << "\n";
+                std::cerr << "Error: Unable to open file " << filename << std::endl;
                 return;
             }
-            std::string line;
-            std::string header;
-            std::string sequence;
-            std::cout << "\n-----------------------------------\n";
+            std::string line, header, sequence;
+            std::cout << "\n----- Structural Pipeline --------" << std::endl;
             while (std::getline(fastaFile, line)) {
                 if (line.empty()) continue;
-
                 if (line[0] == '>') {
                     if (!sequence.empty()) {
-                        std::string complement = ComplementStrandColored(sequence);
-                        std::cout << ">" << header << " (complement)\n" << complement << "\n\n";
-                        std::cout << "\n-----------------------------------\n";
+                        std::string protein = translateToAminoAcids(sequence);
+                        double mw = calculateMolecularWeight(protein);
+                        double pI = computePI(protein);
+                        double epsilon = calculateExtinction(protein);
+                        std::cout << header << "\n";
+                        std::cout << "-----------------------------------" << std::endl;
+                        std::cout << "Protein: " << protein.size() << " AA" << std::endl;
+                        std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << (mw - 100)/1000 << " kDa" << std::endl;
+                        std::cout << "Isoelectric point (pI): " << std::fixed << std::setprecision(2) << pI << std::endl;
+                        std::cout << "Extinction Coefficient(ε280): " << std::fixed << std::setprecision(0) << epsilon << " M^-1 cm^-1" << std::endl;
+                        std::cout << "-----------------------------------" << std::endl;
                         sequence.clear();
                     }
                     header = line.substr(1);
@@ -2177,76 +2422,19 @@ class cDNA_colour{
                 }
             }
             if (!sequence.empty()) {
-                std::string complement = ComplementStrandColored(sequence);
-                std::cout << ">" << header << " (complement)\n" << complement << "\n";
+                std::string protein = translateToAminoAcids(sequence);
+                double mw = calculateMolecularWeight(protein);
+                double pI = computePI(protein);
+                double epsilon = calculateExtinction(protein);
+                std::cout << header << "\n";
+                std::cout << "-----------------------------------" << std::endl;
+                std::cout << "Protein: " << protein.size() << " AA" << std::endl;
+                std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << (mw - 100)/1000 << " kDa" << std::endl;
+                std::cout << "Isoelectric point (pI): " << std::fixed << std::setprecision(2) << pI << std::endl;
+                std::cout << "Extinction Coefficient(ε280): " << std::fixed << std::setprecision(0) << epsilon << " M^-1 cm^-1" << std::endl;
+                std::cout << "-----------------------------------" << std::endl;
             }
-            std::cout << "-----------------------------------\n\n\n";
-            std::cout << "Process completed.\n";
-            fastaFile.close();
-        }
-};
-class Seq_colour{
-    private:
-        char Complement(char base) const {
-            switch (std::toupper(static_cast<unsigned char>(base))) {
-                case 'A': return 'A';
-                case 'T': return 'T';
-                case 'C': return 'C';
-                case 'G': return 'G';
-                default:  return 'N'; 
-            }
-        }
-        std::string ColorBase(char base) const {
-        switch (base) {
-            case 'A': return "\033[42mA\033[0m"; // Green 
-            case 'T': return "\033[41mT\033[0m"; // Red 
-            case 'G': return "\033[44mG\033[0m"; // Blue 
-            case 'C': return "\033[40mC\033[0m"; // Black 
-            default:  return "\033[47mN\033[0m"; // Gray 
-            }
-        }
-        //DNA complement strand init
-        std::string ComplementStrandColored(const std::string& sequence) const {
-        std::string result;
-        for (char base : sequence) {
-            char comp = Complement(base);
-            result += ColorBase(comp);
-        }
-        return result;
-        }
-    public:
-        void FASTA_loader(const std::string& filename) const {
-            std::ifstream fastaFile(filename);
-            if (!fastaFile.is_open()) {
-                std::cerr << "Error: Unable to open file " << filename << "\n";
-                return;
-            }
-            std::string line;
-            std::string header;
-            std::string sequence;
-            std::cout << "\n-----------------------------------\n";
-
-            while (std::getline(fastaFile, line)) {
-                if (line.empty()) continue;
-
-                if (line[0] == '>') {
-                    if (!sequence.empty()) {
-                        std::string complement = ComplementStrandColored(sequence);
-                        std::cout << ">" << header << "\n" << complement << "\n\n";
-                        std::cout << "\n-----------------------------------\n";
-                        sequence.clear();
-                    }
-                    header = line.substr(1);
-                } else {
-                    sequence += line;
-                }
-            }
-            if (!sequence.empty()) {
-                std::string complement = ComplementStrandColored(sequence);
-                std::cout << ">" << header << "\n" << complement << "\n";
-            }
-            std::cout << "-----------------------------------\n\n\n";
-            std::cout << "Process completed.\n";
+            std::cout << "Process completed." << std::endl;
             fastaFile.close();
         }
 };
@@ -2396,8 +2584,11 @@ int main(int argc, char* argv[]){
             std::cin >> motif;
             mfinder.FASTAloader(filename, motif);
         }},
-        
-        
+        {"-pip3", [&](){
+            Pipeline3 pip3;
+            pip3.FASTA_loader(filename);
+        }},
+  
     };
     // Dispatch
     if (dispatch.find(function) != dispatch.end()) {
