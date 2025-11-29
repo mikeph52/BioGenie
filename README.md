@@ -3,9 +3,6 @@ BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and
 
 <img width="874" height="724" alt="Image" src="https://github.com/user-attachments/assets/7f65593b-35c1-4092-bd2c-bf581854e6fa" />
 
-> [!IMPORTANT]
-> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
-
 
 It currently supports fasta formats(.fasta, .fa).
 - To run the app, simply type:
@@ -34,6 +31,9 @@ Read [Documentation](documentation.md) for more information (*References include
 - Get the purine/pyrimidine ratio --> "-pp".
 - Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
 - Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method ---> "-mt2".
+- Calculate the Isoelectric Point of a protein ---> "-pi".
+- Calculate the molecular weight of a protein(kDa) ---> "-mw".
+- Calculate the Extinction Coefficient of a protein ---> "-ec".
 - Coloured cDNA sequence ---> "-cc".
 - Coloured DNA sequence ---> "-sc".
 - Get the Open Reading Frame(ORF) ---> "-orf".
@@ -44,15 +44,19 @@ Read [Documentation](documentation.md) for more information (*References include
 - Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
 - Custom preset pipeline 1 ---> "-pip1".
 - Custom preset pipeline 2 ---> "-pip2".
+- Custom preset pipeline 3 ---> "-pip3".
 
 
 More functions will be added in the future.
+
+> [!NOTE]
+> _If you have any suggestions for new features or a bug encountered, create an Issue or send me a message at: mikeph526@outlook.com. I'm happy to help._
 
 ## Installation
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.24.0/biogenie_linux_0.24.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.25.0/biogenie_linux_0.25.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -62,10 +66,16 @@ sudo chmod +x biogenie_linux_0.x.x
 ```
 sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
 ```
+- If you need to build from source:
+```
+git clone https://github.com/mikeph52/BioGenie.git
+g++ main.cpp -o biogenie
+sudo mv biogenie /usr/local/bin/
+```
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.24.0/biogenie_macos_0.24.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.25.0/biogenie_macos_0.25.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -75,21 +85,28 @@ sudo chmod +x biogenie_macos_0.x.x
 ```
 sudo mv biogenie_macos_0.x.x /usr/local/bin/biogenie
 ```
+- If you need to build from source(probably not):
+```
+git clone https://github.com/mikeph52/BioGenie.git
+g++ -std=c++17 main.cpp -o biogenie
+sudo mv biogenie /usr/local/bin/
+```
 ### MS Windows
+> [!IMPORTANT]
+> _The Windows version is not being maintained and probably never will. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 It requires Windows 10 or later.
 - Download BioGenie from Releases.
 - Add the executable to PATH(https://stackoverflow.com/questions/44272416/add-a-folder-to-the-path-environment-variable-in-windows-10-with-screenshots)
 - Run from powershell.
 There's also a GUI Version Available on Alpha testing.
 > [!CAUTION]
-> This is an Alpha testing version. It is not functional. Not for scientific use.
-
-> [!IMPORTANT]
-> _The Windows version is not being maintained at the moment. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
+> This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.25.0:
+Protein mollecular weight, isoelectric point, extinction coeficient and pipeline 3 added. Issues https://github.com/mikeph52/BioGenie/issues/25, https://github.com/mikeph52/BioGenie/issues/27 fixed. Major performance improvements made. Minor bugs fixed. 
 - 0.24.0:
-Add motif search. Issues https://github.com/mikeph52/BioGenie/issues/19, https://github.com/mikeph52/BioGenie/issues/21, https://github.com/mikeph52/BioGenie/issues/23, https://github.com/mikeph52/BioGenie/issues/24 fixed. Minor formatting issues fixed.
+Motif search added. Issues https://github.com/mikeph52/BioGenie/issues/19, https://github.com/mikeph52/BioGenie/issues/21, https://github.com/mikeph52/BioGenie/issues/23, https://github.com/mikeph52/BioGenie/issues/24 fixed. Minor formatting issues fixed.
 - 0.23.0:
 DNA sequence with color added.
 - 0.22.0:

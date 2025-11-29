@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025
-// Current version 0.24.0 26/11/2025
+// Current version 0.25.0 30/11/2025
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -14,7 +14,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.25.0 pre-release \nby mikeph_ 2025\n\n";    
+    std::cout << "BioGenie 0.25.0 \nby mikeph_ 2025\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
