@@ -91,7 +91,7 @@ git clone https://github.com/mikeph52/BioGenie.git
 g++ -std=c++17 main.cpp -o biogenie
 sudo mv biogenie /usr/local/bin/
 ```
-### MS Windows
+### MS Windows (Deprecated)
 > [!IMPORTANT]
 > _The Windows version is not being maintained and probably never will. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
 It requires Windows 10 or later.
