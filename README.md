@@ -106,7 +106,7 @@ There's also a GUI Version Available on Alpha testing.
 
 ## Changelog:
 - 0.26.0:
-Hydrogen bonds calulator and protein chain with color added.
+Hydrogen bonds calculator and protein chain with color added.
 - 0.25.0:
 Protein mollecular weight, isoelectric point, extinction coeficient and pipeline 3 added. Issues https://github.com/mikeph52/BioGenie/issues/25, https://github.com/mikeph52/BioGenie/issues/27 fixed. Major performance improvements made. Minor bugs fixed. 
 - 0.24.0:
