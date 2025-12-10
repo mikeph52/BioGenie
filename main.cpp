@@ -14,7 +14,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.25.0 \nby mikeph_ 2025\n\n";    
+    std::cout << "BioGenie 0.26.0 pre-release \nby mikeph_ 2025\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
@@ -25,6 +25,7 @@ void helpme(){
     std::cout << "Get the mRNA ---> '-t'.\n";
     std::cout << "GC percentage calculation ---> '-gc'.\n";
     std::cout << "Generate the aminoacids(Protein chain) ---> '-p'.\n";
+    std::cout << "Generate the aminoacids(Protein chain) with color ---> '-pc'.\n";
     std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
@@ -44,6 +45,7 @@ void helpme(){
     std::cout << "Calculate the Isoelectric Point of a protein ---> '-pi'.\n";
     std::cout << "Calculate the molecular weight of a protein(kDa) ---> '-mw'.\n";
     std::cout << "Calculate the Extinction Coefficient of a protein ---> '-ec'.\n";
+    std::cout << "Calculate the Hydrogen Bonds of dsDNA ---> '-hb'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n";
     std::cout << "Preset pipeline 3 ---> '-pip3'. Protein structural properties.\n\n";
@@ -54,12 +56,12 @@ void helpme(){
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
-        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain]\n";
+        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain][-pc protein w color]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
-        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient]\n";
+        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-hb Hydrogen Bonds]\n";
         std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2][-pip3 Preset pipeline 3]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
@@ -83,6 +85,15 @@ const std::unordered_map<std::string, char>codonTable = {
     {"TAC",'Y'}, {"TAT",'Y'}, {"TAA",'*'}, {"TAG",'*'},
     {"TGC",'C'}, {"TGT",'C'}, {"TGA",'*'}, {"TGG",'W'}
 };
+// ANSI ESCAPE CODES FOR COLOR
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define BLUE    "\033[34m"
+#define YELLOW  "\033[33m"
+#define CYAN    "\033[36m"
+#define GREEN   "\033[32m"
+#define WHITE   "\033[37m"
+#define BRED    "\033[41m"
 // Arg Classes
 class FastaVerifier {
     public:
@@ -148,7 +159,6 @@ class GCCalc {
                 } else if (upperBase == 'A' || upperBase == 'T') {
                     validBases++;
                 }
-                
             }
 
             if (validBases == 0) return 0.0;
@@ -487,6 +497,97 @@ class ProteinChain{
             fastaFile.close();
         }
 };
+
+class ProteinColor {
+    private:
+        std::string translateToAminoAcids(const std::string& sequence) {
+            std::string protein;
+
+            for (size_t i = 0; i + 2 < sequence.size(); i += 3) {
+                std::string codon = sequence.substr(i, 3);
+                for (char& c : codon) c = std::toupper(c);
+
+                if (codonTable.count(codon))
+                    protein += codonTable.at(codon);
+                else
+                    protein += 'X';   // Unknown codon
+            }
+            return protein;
+        }
+        std::string colorAA(char aa) {
+        switch (aa) {
+            case 'A': case 'V': case 'L': case 'I': case 'M':
+            case 'F': case 'W': case 'Y':
+                return std::string(YELLOW) + aa + RESET;
+            case 'S': case 'T': case 'N': case 'Q':
+                return std::string(CYAN) + aa + RESET;
+            case 'K': case 'R': case 'H':
+                return std::string(BLUE) + aa + RESET;
+            case 'D': case 'E':
+                return std::string(RED) + aa + RESET;
+            case 'G': case 'P': case 'C':
+                return std::string(GREEN) + aa + RESET;
+            case 'X':
+                return std::string(WHITE BRED) + aa + RESET;
+            default:
+                return std::string(WHITE) + aa + RESET;
+            }
+        }
+    public:
+        void FASTA_loader(const std::string& filename) {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+
+            std::string line, header, sequence;
+            std::cout << "\n-----------------------------------\n";
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    // Print previous sequence if exists
+                    if (!sequence.empty()) {
+                        std::string protein = translateToAminoAcids(sequence);
+
+                        std::string coloredProtein;
+                        for (char aa : protein)
+                            coloredProtein += colorAA(aa);
+
+                        std::cout << ">" << header << " Protein:\n"
+                                << coloredProtein << "\n\n";
+                        std::cout << "-----------------------------------\n";
+
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                }
+                else {
+                    sequence += line;
+                }
+            }
+
+            // Print last sequence
+            if (!sequence.empty()) {
+                std::string protein = translateToAminoAcids(sequence);
+
+                std::string coloredProtein;
+                for (char aa : protein)
+                    coloredProtein += colorAA(aa);
+
+                std::cout << ">" << header << " Protein:\n"
+                        << coloredProtein << "\n";
+            }
+
+            std::cout << "-----------------------------------\n";
+            std::cout << "Process completed.\n";
+
+            fastaFile.close();
+        }
+};
+
 class FASTAChromosomeSeparator {
   public:
     void FASTA_loader(const std::string& filename) {
@@ -1969,6 +2070,72 @@ class Seq_colour{
             fastaFile.close();
         }
 };
+class HydrogenBondsCalc {
+    private:
+    void calculateHydrogenBonds(const std::string& header, const std::string& sequence) const{
+        int sum_AT = 0, sum_GC = 0;
+       
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            switch (upper) {
+                case 'A':
+                case 'T':
+                    sum_AT++;
+                    break;
+                case 'C':
+                case 'G':
+                    sum_GC++;
+                    break;
+                default:
+                    break; // Skip 'N' or unknown bases
+            }
+        }
+
+        std::cout << ">" << header << "\n";
+        std::cout << "A+T: " << sum_AT << "\n";
+        std::cout << "G+C: " << sum_GC << "\n";
+
+        if (sum_AT == 0) {
+            std::cout << "Hydrogen bonds: Undefined (Hydrogen Bonds = 0)\n";
+        } else {
+            double hbonds = (sum_AT)*2 + sum_GC*3;
+            std::cout << "Hydrogen Bonds: " << std::fixed << std::setprecision(0) << hbonds << "\n";
+        }
+        std::cout << "\n-----------------------------------\n";
+    }
+    public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+
+        std::string line, header, sequence;
+        std::cout << "\n----- Hydrogen Bonds -----\n";
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    calculateHydrogenBonds(header, sequence);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+
+        if (!sequence.empty()) {
+            calculateHydrogenBonds(header, sequence);
+        }
+
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -2389,7 +2556,7 @@ private:
             epsilon += C * (C - 1) * 120.0 / 2.0;
 
             return epsilon;
-        }
+        }        
 public:
     void FASTA_loader(const std::string& filename) {
             std::ifstream fastaFile(filename);
@@ -2588,7 +2755,14 @@ int main(int argc, char* argv[]){
             Pipeline3 pip3;
             pip3.FASTA_loader(filename);
         }},
-  
+        {"-hb", [&](){
+            HydrogenBondsCalc hb;
+            hb.FASTA_loader(filename);
+        }},
+        {"-pc", [&](){
+            ProteinColor pc;
+            pc.FASTA_loader(filename);
+        }},
     };
     // Dispatch
     if (dispatch.find(function) != dispatch.end()) {
