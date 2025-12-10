@@ -24,6 +24,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Motif search ---> "-mf".
 - GC percentage calculation ---> "-gc".
 - Generate the aminoacids(Protein chain) ---> "-p".
+- Generate the Protein chain with color ---> "-pc".
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
@@ -42,6 +43,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Generate mRNA sequence FASTA ---> "-tw".
 - Calculate Codon Usage Bias(CUB) ---> "-cub".
 - Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
+- Calculate Hydrogen Bonds of dsDNA ---> "-hb".
 - Custom preset pipeline 1 ---> "-pip1".
 - Custom preset pipeline 2 ---> "-pip2".
 - Custom preset pipeline 3 ---> "-pip3".
@@ -56,7 +58,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.25.0/biogenie_linux_0.25.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.26.0/biogenie_linux_0.26.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -75,7 +77,7 @@ sudo mv biogenie /usr/local/bin/
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.25.0/biogenie_macos_0.25.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.26.0/biogenie_macos_0.26.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -103,6 +105,8 @@ There's also a GUI Version Available on Alpha testing.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.26.0:
+Hydrogen bonds calulator and protein chain with color added.
 - 0.25.0:
 Protein mollecular weight, isoelectric point, extinction coeficient and pipeline 3 added. Issues https://github.com/mikeph52/BioGenie/issues/25, https://github.com/mikeph52/BioGenie/issues/27 fixed. Major performance improvements made. Minor bugs fixed. 
 - 0.24.0:
