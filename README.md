@@ -1,7 +1,7 @@
 # BioGenie
 BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and MS Windows, written in C++.
 
-<img width="874" height="724" alt="Image" src="https://github.com/user-attachments/assets/7f65593b-35c1-4092-bd2c-bf581854e6fa" />
+<img width="1002" height="770" alt="Image" src="https://github.com/user-attachments/assets/4dfb77db-721d-42e0-ade9-73115f12057e" />
 
 
 It currently supports fasta formats(.fasta, .fa).
