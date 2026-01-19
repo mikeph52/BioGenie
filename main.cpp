@@ -11,10 +11,12 @@
 #include <cmath>
 #include <vector>
 #include <functional> 
+#include <thread> //new stuff-multi thread
+#include <mutex> //for mutual execution
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.26.0 \nby mikeph_ 2025\n\n";    
+    std::cout << "BioGenie 0.27.0 pre-release \nby mikeph_ 2025\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
@@ -2141,6 +2143,7 @@ class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
     Classes:GCCalc, CodonNumber.*/
     private:
+        std::mutex printMutex;
     // GC content function
         double GCContent1(const std::string& sequence) const {
             int gcCount = 0;
@@ -2154,9 +2157,7 @@ class Pipeline1 {
                 } else if (upperBase == 'A' || upperBase == 'T') {
                     validBases++;
                 }
-                
             }
-
             if (validBases == 0) return 0.0;
 
             return (static_cast<double>(gcCount) / validBases) * 100.0;
@@ -2173,31 +2174,36 @@ class Pipeline1 {
             }
             return validBases / 3;
         }
-    
+
+        void procSequence(const std::string& header, const std::string& sequence){
+            /*The concept is we refactor the fasta loader function from 
+            public to private for safer handling. Important note! Avoid null pointers!! */
+            int codons = CodonCount(sequence);
+            double gc = GCContent1(sequence);
+
+            std::lock_guard<std::mutex> lock(printMutex); //lock ownership of pointer
+            std::cout << "\n-----------------------------------\n";
+            std::cout << ">" << header << "\nCodon count: " << codons << "\n";
+            std::cout << "GC Content = " << std::fixed << std::setprecision(2) << gc << "%\n";
+        }
+
     public:
-    void FASTA_loader(const std::string& filename) const {
+    void FASTA_loader(const std::string& filename)  {
             std::ifstream fastaFile(filename);
             if (!fastaFile.is_open()) {
                 std::cerr << "Error: Unable to open file " << filename << "\n";
                 exit(1);
             }
 
-            std::string line;
-            std::string header;
-            std::string sequence;
-
-            std::cout << "\n-----------------------------------\n";
-
+            std::vector<std::pair<std::string, std::string>> sequences;
+            std::string line, header, sequence;
+            
             while (std::getline(fastaFile, line)) {
                 if (line.empty()) continue;
 
                 if (line[0] == '>') {
                     if (!sequence.empty()) {
-                        int codons = CodonCount(sequence);                      
-                        std::cout << ">" << header << "\nCodon count:" << codons << "\n";
-                        double gcContent = GCContent1(sequence);
-                        std::cout << "GC Content = " << std::fixed << std::setprecision(2) << gcContent << "%\n";
-                        std::cout << "\n-----------------------------------\n";
+                        sequences.emplace_back(header, sequence);
                         sequence.clear();
                     }
                     header = line.substr(1);
@@ -2205,18 +2211,23 @@ class Pipeline1 {
                     sequence += line;
                 }
             }
-    
+
             if (!sequence.empty()) {
-                int codons = CodonCount(sequence);
-                std::cout << ">" << header << "\nCodon count:" << codons << "\n";
-                double gc = GCContent1(sequence);
-                std::cout << "GC Content = " << std::fixed << std::setprecision(2) << gc << "%\n";
+                sequences.emplace_back(header, sequence);
             }
 
-            std::cout << "-----------------------------------\n\n\n";
-            std::cout << "Process completed.\n";
-
             fastaFile.close();
+
+            // multithreading
+            std::vector<std::thread> threads;
+            for (const auto& [hdr, seq] : sequences){
+                threads.emplace_back(&Pipeline1::procSequence, this, hdr, seq);
+            }
+            for (auto& t : threads) {
+                t.join(); //wait for all threads
+            }
+            std::cout << "-----------------------------------\n\n\n";
+            std::cout << "Process completed.\n";          
         }
 };
 class Pipeline2 {
