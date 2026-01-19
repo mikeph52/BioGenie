@@ -2687,7 +2687,7 @@ int main(int argc, char* argv[]){
         }},
         {"-pip1", [&]() {
             Pipeline1 pipeline1;
-            pipeline1.FASTA_loader(filename);
+            pipeline1.FASTA_loader(filename, 2);
         }},
         {"-pp", [&]() {
             PurinePyrimidineRatioAnalyzer ppanalyzer;
