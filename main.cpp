@@ -468,11 +468,9 @@ class ProteinChain{
                 std::cerr << "Error: Unable to open file " << filename << "\n";
                 return;
             }
-
             std::string line;
             std::string header;
             std::string sequence;
-
             std::cout << "\n-----------------------------------\n";
 
             while (std::getline(fastaFile, line)) {
@@ -2241,6 +2239,7 @@ class Pipeline2 {
      /*This is a pipeline that contains the following classes and functions:
     Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc, BasePairCounter.*/
     private:
+    // multithreaded fix later
     void ppRatio(const std::string& header, const std::string& sequence) const{
         int purines = 0, pyrimidines = 0;
        
@@ -2287,7 +2286,6 @@ class Pipeline2 {
             double dH; // kcal/mol
             double dS; // cal/(mol*K)
         };
-
         // SantaLucia 1998 parameters
         const std::unordered_map<std::string, ThermoParams> nnParams = {
             {"AA", {-7.9, -22.2}}, {"TT", {-7.9, -22.2}},
@@ -2590,12 +2588,13 @@ public:
                     if (!sequence.empty()) {
                         std::string protein = translateToAminoAcids(sequence);
                         double mw = calculateMolecularWeight(protein);
+                        double mw_calibrated = (mw - 100)/1000; //calibration and precision set
                         double pI = computePI(protein);
                         double epsilon = calculateExtinction(protein);
                         std::cout << header << "\n";
                         std::cout << "-----------------------------------" << std::endl;
                         std::cout << "Protein: " << protein.size() << " AA" << std::endl;
-                        std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << (mw - 100)/1000 << " kDa" << std::endl;
+                        std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << mw_calibrated << " kDa" << std::endl;
                         std::cout << "Isoelectric point (pI): " << std::fixed << std::setprecision(2) << pI << std::endl;
                         std::cout << "Extinction Coefficient(ε280): " << std::fixed << std::setprecision(0) << epsilon << " M^-1 cm^-1" << std::endl;
                         std::cout << "-----------------------------------" << std::endl;
@@ -2610,11 +2609,12 @@ public:
                 std::string protein = translateToAminoAcids(sequence);
                 double mw = calculateMolecularWeight(protein);
                 double pI = computePI(protein);
+                double mw_calibrated = (mw - 100)/1000;
                 double epsilon = calculateExtinction(protein);
                 std::cout << header << "\n";
                 std::cout << "-----------------------------------" << std::endl;
                 std::cout << "Protein: " << protein.size() << " AA" << std::endl;
-                std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << (mw - 100)/1000 << " kDa" << std::endl;
+                std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << mw_calibrated << " kDa" << std::endl;
                 std::cout << "Isoelectric point (pI): " << std::fixed << std::setprecision(2) << pI << std::endl;
                 std::cout << "Extinction Coefficient(ε280): " << std::fixed << std::setprecision(0) << epsilon << " M^-1 cm^-1" << std::endl;
                 std::cout << "-----------------------------------" << std::endl;
@@ -2687,7 +2687,7 @@ int main(int argc, char* argv[]){
         }},
         {"-pip1", [&]() {
             Pipeline1 pipeline1;
-            pipeline1.FASTA_loader(filename, 2);
+            pipeline1.FASTA_loader(filename, 2); // (filename, num_threads)
         }},
         {"-pp", [&]() {
             PurinePyrimidineRatioAnalyzer ppanalyzer;
