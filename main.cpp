@@ -2441,6 +2441,15 @@ private:
     const double pKa_C = 8.3;
     const double pKa_Y = 10.1;
 
+    struct SeqResult {
+            std::string header;
+            std::string protein;
+            double mw;
+            double mw_calibrated;
+            double pI;
+            double epsilon;
+        };
+
     const std::unordered_map<char, double> aaMasses = {
             {'A', 71.0788}, {'R', 156.1875}, {'N', 114.1039}, {'D', 115.0886},
             {'C', 103.1388}, {'E', 129.1155}, {'Q', 128.1307}, {'G', 57.0519},
@@ -2574,12 +2583,13 @@ private:
             return epsilon;
         }        
 public:
-    void FASTA_loader(const std::string& filename) {
+    void FASTA_loader(const std::string& filename, size_t numThreads = 4) {
             std::ifstream fastaFile(filename);
             if (!fastaFile.is_open()) {
                 std::cerr << "Error: Unable to open file " << filename << std::endl;
                 return;
             }
+            std::vector<std::pair<std::string, std::string >> sequences;
             std::string line, header, sequence;
             std::cout << "\n----- Structural Pipeline --------" << std::endl;
             while (std::getline(fastaFile, line)) {
