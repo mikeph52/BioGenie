@@ -2631,6 +2631,33 @@ public:
             }
             std::cout << "Process completed." << std::endl;
             fastaFile.close();
+
+            std::vector<SeqResult> results(sequencies.size());
+            std::mutex queeMutex;
+            size_t index = 0;
+
+            auto worker = [&](){
+
+
+
+
+
+
+
+
+
+
+                
+            };
+
+
+
+
+
+
+
+
+
         }
 };
 // Main Function 
