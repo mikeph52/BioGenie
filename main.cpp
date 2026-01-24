@@ -18,7 +18,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.27.0 pre-release \nby mikeph_ 2025\n\n";    
+    std::cout << "BioGenie 0.26.0 \nby mikeph_ 2025\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
@@ -2240,6 +2240,14 @@ class Pipeline2 {
     Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc, BasePairCounter.*/
     private:
     // multithreaded fix later
+    struct SeqResult {
+        std::string header;
+        int purines;
+        int pyrimidines;
+        int bpCount;
+        double tm;
+        double GCContent;
+    };
     void ppRatio(const std::string& header, const std::string& sequence) const{
         int purines = 0, pyrimidines = 0;
        
@@ -2258,12 +2266,11 @@ class Pipeline2 {
                     break; // Skip N
             }
         }
-
+        std::cout << "\n------------NucleoStats-----------\n";
         std::cout << ">" << header << "\n";
         std::cout << "-----------------------------------\n";
         std::cout << "Purines: " << purines << "\n";
         std::cout << "Pyrimidines: " << pyrimidines << "\n";
-
         if (pyrimidines == 0) {
             std::cout << "Purine/Pyrimidine Ratio: Undefined (pyrimidines = 0)\n";
         } else {
@@ -2384,27 +2391,20 @@ class Pipeline2 {
             return (static_cast<double>(gcCount) / validBases) * 100.0;
     }
     public:
-    void FASTA_loader(const std::string& filename) const {
+    void FASTA_loader(const std::string& filename, size_t numThreads = 4) const {
         std::ifstream fastaFile(filename);
         if (!fastaFile.is_open()) {
             std::cerr << "Error: Unable to open file: " << filename << "\n";
             return;
         }
-
+        std::cout << "\n------------NucleoStats-----------\n";
+        std::vector<std::pair<std::string, std::string>> sequences;
         std::string line, header, sequence;
-        std::cout << "\n-----"<< filename<<"------\n";
         while (std::getline(fastaFile, line)) {
             if (line.empty()) continue;
-
             if (line[0] == '>') {
                 if (!sequence.empty()) {
-                    ppRatio(header, sequence);
-                    int bpCount = CountBases(sequence);
-                    std::cout << "Base pairs: " << bpCount << "\n";
-                    TmCalc(header, sequence);
-                    double GCContent = GCCon(sequence);
-                    std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
-                    std::cout << "-----------------------------------\n";
+                    sequences.emplace_back(header, sequence);
                     sequence.clear();
                 }
                 header = line.substr(1);
@@ -2412,18 +2412,66 @@ class Pipeline2 {
                 sequence += line;
             }
         }
-        if (!sequence.empty()) {
-            ppRatio(header, sequence);
-            int bpCount = CountBases(sequence);
-            std::cout << "Base pairs: " << bpCount << "\n";
-            TmCalc(header, sequence);
-            double GCContent = GCCon(sequence);
-            std::cout << "GC Content = " << std::fixed << std::setprecision(2) << GCContent << "%\n";
+        if (!sequence.empty())
+            sequences.emplace_back(header, sequence);
+        fastaFile.close();
+        std::vector<SeqResult> results(sequences.size());
+        std::mutex indexMutex;
+        size_t index = 0;
+        auto worker = [&]() {
+            while (true) {
+                size_t i;
+                {
+                    std::lock_guard<std::mutex> lock(indexMutex);
+                    if (index >= sequences.size()) return;
+                    i = index++;
+                }
+                const auto& [hdr, seq] = sequences[i];
+                SeqResult r;
+                r.header = hdr;
+                for (char base : seq) {
+                    switch (std::toupper(static_cast<unsigned char>(base))) {
+                        case 'A':
+                        case 'G': r.purines++; break;
+                        case 'C':
+                        case 'T': r.pyrimidines++; break;
+                    }
+                }
+                r.bpCount = CountBases(seq);
+                r.tm = calculateTmNN(seq);
+                r.GCContent = GCCon(seq);
+                results[i] = r;
+            }
+        };
+        std::vector<std::thread> threads;
+        numThreads = std::min(numThreads, sequences.size());
+        for (size_t t = 0; t < numThreads; ++t)
+            threads.emplace_back(worker);
+        for (auto& t : threads)
+            t.join();
+        for (const auto& r : results) {
+            std::cout << r.header << "\n";
+            std::cout << "-----------------------------------\n";
+            std::cout << "Purines: " << r.purines << "\n";
+            std::cout << "Pyrimidines: " << r.pyrimidines << "\n";
+            if (r.pyrimidines == 0)
+                std::cout << "Purine/Pyrimidine Ratio: Undefined\n";
+            else
+                std::cout << "Purine/Pyrimidine Ratio: "
+                        << std::fixed << std::setprecision(3)
+                        << static_cast<double>(r.purines) / r.pyrimidines << "\n";
+            std::cout << "Base pairs: " << r.bpCount << "\n";
+            std::cout << "Melting Temperature (NN model): "
+                    << std::fixed << std::setprecision(2)
+                    << r.tm << " °C\n";
+            std::cout << "GC Content = "
+                    << std::fixed << std::setprecision(2)
+                    << r.GCContent << "%\n";
             std::cout << "-----------------------------------\n";
         }
         std::cout << "Process completed.\n";
-        fastaFile.close();
-    }
+}
+
 };
 class Pipeline3{
     /*This is a pipeline for structual analysis. It contains the following classes and functions:
@@ -2449,7 +2497,6 @@ private:
             double pI;
             double epsilon;
         };
-
     const std::unordered_map<char, double> aaMasses = {
             {'A', 71.0788}, {'R', 156.1875}, {'N', 114.1039}, {'D', 115.0886},
             {'C', 103.1388}, {'E', 129.1155}, {'Q', 128.1307}, {'G', 57.0519},
@@ -2480,7 +2527,6 @@ private:
             }
             return totalMass;
         }
-
         struct Counts {
         int nterm_len = 0; 
         int cterm_len = 0;
@@ -2505,13 +2551,11 @@ private:
     }
     double netChargeAtPH(const Counts& c, double pH) const {
         const double ten = 10.0;
-
         auto pos = [&](double pKa, int n) {
             if (n == 0) return 0.0;
             double term = 1.0 / (1.0 + std::pow(ten, pH - pKa));
             return n * term;  // +1 
         };
-
         auto neg = [&](double pKa, int n) {
             if (n == 0) return 0.0;
             double term = 1.0 / (1.0 + std::pow(ten, pKa - pH));
@@ -2558,15 +2602,12 @@ private:
                 else if (upper == 'W') W++;
                 else if (upper == 'Y') Y++;
             }
-
             // Gill & von Hippel method: singles + all pairwise interactions
-            double epsilon = 0.0;
-            
+            double epsilon = 0.0;           
             // Single residues
             epsilon += C * 120.0;
             epsilon += W * 5500.0;
-            epsilon += Y * 1490.0;
-            
+            epsilon += Y * 1490.0;           
             // WW pairs
             epsilon += W * (W - 1) * 11000.0 / 2.0;
             // WY + YW pairs  
@@ -2579,86 +2620,80 @@ private:
             epsilon += Y * C * 2410.0;
             // CC pairs
             epsilon += C * (C - 1) * 120.0 / 2.0;
-
             return epsilon;
         }        
 public:
     void FASTA_loader(const std::string& filename, size_t numThreads = 4) {
-            std::ifstream fastaFile(filename);
-            if (!fastaFile.is_open()) {
-                std::cerr << "Error: Unable to open file " << filename << std::endl;
-                return;
-            }
-            std::vector<std::pair<std::string, std::string >> sequences;
-            std::string line, header, sequence;
-            std::cout << "\n----- Structural Pipeline --------" << std::endl;
-            while (std::getline(fastaFile, line)) {
-                if (line.empty()) continue;
-                if (line[0] == '>') {
-                    if (!sequence.empty()) {
-                        std::string protein = translateToAminoAcids(sequence);
-                        double mw = calculateMolecularWeight(protein);
-                        double mw_calibrated = (mw - 100)/1000; //calibration and precision set
-                        double pI = computePI(protein);
-                        double epsilon = calculateExtinction(protein);
-                        std::cout << header << "\n";
-                        std::cout << "-----------------------------------" << std::endl;
-                        std::cout << "Protein: " << protein.size() << " AA" << std::endl;
-                        std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << mw_calibrated << " kDa" << std::endl;
-                        std::cout << "Isoelectric point (pI): " << std::fixed << std::setprecision(2) << pI << std::endl;
-                        std::cout << "Extinction Coefficient(ε280): " << std::fixed << std::setprecision(0) << epsilon << " M^-1 cm^-1" << std::endl;
-                        std::cout << "-----------------------------------" << std::endl;
-                        sequence.clear();
-                    }
-                    header = line.substr(1);
-                } else {
-                    sequence += line;
-                }
-            }
-            if (!sequence.empty()) {
-                std::string protein = translateToAminoAcids(sequence);
-                double mw = calculateMolecularWeight(protein);
-                double pI = computePI(protein);
-                double mw_calibrated = (mw - 100)/1000;
-                double epsilon = calculateExtinction(protein);
-                std::cout << header << "\n";
-                std::cout << "-----------------------------------" << std::endl;
-                std::cout << "Protein: " << protein.size() << " AA" << std::endl;
-                std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3) << mw_calibrated << " kDa" << std::endl;
-                std::cout << "Isoelectric point (pI): " << std::fixed << std::setprecision(2) << pI << std::endl;
-                std::cout << "Extinction Coefficient(ε280): " << std::fixed << std::setprecision(0) << epsilon << " M^-1 cm^-1" << std::endl;
-                std::cout << "-----------------------------------" << std::endl;
-            }
-            std::cout << "Process completed." << std::endl;
-            fastaFile.close();
-
-            std::vector<SeqResult> results(sequencies.size());
-            std::mutex queeMutex;
-            size_t index = 0;
-
-            auto worker = [&](){
-
-
-
-
-
-
-
-
-
-
-                
-            };
-
-
-
-
-
-
-
-
-
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << std::endl;
+            return;
         }
+        std::cout << "\n----- Structural Pipeline --------\n";
+        std::vector<std::pair<std::string, std::string>> sequences;
+        std::string line, header, sequence;
+
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    sequences.emplace_back(header, sequence);
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+        if (!sequence.empty())
+            sequences.emplace_back(header, sequence);
+
+        fastaFile.close();
+
+        std::vector<SeqResult> results(sequences.size());
+        std::mutex indexMutex;
+        size_t index = 0;
+
+        auto worker = [&]() {
+            while (true) {
+                size_t i;
+                {
+                    std::lock_guard<std::mutex> lock(indexMutex);
+                    if (index >= sequences.size()) return;
+                    i = index++;
+                }
+                const auto& [hdr, dna] = sequences[i];
+                std::string protein = translateToAminoAcids(dna);
+
+                double mw = calculateMolecularWeight(protein);
+                double mw_calibrated = (mw - 100.0) / 1000.0;
+                double pI = computePI(protein);
+                double epsilon = calculateExtinction(protein);
+                results[i] = {hdr, protein, mw, mw_calibrated, pI, epsilon};
+            }
+        };
+        std::vector<std::thread> threads;
+        numThreads = std::min(numThreads, sequences.size());
+        for (size_t t = 0; t < numThreads; ++t)
+            threads.emplace_back(worker);
+        for (auto& t : threads)
+            t.join();
+        for (const auto& r : results) {
+            std::cout << r.header << "\n";
+            std::cout << "-----------------------------------\n";
+            std::cout << "Protein: " << r.protein.size() << " AA\n";
+            std::cout << "Molecular Weight: " << std::fixed << std::setprecision(3)
+                    << r.mw_calibrated << " kDa\n";
+            std::cout << "Isoelectric point (pI): " << std::fixed
+                    << std::setprecision(2) << r.pI << "\n";
+            std::cout << "Extinction Coefficient(ε280): "
+                    << std::fixed << std::setprecision(0)
+                    << r.epsilon << " M^-1 cm^-1\n";
+            std::cout << "-----------------------------------\n";
+        }
+        std::cout << "Process completed.\n";
+    }    
 };
 // Main Function 
 int main(int argc, char* argv[]){
@@ -2744,7 +2779,7 @@ int main(int argc, char* argv[]){
         }},
         {"-pip2", [&]() {
             Pipeline2 pipeline2;
-            pipeline2.FASTA_loader(filename);
+            pipeline2.FASTA_loader(filename, 2);
         }},
         {"-orf", [&]() {
             ORFFinder orffinder;
@@ -2808,7 +2843,7 @@ int main(int argc, char* argv[]){
         }},
         {"-pip3", [&](){
             Pipeline3 pip3;
-            pip3.FASTA_loader(filename);
+            pip3.FASTA_loader(filename, 2);
         }},
         {"-hb", [&](){
             HydrogenBondsCalc hb;
