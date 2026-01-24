@@ -2777,7 +2777,13 @@ int main(int argc, char* argv[]){
     }
     //end clock and print timer results
     auto end_timer = std::chrono::high_resolution_clock::now();
-    auto elapsed_timer = std::chrono::duration_cast<std::chrono::microseconds>(end_timer - start_timer);
-    std::cout << "Time elapsed: " << elapsed_timer.count() << " ms\n";
+    auto elapsed_timer_s = std::chrono::duration_cast<std::chrono::seconds>(end_timer - start_timer);
+    auto elapsed_timer_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_timer - start_timer);
+    
+    if (elapsed_timer_s >= std::chrono::seconds(1)){
+        std::cout << "Time elapsed: " << elapsed_timer_s.count() << " s\n";
+    } else {
+        std::cout << "Time elapsed: " << elapsed_timer_ms.count() << " ms\n";
+    }    
     return 0;
 }
