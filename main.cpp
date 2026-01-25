@@ -15,6 +15,7 @@
 #include <mutex> //for mutual execution
 #include <queue> //for thread pool
 #include <condition_variable> //synchronization primitive
+#include <map>
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
@@ -34,6 +35,7 @@ void helpme(){
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
     std::cout << "Get the purine/pyrimidine ratio ---> '-pp'.\n";
+    std::cout << "Ambiguous bases statistics ---> '-amb'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> '-mt1'.\n";
     std::cout << "Calculate melting temperature (Tm) of DNA sequences using the SantaLucia 1998 nearest-neighbor method ---> '-mt2'.\n";
     std::cout << "Get the DNA sequence with colour(EXPERIMENTAL) ---> '-sc'.\n";
@@ -65,7 +67,7 @@ void message(){
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
-        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-hb Hydrogen Bonds]\n";
+        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats]\n";
         std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2][-pip3 Preset pipeline 3]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
@@ -499,7 +501,6 @@ class ProteinChain{
             fastaFile.close();
         }
 };
-
 class ProteinColor {
     private:
         std::string translateToAminoAcids(const std::string& sequence) {
@@ -589,7 +590,6 @@ class ProteinColor {
             fastaFile.close();
         }
 };
-
 class FASTAChromosomeSeparator {
   public:
     void FASTA_loader(const std::string& filename) {
@@ -2138,6 +2138,92 @@ class HydrogenBondsCalc {
         fastaFile.close();
     }
 };
+class DNAambiguousStats {
+    private:
+        bool IsStandardBase(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'A':
+                case 'T':
+                case 'G':
+                case 'C':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        bool IsAmbiguousBase(char base) const {
+            switch (std::toupper(static_cast<unsigned char>(base))) {
+                case 'N': case 'R': case 'Y': case 'S': case 'W':
+                case 'K': case 'M': case 'B': case 'D':
+                case 'H': case 'V':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        void AnalyzeSequence(const std::string& sequence) const {
+            std::map<char, size_t> counts;
+            size_t total = 0;
+            size_t ambiguousTotal = 0;
+
+            for (char base : sequence) {
+                char b = std::toupper(static_cast<unsigned char>(base));
+                if (IsStandardBase(b) || IsAmbiguousBase(b)) {
+                    counts[b]++;
+                    total++;
+                    if (IsAmbiguousBase(b)) ambiguousTotal++;
+                }
+            }
+            std::cout << "Sequence length: " << total << " bp\n\n";
+            std::cout << "Standard bases:\n";
+            for (char b : {'A','T','G','C'}) {
+                std::cout << b << ": " << counts[b] << "\n";
+            }
+            std::cout << "\nAmbiguous bases:\n";
+            for (char b : {'N','R','Y','S','W','K','M','B','D','H','V'}) {
+                std::cout << b << ": " << counts[b] << "\n";
+            }
+            double percent = total > 0 ? (ambiguousTotal * 100.0) / total : 0.0;
+            std::cout << "\nTotal ambiguous bases: " << ambiguousTotal << "\n";
+            std::cout << "Ambiguous percentage: "
+                    << std::fixed << std::setprecision(2)
+                    << percent << "%\n";
+        }
+    public:
+        void FASTA_loader(const std::string& filename) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+            std::string line;
+            std::string header;
+            std::string sequence;
+            std::cout << "\n-----------------------------------\n";
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        std::cout << ">" << header << " (ambiguous base statistics)\n";
+                        AnalyzeSequence(sequence);
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+                std::cout << ">" << header << " (ambiguous base statistics)\n";
+                AnalyzeSequence(sequence);
+                std::cout << "\n-----------------------------------\n";
+            }
+            fastaFile.close();
+            std::cout << "\nProcess completed.\n";
+        }
+};
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -2855,6 +2941,10 @@ int main(int argc, char* argv[]){
         {"-pc", [&](){
             ProteinColor pc;
             pc.FASTA_loader(filename);
+        }},
+        {"-amb", [&](){
+            DNAambiguousStats ambig;
+            ambig.FASTA_loader(filename);
         }},
     };
     // Dispatch
