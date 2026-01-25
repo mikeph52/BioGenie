@@ -107,7 +107,7 @@ There's also a GUI Version Available on Alpha testing.
 
 ## Changelog:
 - 0.27.0:
-Multi core support added for pip1, pip2 and pip3(https://github.com/mikeph52/BioGenie/issues/30)(https://github.com/mikeph52/BioGenie/issues/31). Ambiguous bases statistics added. Execution timer added. Minor bugs fixed.
+Multi core support added for pip1, pip2 and pip3(https://github.com/mikeph52/BioGenie/issues/30), (https://github.com/mikeph52/BioGenie/issues/31). Ambiguous bases statistics added. Execution timer added. Minor bugs fixed.
 
 - 0.26.0:
 Hydrogen bonds calculator and protein chain with color added.
