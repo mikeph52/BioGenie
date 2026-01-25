@@ -888,7 +888,7 @@ class MeltingTempCalculator2 {
 
         double R = 1.987; // cal/(K*mol)
 
-        double calculateTmNN(const std::string& sequence, double strandConc = 5e-7, do cuble NaConc = 0.05) const {
+        double calculateTmNN(const std::string& sequence, double strandConc = 5e-7, double NaConc = 0.05) const {
             if (sequence.size() < 2) return 0.0;
 
             double dH = 0.0; // kcal/mol
