@@ -22,6 +22,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Get the codon number ---> "-nc".
 - Get the mRNA ---> "-t".
 - Motif search ---> "-mf".
+- Ambiguous bases statistics ---> "-amb".
 - GC percentage calculation ---> "-gc".
 - Generate the aminoacids(Protein chain) ---> "-p".
 - Generate the Protein chain with color ---> "-pc".
@@ -58,7 +59,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.26.0/biogenie_linux_0.26.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.27.0/biogenie_linux_0.27.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -77,7 +78,7 @@ sudo mv biogenie /usr/local/bin/
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.26.0/biogenie_macos_0.26.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.27.0/biogenie_macos_0.27.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -105,6 +106,9 @@ There's also a GUI Version Available on Alpha testing.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.27.0:
+Multi core support added for pip1, pip2 and pip3(https://github.com/mikeph52/BioGenie/issues/30)(https://github.com/mikeph52/BioGenie/issues/31). Ambiguous bases statistics added. Execution timer added. Minor bugs fixed.
+
 - 0.26.0:
 Hydrogen bonds calculator and protein chain with color added.
 - 0.25.0:
