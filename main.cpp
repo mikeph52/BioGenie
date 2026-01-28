@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 0.27.0 25/1/2026
+// Current version 0.28.0 28/1/2026
 #include <iostream>
 #include <string>
 #include <cctype>

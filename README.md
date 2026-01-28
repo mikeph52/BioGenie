@@ -29,6 +29,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
+- Pairwise Sequence Alignment with Needleman-Wunsch ---> "-nw".
 - Calculate the Number of Base Pairs(bp) ---> "-bp".
 - Get the purine/pyrimidine ratio --> "-pp".
 - Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
@@ -59,7 +60,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.27.0/biogenie_linux_0.27.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.28.0/biogenie_linux_0.28.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -78,7 +79,7 @@ sudo mv biogenie /usr/local/bin/
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.27.0/biogenie_macos_0.27.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.28.0/biogenie_macos_0.28.0
 ``` 
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -106,6 +107,8 @@ There's also a GUI Version Available on Alpha testing.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.28.0:
+Pairwise Sequence Alignment with Needleman-Wunsch added. Issue (https://github.com/mikeph52/BioGenie/issues/34) fixed. Minor bugs fixed.
 - 0.27.0:
 Multi core support added for pip1, pip2 and pip3(https://github.com/mikeph52/BioGenie/issues/30), (https://github.com/mikeph52/BioGenie/issues/31). Ambiguous bases statistics added. Execution timer added. Minor bugs fixed.
 
