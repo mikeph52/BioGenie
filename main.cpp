@@ -19,7 +19,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.27.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 0.28.0 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
@@ -52,6 +52,7 @@ void helpme(){
     std::cout << "Calculate the molecular weight of a protein(kDa) ---> '-mw'.\n";
     std::cout << "Calculate the Extinction Coefficient of a protein ---> '-ec'.\n";
     std::cout << "Calculate the Hydrogen Bonds of dsDNA ---> '-hb'.\n";
+    std::cout << "Pairwise Sequence Alignment with Needleman-Wunsch ---> '-nw'.\n";
     std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
     std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n";
     std::cout << "Preset pipeline 3 ---> '-pip3'. Protein structural properties.\n\n";
@@ -68,7 +69,7 @@ void message(){
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
         std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats]\n";
-        std::cerr << "[-pip1 Preset pipeline 1][-pip2 Preset pipeline 2][-pip3 Preset pipeline 3]\n";
+        std::cerr << "[-nw Needleman-Wunsch][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2][-pip3 Preset pipeline 3]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -140,6 +141,7 @@ class FastaVerifier {
         std::string filename;
         bool isValidSequenceLine(const std::string& line) {
             for (char ch : line) {
+                if (std::isspace(ch)) continue; // fix for validating whitespaces
                 char upper = std::toupper(ch);
                 if (!(upper == 'A' || upper == 'C' || upper == 'G' || upper == 'T' || upper == 'N')) {
                     return false;
@@ -2224,6 +2226,110 @@ class DNAambiguousStats {
             std::cout << "\nProcess completed.\n";
         }
 };
+class NeedlemanWunsch{
+    private:
+        bool isValidBase(char c) {
+            c = std::toupper(c);
+            return (c == 'A' || c == 'C' || c == 'G' ||
+                    c == 'T' || c == 'N');
+        }
+        std::string sanitizeSequence(const std::string& line) {
+            std::string clean;
+            for (char c : line) {
+                if (std::isspace(c)) continue;
+                if (!isValidBase(c)) {
+                    std::cerr << "Error: Invalid character '" << c << "' in FASTA sequence\n";
+                    exit(1);
+                }
+                clean += std::toupper(c);
+            }
+            return clean;
+        }   
+        int match, mismatch, gap;
+        int score(char a, char b){return(a == b) ? match : mismatch;}      
+        void align(const std::string& s1, const std::string& s2){
+            int n = s1.size();
+            int m = s2.size();
+            std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1));
+            //algorithm init
+            for (int i = 0; i <= n; i++)
+                dp[i][0] = i * gap;
+            for (int j = 0; j <= m; j++)
+                dp[0][j] = j * gap;
+            //fill matrix
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= m; j++) {
+                    int diag = dp[i - 1][j - 1] + score(s1[i - 1], s2[j - 1]);
+                    int up   = dp[i - 1][j] + gap;
+                    int left = dp[i][j - 1] + gap;
+                    dp[i][j] = std::max({diag, up, left});
+                }
+            }
+            std::string a1, a2;
+            int i = n, j = m;
+            while (i > 0 || j > 0){
+                if(i > 0 && j > 0 && dp[i][j] == dp[i -1][j - 1] + score(s1[i - 1], s2[j - 1])){
+                    a1 += s1[i - 1];
+                    a2 += s2[j - 1];
+                    i--; j--;
+                }
+                else if (i > 0 && dp[i][j] == dp[i - 1][j] + gap) {
+                    a1 += s1[i - 1];
+                    a2 += '-';
+                    i--;
+                }
+                else {
+                    a1 += '-';
+                    a2 += s2[j - 1];
+                    j--;
+                }
+            }
+            std::reverse(a1.begin(), a1.end());
+            std::reverse(a2.begin(), a2.end());
+            std::cout << "Alignment score: " << dp[n][m] << "\n\n";
+            std::cout << a1 << "\n";
+            std::cout << a2 << "\n";
+        }
+    public:
+        NeedlemanWunsch(int m = 1, int mm = -1, int g = -2)
+            : match(m), mismatch(mm), gap(g) {}
+        void FASTA_loader(const std::string& filename) {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file: " << filename << "\n";
+                exit(1);
+            }
+            std::vector<std::string> headers;
+            std::vector<std::string> sequences ;
+            std::string line, seq;
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+                if (line[0] == '>') {
+                    if (!seq.empty()) {
+                        sequences.push_back(seq);
+                        seq.clear();
+                    }
+                    headers.push_back(line.substr(1));
+                } else {
+                    seq += sanitizeSequence(line);
+            }
+        }
+        if (!seq.empty())
+            sequences.push_back(seq);
+        fastaFile.close();
+        if (sequences.size() != 2) {
+            std::cerr << "Error: FASTA file must contain exactly two sequences\n";
+            exit(1);
+        }
+        std::cout << "\n-----------------------------------\n";
+        std::cout << "Sequence 1: " << headers[0] << "\n";
+        std::cout << "Sequence 2: " << headers[1] << "\n";
+        std::cout << "-----------------------------------\n\n";
+        align(sequences[0], sequences[1]);
+        std::cout << "\n-----------------------------------\n";
+        std::cout << "Process completed.\n";
+    }
+};
 // Custom Pipelines bellow:
 class Pipeline1 {
     /*This is a pipeline that contains the following classes and functions:
@@ -2945,6 +3051,10 @@ int main(int argc, char* argv[]){
         {"-amb", [&](){
             DNAambiguousStats ambig;
             ambig.FASTA_loader(filename);
+        }},
+        {"-nw", [&](){
+            NeedlemanWunsch nw;
+            nw.FASTA_loader(filename);
         }},
     };
     // Dispatch
