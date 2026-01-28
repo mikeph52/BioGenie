@@ -2296,9 +2296,10 @@ class NeedlemanWunsch{
             result.a1 = a1;
             result.a2 = a2;
             result.score = dp[n][m];
-            std::cout << "Alignment score: " << result.score << "\n\n";
+            
             std::cout << a1 << "\n";
             std::cout << a2 << "\n";
+            std::cout << "\n\nAlignment score: " << result.score;
             return result;
         }   
         void calculateIdentity(const std::string& a1, const std::string& a2) {
@@ -2356,7 +2357,8 @@ class NeedlemanWunsch{
             std::cerr << "Error: FASTA file must contain exactly two sequences\n";
             exit(1);
         }
-        std::cout << "\n-----------------------------------\n";
+        std::cout << "\nNeedleman-Wunsch Pairwise Sequence Alignment\n";
+        std::cout << "-----------------------------------\n";
         std::cout << "Sequence 1: " << headers[0] << "\n";
         std::cout << "Sequence 2: " << headers[1] << "\n";
         std::cout << "-----------------------------------\n\n";
@@ -2365,7 +2367,7 @@ class NeedlemanWunsch{
         int gapsSeq1 = countGaps(res.a1);
         int gapsSeq2 = countGaps(res.a2);
         int GapSum = gapsSeq1 + gapsSeq2;
-        std::cout << "Gaps: " << GapSum << "\n";
+        std::cout << "Gaps: " << GapSum;
         std::cout << "\n-----------------------------------\n";
         std::cout << "Process completed.\n";
     }
