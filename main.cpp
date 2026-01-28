@@ -2228,6 +2228,12 @@ class DNAambiguousStats {
 };
 class NeedlemanWunsch{
     private:
+        struct AlignmentResult {
+            std::string a1;
+            std::string a2;
+            int score;
+        };
+
         bool isValidBase(char c) {
             c = std::toupper(c);
             return (c == 'A' || c == 'C' || c == 'G' ||
@@ -2247,7 +2253,7 @@ class NeedlemanWunsch{
         }   
         int match, mismatch, gap;
         int score(char a, char b){return(a == b) ? match : mismatch;}      
-        void align(const std::string& s1, const std::string& s2){
+        AlignmentResult  align(const std::string& s1, const std::string& s2){
             int n = s1.size();
             int m = s2.size();
             std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1));
@@ -2286,9 +2292,38 @@ class NeedlemanWunsch{
             }
             std::reverse(a1.begin(), a1.end());
             std::reverse(a2.begin(), a2.end());
-            std::cout << "Alignment score: " << dp[n][m] << "\n\n";
+            AlignmentResult result;
+            result.a1 = a1;
+            result.a2 = a2;
+            result.score = dp[n][m];
+            std::cout << "Alignment score: " << result.score << "\n\n";
             std::cout << a1 << "\n";
             std::cout << a2 << "\n";
+            return result;
+        }   
+        void calculateIdentity(const std::string& a1, const std::string& a2) {
+            int identical = 0;
+            int aligned = 0;
+
+            for (size_t i = 0; i < a1.size(); i++) {
+                if (a1[i] == '-' && a2[i] == '-') continue;
+                aligned++;
+                if (a1[i] == a2[i])
+                    identical++;
+            }
+            double percentIdentity = (aligned > 0)
+                ? (static_cast<double>(identical) / aligned) * 100.0
+                : 0.0;
+            std::cout << "\nPercentage identity: "
+                    << std::fixed << std::setprecision(2)
+                    << percentIdentity << "%\n";
+        }
+        int countGaps(const std::string& alignedSeq) {
+            int gaps = 0;
+            for (char c : alignedSeq) {
+                if (c == '-') gaps++;
+            }
+            return gaps;
         }
     public:
         NeedlemanWunsch(int m = 1, int mm = -1, int g = -2)
@@ -2325,7 +2360,12 @@ class NeedlemanWunsch{
         std::cout << "Sequence 1: " << headers[0] << "\n";
         std::cout << "Sequence 2: " << headers[1] << "\n";
         std::cout << "-----------------------------------\n\n";
-        align(sequences[0], sequences[1]);
+        AlignmentResult res = align(sequences[0], sequences[1]);
+        calculateIdentity(res.a1, res.a2);
+        int gapsSeq1 = countGaps(res.a1);
+        int gapsSeq2 = countGaps(res.a2);
+        int GapSum = gapsSeq1 + gapsSeq2;
+        std::cout << "Gaps: " << GapSum << "\n";
         std::cout << "\n-----------------------------------\n";
         std::cout << "Process completed.\n";
     }
