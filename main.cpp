@@ -671,18 +671,18 @@ public:
             std::cerr << "Error: Unable to open file: " << filename << "\n";
             return;
         }
-
         std::string line;
+        int total_heads = 0;
         std::cout << "\n--------- Sequence Headers ---------\n";
-
         while (std::getline(fastaFile, line)) {
             if (line.empty()) continue;
             if (line[0] == '>') {
+                total_heads++;
                 std::cout << line << "\n";
             }
         }
-
-        std::cout << "-----------------------------------\n\n\n";
+        std::cout << "-----------------------------------\n";
+        std::cout << "Total FASTA Headers: " << total_heads << "\n\n\n";
         std::cout << "Process completed.\n";
         fastaFile.close();
     }
@@ -3110,11 +3110,17 @@ int main(int argc, char* argv[]){
     auto end_timer = std::chrono::high_resolution_clock::now();
     auto elapsed_timer_s = std::chrono::duration_cast<std::chrono::seconds>(end_timer - start_timer);
     auto elapsed_timer_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_timer - start_timer);
-    
+
     if (elapsed_timer_s >= std::chrono::seconds(1)){
-        std::cout << "Time elapsed: " << elapsed_timer_s.count() << " s\n";
+        auto elapsed_time = elapsed_timer_s.count();
+        if (elapsed_time >= 60){
+            auto elapsed_time_corrected = elapsed_time / 60;
+            std::cout << "Time elapsed: " << elapsed_time_corrected << " m\n";
+        }else {
+            std::cout << "Time elapsed: " << elapsed_time << " s\n";
+        }
     } else {
         std::cout << "Time elapsed: " << elapsed_timer_ms.count() << " ms\n";
-    }    
+    }
     return 0;
 }
