@@ -26,6 +26,7 @@ Read [Documentation](documentation.md) for more information (*References include
 - GC percentage calculation ---> "-gc".
 - Generate the aminoacids(Protein chain) ---> "-p".
 - Generate the Protein chain with color ---> "-pc".
+- Color the protein chain from a FASTA file ---> "-pca".
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
@@ -60,12 +61,12 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.28.0/biogenie_linux_0.28.0
-``` 
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.29.0/biogenie_linux_0.29.0
+```
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
 sudo chmod +x biogenie_linux_0.x.x
-``` 
+```
 - Move it to bin folder by executing the following command:
 ```
 sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
@@ -79,12 +80,12 @@ sudo mv biogenie /usr/local/bin/
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.28.0/biogenie_macos_0.28.0
-``` 
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.29.0/biogenie_macos_0.29.0
+```
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
 sudo chmod +x biogenie_macos_0.x.x
-``` 
+```
 - Move it to bin folder by executing the following command:
 ```
 sudo mv biogenie_macos_0.x.x /usr/local/bin/biogenie
@@ -109,6 +110,8 @@ It requires Windows 10 or later.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.29.0:
+Add the number of headers in a FASTA file in "-sh" function. Issue (https://github.com/mikeph52/BioGenie/issues/37) fixed. Minor bugs fixed.
 - 0.28.0:
 Pairwise Sequence Alignment with Needleman-Wunsch added. Issue (https://github.com/mikeph52/BioGenie/issues/34) fixed. Minor bugs fixed.
 - 0.27.0:
@@ -116,7 +119,7 @@ Multi core support added for pip1, pip2 and pip3(https://github.com/mikeph52/Bio
 - 0.26.0:
 Hydrogen bonds calculator and protein chain with color added.
 - 0.25.0:
-Protein mollecular weight, isoelectric point, extinction coeficient and pipeline 3 added. Issues https://github.com/mikeph52/BioGenie/issues/25, https://github.com/mikeph52/BioGenie/issues/27 fixed. Major performance improvements made. Minor bugs fixed. 
+Protein mollecular weight, isoelectric point, extinction coeficient and pipeline 3 added. Issues https://github.com/mikeph52/BioGenie/issues/25, https://github.com/mikeph52/BioGenie/issues/27 fixed. Major performance improvements made. Minor bugs fixed.
 - 0.24.0:
 Motif search added. Issues https://github.com/mikeph52/BioGenie/issues/19, https://github.com/mikeph52/BioGenie/issues/21, https://github.com/mikeph52/BioGenie/issues/23, https://github.com/mikeph52/BioGenie/issues/24 fixed. Minor formatting issues fixed.
 - 0.23.0:
