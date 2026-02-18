@@ -31,6 +31,7 @@ void helpme(){
     std::cout << "GC percentage calculation ---> '-gc'.\n";
     std::cout << "Generate the aminoacids(Protein chain) ---> '-p'.\n";
     std::cout << "Generate the aminoacids(Protein chain) with color ---> '-pc'.\n";
+    std::cout << "Color the protein chain from a FASTA file ---> '-pca'.\n";
     std::cout << "Separate different sequencies in a FASTA file ---> '-ss'\n";
     std::cout << "Print the different sequence headers from a FASTA file ---> '-sh'\n";
     std::cout << "Trim DNA ---> 'tr'. It uses 0-based indexing (start = 0 is the first base).\n";
@@ -62,8 +63,8 @@ void helpme(){
 }
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
-        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence]\n";
-        std::cerr << "[-nc codon number][-t mRNA][-gc GC percentage calculator][-p protein chain][-pc protein w color]\n";
+        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-nc codon number][-t mRNA]\n";
+        std::cerr << "[-gc GC percentage calculator][-p protein chain][-pc protein chain w color][-pca protein fasta w color]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
         std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
@@ -589,6 +590,74 @@ class ProteinColor {
             std::cout << "-----------------------------------\n";
             std::cout << "Process completed.\n";
 
+            fastaFile.close();
+        }
+};
+class ColorForAminoAcids {
+    private:    
+        std::string colorAA(char aa) {
+            aa = std::toupper(aa);
+            switch (aa) {
+                case 'A': case 'V': case 'L': case 'I': case 'M':
+                case 'F': case 'W': case 'Y':
+                    return std::string(YELLOW) + aa + RESET;
+                case 'S': case 'T': case 'N': case 'Q':
+                    return std::string(CYAN) + aa + RESET;
+                case 'K': case 'R': case 'H':
+                    return std::string(BLUE) + aa + RESET;
+                case 'D': case 'E':
+                    return std::string(RED) + aa + RESET;
+                case 'G': case 'P': case 'C':
+                    return std::string(GREEN) + aa + RESET;
+                case 'X':
+                    return std::string(WHITE BRED) + aa + RESET;
+                default:
+                    return std::string(WHITE) + aa + RESET;
+                }
+        }
+    public:
+        void FASTA_loader(const std::string& filename) {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+            std::string line, header, sequence;
+            
+            std::cout << "\n-----------------------------------\n";
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+                if (line[0] == '>') {
+                    // Print previous sequence if exists
+                    if (!sequence.empty()) {
+                        std::cout << ">" << header << "\n";
+                        int count = 0;
+                        for (char aa : sequence) {
+                            std::cout << colorAA(aa);
+                            if (++count % 60 == 0)
+                                std::cout << "\n";
+                        }
+                        std::cout << "\n-----------------------------------\n";
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                }
+                else {
+                    sequence += line;
+                }
+            }
+            // Print last sequence
+            if (!sequence.empty()) {
+                std::cout << ">" << header << "\n";
+                int count = 0;
+                for (char aa : sequence) {
+                    std::cout << colorAA(aa);
+                    if (++count % 60 == 0)
+                        std::cout << "\n";
+                }
+            }
+            std::cout << "\n-----------------------------------\n";
+            std::cout << "Process completed.\n";
             fastaFile.close();
         }
 };
@@ -3097,6 +3166,10 @@ int main(int argc, char* argv[]){
         {"-nw", [&](){
             NeedlemanWunsch nw;
             nw.FASTA_loader(filename);
+        }},
+        {"-pca", [&](){
+            ColorForAminoAcids caa;
+            caa.FASTA_loader(filename);
         }},
     };
     // Dispatch
