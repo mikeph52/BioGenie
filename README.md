@@ -95,14 +95,16 @@ git clone https://github.com/mikeph52/BioGenie.git
 g++ -std=c++17 main.cpp -o biogenie
 sudo mv biogenie /usr/local/bin/
 ```
-### MS Windows (Deprecated)
+### MS Windows
 > [!IMPORTANT]
-> _The Windows version is not being maintained and probably never will. Last available version: 0.14.0(https://github.com/mikeph52/BioGenie/releases/tag/v.0.14.0). Use WSL(Windows Subsystem for Linux) instead._
+> _Windows is back(sort of). From version v.0.28.0, windows is supported. Still, this version is not going to be prioritized._
+
 It requires Windows 10 or later.
 - Download BioGenie from Releases.
 - Add the executable to PATH(https://stackoverflow.com/questions/44272416/add-a-folder-to-the-path-environment-variable-in-windows-10-with-screenshots)
 - Run from powershell.
-There's also a GUI Version Available on Alpha testing.
+
+~There's also a GUI Version Available on Alpha testing~.
 > [!CAUTION]
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
@@ -111,7 +113,6 @@ There's also a GUI Version Available on Alpha testing.
 Pairwise Sequence Alignment with Needleman-Wunsch added. Issue (https://github.com/mikeph52/BioGenie/issues/34) fixed. Minor bugs fixed.
 - 0.27.0:
 Multi core support added for pip1, pip2 and pip3(https://github.com/mikeph52/BioGenie/issues/30), (https://github.com/mikeph52/BioGenie/issues/31). Ambiguous bases statistics added. Execution timer added. Minor bugs fixed.
-
 - 0.26.0:
 Hydrogen bonds calculator and protein chain with color added.
 - 0.25.0:
