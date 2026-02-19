@@ -47,9 +47,8 @@ Read [Documentation](documentation.md) for more information (*References include
 - Calculate Codon Usage Bias(CUB) ---> "-cub".
 - Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
 - Calculate Hydrogen Bonds of dsDNA ---> "-hb".
-- Custom preset pipeline 1 ---> "-pip1".
-- Custom preset pipeline 2 ---> "-pip2".
-- Custom preset pipeline 3 ---> "-pip3".
+- Nucleostats ---> '-nucleo'. Statistics and metrics for DNA. Ideal for Primer design.
+- Proteostats ---> '-prot'. Statistics and protein structural properties.
 
 
 More functions will be added in the future.
@@ -61,7 +60,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.29.0/biogenie_linux_0.29.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.30.0/biogenie_linux_0.30.0
 ```
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -80,7 +79,7 @@ sudo mv biogenie /usr/local/bin/
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.29.0/biogenie_macos_0.29.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.30.0/biogenie_macos_0.30.0
 ```
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -110,6 +109,8 @@ It requires Windows 10 or later.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.30.0:
+Add custom threads selection. Refactor pip2. Rename pip2 to Nucleostats. Rename pip3 to Proteostats. Remove pip1. Minor bugs fixed.
 - 0.29.0:
 Add the number of headers in a FASTA file in "-sh" function. Issue (https://github.com/mikeph52/BioGenie/issues/37) fixed. Minor bugs fixed.
 - 0.28.0:
