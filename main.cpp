@@ -54,15 +54,17 @@ void helpme(){
     std::cout << "Calculate the Extinction Coefficient of a protein ---> '-ec'.\n";
     std::cout << "Calculate the Hydrogen Bonds of dsDNA ---> '-hb'.\n";
     std::cout << "Pairwise Sequence Alignment with Needleman-Wunsch ---> '-nw'.\n";
-    std::cout << "Preset pipeline 1 ---> '-pip1'. Returns the codon number and GC%.\n";
-    std::cout << "Preset pipeline 2 ---> '-pip2'. Ideal for Primer design.\n";
-    std::cout << "Preset pipeline 3 ---> '-pip3'. Protein structural properties.\n\n";
+    std::cout << "Nucleostats ---> '-nucleo'. Statistics and metrics for DNA. Ideal for Primer design.\n";
+    std::cout << "Proteostats ---> '-prot'. Statistics and protein structural properties.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
 }
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
+        std::cerr << "[Pipelines]:\n\n";
+        std::cerr << "[-nucleo Nucleostats 2][-prot Proteostats][-nw Needleman-Wunsch]\n\n";
+        std::cerr << "[Single commands]:\n\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-nc codon number][-t mRNA]\n";
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pc protein chain w color][-pca protein fasta w color]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
@@ -70,7 +72,6 @@ void message(){
         std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
         std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats]\n";
-        std::cerr << "[-nw Needleman-Wunsch][-pip1 Preset pipeline 1][-pip2 Preset pipeline 2][-pip3 Preset pipeline 3]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -2442,104 +2443,8 @@ class NeedlemanWunsch{
     }
 };
 // Custom Pipelines bellow:
-class Pipeline1 {
-    /*This is a pipeline that contains the following classes and functions:
-    Classes:GCCalc, CodonNumber.*/
-    private:
-        // storing the results here for later :)
-        struct SeqResult {
-            std::string header;
-            int codons;
-            double gc;
-        };
-    // GC content function
-        double GCContent1(const std::string& sequence) const {
-            int gcCount = 0;
-            int validBases = 0;
-            for (char base : sequence) {
-                char upperBase = std::toupper(base);
-                if (upperBase == 'G' || upperBase == 'C') {
-                    gcCount++;
-                    validBases++;
-                } else if (upperBase == 'A' || upperBase == 'T') {
-                    validBases++;
-                }                
-            }
-            if (validBases == 0) return 0.0;
-            return (static_cast<double>(gcCount) / validBases) * 100.0;
-        }
-    // codon count function
-        int CodonCount(const std::string& sequence) const {
-            int validBases = 0;
-            for (char base : sequence) {
-                char upper = std::toupper(static_cast<unsigned char>(base));
-                if (upper == 'A' || upper == 'T' || upper == 'C' || upper == 'G') {
-                    validBases++;
-                }
-            }
-            return validBases / 3;
-        }        
-    public:
-        void FASTA_loader(const std::string& filename, size_t numThreads = 4) {
-            std::ifstream fastaFile(filename);
-            if (!fastaFile.is_open()) {
-                std::cerr << "Error: Unable to open file " << filename << "\n";
-                exit(1);
-            }
-            // Load seqs into memory !NOTE! alloc correctly!!!
-            std::vector<std::pair<std::string, std::string >> sequences;
-            std::string line, header, sequence;
-            while (std::getline(fastaFile, line)){
-                if (line.empty()) continue;
-                if (line[0] == '>') {
-                    if (!sequence.empty()){
-                        sequences.emplace_back(header, sequence);
-                        sequence.clear();
-                    }
-                    header = line.substr(1);
-                } else {
-                    sequence += line;
-                }
-            }
-            if (!sequence.empty()) sequences.emplace_back(header, sequence);
-            fastaFile.close();
-            // results vector
-            std::vector<SeqResult> results(sequences.size());
-            std::mutex queeMutex; // pre-proc threads
-            size_t index = 0;
-
-            auto worker = [&](){
-                while (true){
-                    size_t i;{
-                        std::lock_guard<std::mutex> lock(queeMutex);
-                        if (index >= sequences.size()) return;
-                        i = index++;
-                    }
-                    const auto& [hdr, seq] = sequences[i];
-                    results[i].header = hdr;
-                    results[i].codons = CodonCount(seq);
-                    results[i].gc = GCContent1(seq);
-                }
-            };
-            // launch threads
-            std::vector<std::thread> threads;
-            for (size_t t = 0; t < numThreads; ++t)
-                threads.emplace_back(worker);
-            for (auto& t : threads)
-                t.join();
-            // print results
-            std::cout << "\n-----------------------------------\n";
-            for (const auto& r : results) {
-                std::cout << ">" << r.header << "\n";
-                std::cout << "Codon count: " << r.codons << "\n";
-                std::cout << "GC Content = " << std::fixed << std::setprecision(2) << r.gc << "%\n";
-                std::cout << "-----------------------------------\n";
-            }
-            std::cout << "Process completed.\n";      
-        }
-};
-class Pipeline2 {
-     /*This is a pipeline that contains the following classes and functions:
+class Nucleostats {
+     /*The old Pipeline 2. This is a pipeline that contains the following classes and functions:
     Classes:PurinePyrimidineRatioAnalyzer, MeltingTempCalculator2, GCCalc, BasePairCounter.*/
     private:
     // multithreaded fix later
@@ -2687,8 +2592,7 @@ class Pipeline2 {
                     validBases++;
                 } else if (upperBase == 'A' || upperBase == 'T') {
                     validBases++;
-                }
-                
+                }   
             }
             if (validBases == 0) return 0.0;
             return (static_cast<double>(gcCount) / validBases) * 100.0;
@@ -2700,7 +2604,7 @@ class Pipeline2 {
             std::cerr << "Error: Unable to open file: " << filename << "\n";
             return;
         }
-        std::cout << "\n------------NucleoStats-----------\n";
+        std::cout << "\n------------ NucleoStats -----------\n";
         std::vector<std::pair<std::string, std::string>> sequences;
         std::string line, header, sequence;
         while (std::getline(fastaFile, line)) {
@@ -2755,6 +2659,13 @@ class Pipeline2 {
         for (const auto& r : results) {
             std::cout << r.header << "\n";
             std::cout << "-----------------------------------\n";
+            std::cout << "Base pairs: " << r.bpCount << "\n";
+            std::cout << "GC Content = "
+                    << std::fixed << std::setprecision(2)
+                    << r.GCContent << "%\n";
+            std::cout << "Melting Temperature (NN model): "
+                    << std::fixed << std::setprecision(2)
+                    << r.tm << " °C\n";
             std::cout << "Purines: " << r.purines << "\n";
             std::cout << "Pyrimidines: " << r.pyrimidines << "\n";
             if (r.pyrimidines == 0)
@@ -2762,22 +2673,15 @@ class Pipeline2 {
             else
                 std::cout << "Purine/Pyrimidine Ratio: "
                         << std::fixed << std::setprecision(3)
-                        << static_cast<double>(r.purines) / r.pyrimidines << "\n";
-            std::cout << "Base pairs: " << r.bpCount << "\n";
-            std::cout << "Melting Temperature (NN model): "
-                    << std::fixed << std::setprecision(2)
-                    << r.tm << " °C\n";
-            std::cout << "GC Content = "
-                    << std::fixed << std::setprecision(2)
-                    << r.GCContent << "%\n";
+                        << static_cast<double>(r.purines) / r.pyrimidines << "\n";   
             std::cout << "-----------------------------------\n";
         }
         std::cout << "Process completed.\n";
 }
 
 };
-class Pipeline3{
-    /*This is a pipeline for structual analysis. It contains the following classes and functions:
+class Proteostats{
+    /*The old Pipeline 3. This is a pipeline for structual analysis. It contains the following classes and functions:
     ProteinIsoelectricPoint, ProteinExtinctionCoefficient, MolecularWeightCalculator.
     */
 private:
@@ -2932,7 +2836,7 @@ public:
             std::cerr << "Error: Unable to open file " << filename << std::endl;
             return;
         }
-        std::cout << "\n----- Structural Pipeline --------\n";
+        std::cout << "\n--------- Proteostats ---------\n";
         std::vector<std::pair<std::string, std::string>> sequences;
         std::string line, header, sequence;
 
@@ -3063,10 +2967,6 @@ int main(int argc, char* argv[]){
             std::cin >> end_position;
             trim.FASTA_loader(filename, start_position, end_position);
         }},
-        {"-pip1", [&]() {
-            Pipeline1 pipeline1;
-            pipeline1.FASTA_loader(filename, 2); // (filename, num_threads)
-        }},
         {"-pp", [&]() {
             PurinePyrimidineRatioAnalyzer ppanalyzer;
             ppanalyzer.FASTA_loader(filename);
@@ -3083,9 +2983,20 @@ int main(int argc, char* argv[]){
             cDNA_colour dnacolour;
             dnacolour.FASTA_loader(filename);
         }},
-        {"-pip2", [&]() {
-            Pipeline2 pipeline2;
-            pipeline2.FASTA_loader(filename, 2);
+        {"-nucleo", [&]() {
+            //The old pip2
+            int num_threads;
+            Nucleostats pipeline2;
+            
+            std::cout << "Select number of threads(default is 2): ";
+            std::cin >> num_threads;
+
+            if(num_threads < 2){
+                std::cout << "\nWarning!This is a multithreaded function. Cannot be used with less than 2 threads.\n";
+                std::cout << "Using 2 threads. . .\n\n\n";
+                num_threads = 2;
+            }
+            pipeline2.FASTA_loader(filename, num_threads);
         }},
         {"-orf", [&]() {
             ORFFinder orffinder;
@@ -3147,9 +3058,20 @@ int main(int argc, char* argv[]){
             std::cin >> motif;
             mfinder.FASTAloader(filename, motif);
         }},
-        {"-pip3", [&](){
-            Pipeline3 pip3;
-            pip3.FASTA_loader(filename, 2);
+        {"-prot", [&](){
+            //the old pip3
+            int num_threads;
+            Proteostats pipeline3;
+            
+            std::cout << "Select number of threads(default is 2): ";
+            std::cin >> num_threads;
+
+            if(num_threads < 2){
+                std::cout << "\nWarning!This is a multithreaded function. Cannot be used with less than 2 threads.\n";
+                std::cout << "Using 2 threads. . .\n\n\n";
+                num_threads = 2;
+            }
+            pipeline3.FASTA_loader(filename, num_threads);
         }},
         {"-hb", [&](){
             HydrogenBondsCalc hb;
