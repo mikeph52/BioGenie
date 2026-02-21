@@ -19,7 +19,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.30.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 0.30.2 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme(){
     std::cout << "-----------------------DOCUMENTATION-----------------------\n";
@@ -62,9 +62,9 @@ void helpme(){
 }
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
-        std::cerr << "[Pipelines]:\n\n";
+        std::cerr << "[Pipelines]:\n";
         std::cerr << "[-nucleo Nucleostats 2][-prot Proteostats][-nw Needleman-Wunsch]\n\n";
-        std::cerr << "[Single commands]:\n\n";
+        std::cerr << "[Single commands]:\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-nc codon number][-t mRNA]\n";
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pc protein chain w color][-pca protein fasta w color]\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
