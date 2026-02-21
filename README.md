@@ -110,7 +110,7 @@ It requires Windows 10 or later.
 
 ## Changelog:
 - 0.30.2:
-Fix minor formating issues.
+Fix minor formatting issues.
 - 0.30.0:
 Add custom threads selection. Refactor pip2. Rename pip2 to Nucleostats. Rename pip3 to Proteostats. Remove pip1. Minor bugs fixed.
 - 0.29.0:
