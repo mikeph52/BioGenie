@@ -111,7 +111,7 @@ It requires Windows 10 or later.
 
 ## Changelog:
 - x.xx.x:
-Pipeline Assemblystats added. AT% added in GCCalc function. Minor bugs fixed.
+Pipeline Assemblystats added. AT% added in GCCalc function. Menu formatting fixed. Minor bugs fixed.
 - 0.30.2:
 Fix minor formatting issues.
 - 0.30.0:
