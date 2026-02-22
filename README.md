@@ -62,7 +62,7 @@ More functions will be added in the future.
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.30.2/biogenie_linux_0.30.2
+wget https://github.com/mikeph52/BioGenie/releases/download/v.0.31.0/biogenie_linux_0.31.0
 ```
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
@@ -81,7 +81,7 @@ sudo mv biogenie /usr/local/bin/
 ### macOS
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.30.2/biogenie_macos_0.30.2
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.31.0/biogenie_macos_0.31.0
 ```
 - Run "chmod +x" first(Replace 0.x.x with the correct version).
 ```
