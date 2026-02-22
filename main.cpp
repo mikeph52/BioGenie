@@ -53,18 +53,19 @@ void helpme(){
     std::cout << "Calculate the molecular weight of a protein(kDa) ---> '-mw'.\n";
     std::cout << "Calculate the Extinction Coefficient of a protein ---> '-ec'.\n";
     std::cout << "Calculate the Hydrogen Bonds of dsDNA ---> '-hb'.\n";
-    std::cout << "Pairwise Sequence Alignment with Needleman-Wunsch ---> '-nw'.\n";
+    std::cout << "Pairwise Global Sequence Alignment with Needleman-Wunsch ---> '-nw'.\n";
+    std::cout << "Pairwise Local Sequence Alignment with Smith-Waterman ---> '-sw'.\n";
     std::cout << "Nucleostats ---> '-nucleo'. Statistics and metrics for DNA. Ideal for Primer design.\n";
     std::cout << "Proteostats ---> '-prot'. Statistics and protein structural properties.\n";
     std::cout << "Assemblystats ---> '-asmbl'. Statistics and metrics for genome assembly.\n\n";
-    std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
+    std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/Documentation/documentation.md\n";
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
 }
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[Pipelines]:\n";
-        std::cerr << "[-nucleo Nucleostats][-prot Proteostats][-asmbl Assemblystats][-nw Needleman-Wunsch]\n\n";
+        std::cerr << "[-nucleo Nucleostats][-prot Proteostats][-asmbl Assemblystats][-nw Needleman-Wunsch][-sw Smith-Waterman]\n\n";
         std::cerr << "[Single commands]:\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-t RNA][-bp Base Pairs]\n";
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pp purine/pyrimidine ratio][-nc codon number]\n";
@@ -2447,6 +2448,183 @@ class NeedlemanWunsch{
         std::cout << "Process completed.\n";
     }
 };
+class SmithWaterman {
+    private:
+        struct AlignmentResult {
+            std::string a1;
+            std::string a2;
+            int score;
+        };
+        bool isValidBase(char c) {
+            c = std::toupper(c);
+            return (c == 'A' || c == 'C' || c == 'G' ||
+                    c == 'T' || c == 'N');
+        }
+        std::string sanitizeSequence(const std::string& line) {
+            std::string clean;
+            for (char c : line) {
+                if (std::isspace(c)) continue;
+                if (!isValidBase(c)) {
+                    std::cerr << "Error: Invalid character '" << c << "' in FASTA sequence\n";
+                    exit(1);
+                }
+                clean += std::toupper(c);
+            }
+            return clean;
+        }
+
+        int match, mismatch, gap;
+
+        int score(char a, char b) {
+            return (a == b) ? match : mismatch;
+        }
+
+        AlignmentResult align(const std::string& s1, const std::string& s2) {
+            int n = s1.size();
+            int m = s2.size();
+
+            std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1, 0));
+
+            int maxScore = 0;
+            int maxI = 0, maxJ = 0;
+
+            // Fill matrix
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= m; j++) {
+                    int diag = dp[i - 1][j - 1] + score(s1[i - 1], s2[j - 1]);
+                    int up   = dp[i - 1][j] + gap;
+                    int left = dp[i][j - 1] + gap;
+
+                    dp[i][j] = std::max({0, diag, up, left});
+
+                    if (dp[i][j] > maxScore) {
+                        maxScore = dp[i][j];
+                        maxI = i;
+                        maxJ = j;
+                    }
+                }
+            }
+            // Traceback from max cell
+            std::string a1, a2;
+            int i = maxI, j = maxJ;
+
+            while (i > 0 && j > 0 && dp[i][j] != 0) {
+                if (dp[i][j] == dp[i - 1][j - 1] + score(s1[i - 1], s2[j - 1])) {
+                    a1 += s1[i - 1];
+                    a2 += s2[j - 1];
+                    i--; j--;
+                }
+                else if (dp[i][j] == dp[i - 1][j] + gap) {
+                    a1 += s1[i - 1];
+                    a2 += '-';
+                    i--;
+                }
+                else {
+                    a1 += '-';
+                    a2 += s2[j - 1];
+                    j--;
+                }
+            }
+
+            std::reverse(a1.begin(), a1.end());
+            std::reverse(a2.begin(), a2.end());
+
+            AlignmentResult result;
+            result.a1 = a1;
+            result.a2 = a2;
+            result.score = maxScore;
+
+            std::cout << a1 << "\n";
+            std::cout << a2 << "\n";
+            std::cout << "\n\nAlignment score: " << result.score;
+
+            return result;
+        }
+
+        void calculateIdentity(const std::string& a1, const std::string& a2) {
+            int identical = 0;
+            int aligned = 0;
+
+            for (size_t i = 0; i < a1.size(); i++) {
+                if (a1[i] == '-' && a2[i] == '-') continue;
+                aligned++;
+                if (a1[i] == a2[i])
+                    identical++;
+            }
+
+            double percentIdentity = (aligned > 0)
+                ? (static_cast<double>(identical) / aligned) * 100.0
+                : 0.0;
+
+            std::cout << "\nPercentage identity: "
+                    << std::fixed << std::setprecision(2)
+                    << percentIdentity << "%\n";
+        }
+
+        int countGaps(const std::string& alignedSeq) {
+            int gaps = 0;
+            for (char c : alignedSeq)
+                if (c == '-') gaps++;
+            return gaps;
+        }
+
+    public:
+        SmithWaterman(int m = 1, int mm = -1, int g = -2)
+            : match(m), mismatch(mm), gap(g) {}
+
+        void FASTA_loader(const std::string& filename) {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file: " << filename << "\n";
+                exit(1);
+            }
+
+            std::vector<std::string> headers;
+            std::vector<std::string> sequences;
+            std::string line, seq;
+
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!seq.empty()) {
+                        sequences.push_back(seq);
+                        seq.clear();
+                    }
+                    headers.push_back(line.substr(1));
+                }
+                else {
+                    seq += sanitizeSequence(line);
+                }
+            }
+
+            if (!seq.empty())
+                sequences.push_back(seq);
+
+            fastaFile.close();
+
+            if (sequences.size() != 2) {
+                std::cerr << "Error: FASTA file must contain exactly two sequences\n";
+                exit(1);
+            }
+
+            std::cout << "\nSmith-Waterman Pairwise Sequence Alignment\n";
+            std::cout << "-----------------------------------\n";
+            std::cout << "Sequence 1: " << headers[0] << "\n";
+            std::cout << "Sequence 2: " << headers[1] << "\n";
+            std::cout << "-----------------------------------\n\n";
+
+            AlignmentResult res = align(sequences[0], sequences[1]);
+            calculateIdentity(res.a1, res.a2);
+
+            int gapsSeq1 = countGaps(res.a1);
+            int gapsSeq2 = countGaps(res.a2);
+
+            std::cout << "Gaps: " << gapsSeq1 + gapsSeq2 << "\n";
+            std::cout << "-----------------------------------\n";
+            std::cout << "Process completed.\n";
+        }
+};
 // Custom Pipelines bellow:
 class Nucleostats {
      /*The old Pipeline 2. This is a pipeline that contains the following classes and functions:
@@ -3235,6 +3413,10 @@ int main(int argc, char* argv[]){
                 num_threads = 2;
             }
             assstats.FASTA_loader(filename, num_threads);
+        }},
+        {"-sw", [&](){
+            SmithWaterman swaterman;
+            swaterman.FASTA_loader(filename);
         }},
     };
     // Dispatch
