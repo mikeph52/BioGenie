@@ -192,6 +192,7 @@ class GCCalc {
                     if (!sequence.empty()) {
                         double gcContent = GCContent(sequence);
                         std::cout << Header << ":\nGC Content = " << std::fixed << std::setprecision(2) << gcContent << "%\n";
+                        std::cout << "AT Content = " << std::fixed << std::setprecision(2) << 100 - gcContent << "%\n";
                         std::cout << "\n-----------------------------------\n";
                         sequence.clear();
                     }
@@ -201,8 +202,9 @@ class GCCalc {
                 }
             }
             if (!sequence.empty()) {
-                double gc = GCContent(sequence);
-                std::cout << Header << ":\nGC Content = " << std::fixed << std::setprecision(2) << gc << "%\n";
+                double gcContent = GCContent(sequence);
+                std::cout << Header << ":\nGC Content = " << std::fixed << std::setprecision(2) << gcContent << "%\n";
+                std::cout << "AT Content = " << std::fixed << std::setprecision(2) << 100 - gcContent<< "%\n";
             }
             std::cout << "-----------------------------------\n\n\n";
             std::cout << "Process completed.\n";
