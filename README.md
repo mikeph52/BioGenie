@@ -16,7 +16,7 @@ biogenie -gc example.fasta
 
 ## Documentation
 BioGenie uses functions to execute different tools for different applications.
-Read [Documentation](documentation.md) for more information (*References included*).
+Read [Documentation](Documentation/documentation.md) for more information (*References included*).
 - Get the complement DNA sequence ---> "-c".
 - Get the reverse complement DNA sequence ---> "-rc".
 - Get the codon number ---> "-nc".
@@ -30,7 +30,8 @@ Read [Documentation](documentation.md) for more information (*References include
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
-- Pairwise Sequence Alignment with Needleman-Wunsch ---> "-nw".
+- Pairwise Global Sequence Alignment with Needleman-Wunsch ---> "-nw".
+- Pairwise Local Sequence Alignment with Smith-Waterman ---> "-sw".
 - Calculate the Number of Base Pairs(bp) ---> "-bp".
 - Get the purine/pyrimidine ratio --> "-pp".
 - Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
@@ -47,8 +48,9 @@ Read [Documentation](documentation.md) for more information (*References include
 - Calculate Codon Usage Bias(CUB) ---> "-cub".
 - Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
 - Calculate Hydrogen Bonds of dsDNA ---> "-hb".
-- Nucleostats ---> '-nucleo'. Statistics and metrics for DNA. Ideal for Primer design.
-- Proteostats ---> '-prot'. Statistics and protein structural properties.
+- Nucleostats ---> "-nucleo". Statistics and metrics for DNA. Ideal for Primer design.
+- Proteostats ---> "-prot". Statistics and protein structural properties.
+- Assemblystats ---> "-asmbl". Statistics and metrics for genome assembly.
 
 
 More functions will be added in the future.
@@ -109,6 +111,8 @@ It requires Windows 10 or later.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- 0.31.0:
+Pipeline Assemblystats added. AT% added in GCCalc function. Smith-Waterman PSA added. Menu formatting fixed. Minor bugs fixed.
 - 0.30.2:
 Fix minor formatting issues.
 - 0.30.0:
