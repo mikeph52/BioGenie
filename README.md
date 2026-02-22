@@ -16,7 +16,7 @@ biogenie -gc example.fasta
 
 ## Documentation
 BioGenie uses functions to execute different tools for different applications.
-Read [Documentation](documentation.md) for more information (*References included*).
+Read [Documentation](Documentation/documentation.md) for more information (*References included*).
 - Get the complement DNA sequence ---> "-c".
 - Get the reverse complement DNA sequence ---> "-rc".
 - Get the codon number ---> "-nc".
