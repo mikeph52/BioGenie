@@ -4,7 +4,7 @@ BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and
 <img width="1002" height="770" alt="Image" src="https://github.com/user-attachments/assets/4dfb77db-721d-42e0-ade9-73115f12057e" />
 
 
-It currently supports fasta formats(.fasta, .fa).
+It currently supports fasta formats(.fasta, .faa, .fa).
 - To run the app, simply type:
 ```
 biogenie <function> <filename>
