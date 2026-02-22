@@ -47,8 +47,9 @@ Read [Documentation](documentation.md) for more information (*References include
 - Calculate Codon Usage Bias(CUB) ---> "-cub".
 - Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
 - Calculate Hydrogen Bonds of dsDNA ---> "-hb".
-- Nucleostats ---> '-nucleo'. Statistics and metrics for DNA. Ideal for Primer design.
-- Proteostats ---> '-prot'. Statistics and protein structural properties.
+- Nucleostats ---> "-nucleo". Statistics and metrics for DNA. Ideal for Primer design.
+- Proteostats ---> "-prot". Statistics and protein structural properties.
+- Assemblystats ---> "-asmbl". Statistics and metrics for genome assembly.
 
 
 More functions will be added in the future.
@@ -109,6 +110,8 @@ It requires Windows 10 or later.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
+- x.xx.x:
+Pipeline Assemblystats added. AT% added in GCCalc function. Minor bugs fixed.
 - 0.30.2:
 Fix minor formatting issues.
 - 0.30.0:

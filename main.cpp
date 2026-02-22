@@ -27,8 +27,8 @@ void helpme(){
     std::cout << "Get the complement DNA sequence ---> '-c'.\n";
     std::cout << "Get the reverse complement DNA sequence ---> '-rc'.\n";
     std::cout << "Get the codon number ---> '-nc'.\n";
-    std::cout << "Get the mRNA ---> '-t'.\n";
-    std::cout << "GC percentage calculation ---> '-gc'.\n";
+    std::cout << "Get the RNA sequence ---> '-t'.\n";
+    std::cout << "GC percentage calculation(and AT%) ---> '-gc'.\n";
     std::cout << "Generate the aminoacids(Protein chain) ---> '-p'.\n";
     std::cout << "Generate the aminoacids(Protein chain) with color ---> '-pc'.\n";
     std::cout << "Color the protein chain from a FASTA file ---> '-pca'.\n";
@@ -64,15 +64,17 @@ void helpme(){
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[Pipelines]:\n";
-        std::cerr << "[-nucleo Nucleostats 2][-prot Proteostats][-asmbl Assemblystats][-nw Needleman-Wunsch]\n\n";
+        std::cerr << "[-nucleo Nucleostats][-prot Proteostats][-asmbl Assemblystats][-nw Needleman-Wunsch]\n\n";
         std::cerr << "[Single commands]:\n";
-        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-nc codon number][-t mRNA]\n";
-        std::cerr << "[-gc GC percentage calculator][-p protein chain][-pc protein chain w color][-pca protein fasta w color]\n";
-        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-bp Base Pairs]\n";
-        std::cerr << "[-pp purine/pyrimidine ratio][-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)]\n";
-        std::cerr << "[-cc cDNA coloured][-orf ORF Finder][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
-        std::cerr << "[-cub Codon Usage Bias][-wcub Codon Usage Bias to CSV][-sc colour sequence][-mf Find MOTIFs]\n";
-        std::cerr << "[-mw prot kDa][-pi Isoelectric Point][-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats]\n";
+        std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-t RNA][-bp Base Pairs]\n";
+        std::cerr << "[-gc GC percentage calculator][-p protein chain][-pp purine/pyrimidine ratio][-nc codon number]\n";
+        std::cerr << "[-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)][-orf ORF Finder]\n";
+        std::cerr << "[-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats][-mw prot kDa]\n";
+        std::cerr << "[-cub Codon Usage Bias][-mf Find MOTIFs][-pi Isoelectric Point]\n\n";
+        std::cerr << "[Utilities]:\n";
+        std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
+        std::cerr << "[-wcub Codon Usage Bias to CSV][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
+        std::cerr << "[-pc protein chain w color][-pca protein fasta w color][-cc cDNA coloured]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
