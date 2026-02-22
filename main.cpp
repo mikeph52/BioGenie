@@ -55,7 +55,8 @@ void helpme(){
     std::cout << "Calculate the Hydrogen Bonds of dsDNA ---> '-hb'.\n";
     std::cout << "Pairwise Sequence Alignment with Needleman-Wunsch ---> '-nw'.\n";
     std::cout << "Nucleostats ---> '-nucleo'. Statistics and metrics for DNA. Ideal for Primer design.\n";
-    std::cout << "Proteostats ---> '-prot'. Statistics and protein structural properties.\n\n";
+    std::cout << "Proteostats ---> '-prot'. Statistics and protein structural properties.\n";
+    std::cout << "Assemblystats ---> '-asmbl'. Statistics and metrics for genome assembly.\n\n";
     std::cout << "For more info visit the github page: https://github.com/mikeph52/BioGenie/blob/main/documentation.md\n";
     std::cout << "More functions will be added in the future.\n\n";
     std::cout << "-----------------------------------------------------------\n";
@@ -63,7 +64,7 @@ void helpme(){
 void message(){
         std::cerr << "Usage: biogenie <function> <FASTA_file_path>\n\n";
         std::cerr << "[Pipelines]:\n";
-        std::cerr << "[-nucleo Nucleostats 2][-prot Proteostats][-nw Needleman-Wunsch]\n\n";
+        std::cerr << "[-nucleo Nucleostats 2][-prot Proteostats][-asmbl Assemblystats][-nw Needleman-Wunsch]\n\n";
         std::cerr << "[Single commands]:\n";
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-nc codon number][-t mRNA]\n";
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pc protein chain w color][-pca protein fasta w color]\n";
@@ -2902,6 +2903,132 @@ public:
         std::cout << "Process completed.\n";
     }    
 };
+class AssemblyStats{
+    private:
+        struct AssemblyResult {
+            size_t numContigs = 0;
+            size_t totalLength = 0;
+            double gcPercent = 0.0;
+            size_t n50 = 0;
+            size_t l50 = 0;
+            size_t longestContig = 0;
+            double meanLength = 0.0;
+        };
+        std::string cleanSequence(const std::string& seq) const {
+            std::string cleaned;
+            cleaned.reserve(seq.size());
+            for (char c : seq) {
+                if (!std::isspace(static_cast<unsigned char>(c)))
+                    cleaned += std::toupper(static_cast<unsigned char>(c));
+            }
+            return cleaned;
+        }
+        size_t countGC(const std::string& seq) const {
+            size_t gc = 0;
+            for (char c : seq)
+                if (c == 'G' || c == 'C') gc++;
+            return gc;
+        }
+        void computeN50(std::vector<size_t>& lengths, size_t& n50, size_t& l50) const {
+            std::sort(lengths.begin(), lengths.end(), std::greater<size_t>());
+            size_t total = 0;
+            for (size_t len : lengths)
+                total += len;
+            size_t cumulative = 0;
+            l50 = 0;
+            n50 = 0;
+            for (size_t len : lengths) {
+                cumulative += len;
+                l50++;
+                if (cumulative >= total / 2) {
+                    n50 = len;
+                    break;
+                }
+            }
+        }
+    public:
+        void FASTA_loader(const std::string& filename, size_t numThreads = 4) {
+            std::ifstream file(filename);
+            if (!file.is_open()) {
+                std::cerr << "Error: Cannot open file " << filename << std::endl;
+                return;
+            }
+            std::vector<std::string> sequences;
+            std::string line, sequence;
+            while (std::getline(file, line)) {
+                if (line.empty()) continue;
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        sequences.push_back(cleanSequence(sequence));
+                        sequence.clear();
+                    }
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty())
+                sequences.push_back(cleanSequence(sequence));
+            file.close();
+            if (sequences.empty()) {
+                std::cout << "No contigs found.\n";
+                return;
+            }
+            // multithreaded values
+            std::mutex mtx;
+            AssemblyResult result;
+            std::vector<size_t> lengths;
+            size_t totalGC = 0;
+            size_t index = 0;
+            numThreads = std::min(numThreads, sequences.size());
+
+            auto worker = [&]() {
+                while (true) {
+                    size_t i;
+                    {
+                        std::lock_guard<std::mutex> lock(mtx);
+                        if (index >= sequences.size())
+                            return;
+                        i = index++;
+                    }
+                    const std::string& seq = sequences[i];
+                    size_t len = seq.size();
+                    size_t gc = countGC(seq);
+                    {
+                        std::lock_guard<std::mutex> lock(mtx);
+                        lengths.push_back(len);
+                        result.totalLength += len;
+                        totalGC += gc;
+                        result.longestContig =
+                            std::max(result.longestContig, len);
+                    }
+                }
+            };
+            std::vector<std::thread> threads;
+            for (size_t t = 0; t < numThreads; ++t)
+                threads.emplace_back(worker);
+            for (auto& t : threads)
+                t.join();
+            result.numContigs = sequences.size();
+            result.meanLength =
+                static_cast<double>(result.totalLength) / result.numContigs;
+            result.gcPercent =
+                (result.totalLength > 0)
+                ? (100.0 * static_cast<double>(totalGC) / result.totalLength)
+                : 0.0;
+            computeN50(lengths, result.n50, result.l50);
+    
+            std::cout << "\n--------- Assemblystats ---------\n";
+            std::cout << "Number of Contigs: " << result.numContigs << "\n";
+            std::cout << "Total Length: " << result.totalLength << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.totalLength)/1000000 << " Mb)\n";
+            std::cout << "GC%: " << std::fixed << std::setprecision(2) << result.gcPercent << "%" << " (AT%: " << std::setprecision(2) << 100 - result.gcPercent << "%)\n";
+            std::cout << "N50: " << result.n50 << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.n50)/1000000 << " Mb)\n";
+            std::cout << "L50: " << result.l50 << "\n";
+            std::cout << "Longest Contig: " << result.longestContig << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.longestContig)/1000000 << " Mb)\n";
+            std::cout << "Mean Contig Length: " << std::fixed << std::setprecision(2) << result.meanLength << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.meanLength)/1000000 << " Mb)\n";
+            std::cout << "--------------------------------------------\n\n";
+            std::cout << "Process completed.\n\n";
+        }
+};
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -3092,6 +3219,18 @@ int main(int argc, char* argv[]){
         {"-pca", [&](){
             ColorForAminoAcids caa;
             caa.FASTA_loader(filename);
+        }},
+        {"-asmbl", [&](){
+            int num_threads;
+            AssemblyStats assstats;
+            std::cout << "Select number of threads(default is 2): ";
+            std::cin >> num_threads;
+            if(num_threads < 2){
+                std::cout << "\nWarning!This is a multithreaded function. Cannot be used with less than 2 threads.\n";
+                std::cout << "Using 2 threads. . .\n\n\n";
+                num_threads = 2;
+            }
+            assstats.FASTA_loader(filename, num_threads);
         }},
     };
     // Dispatch
