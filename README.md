@@ -58,6 +58,9 @@ More functions will be added in the future.
 > [!NOTE]
 > _If you have any suggestions for new features or a bug encountered, create an Issue or send me a message at: mikeph526@outlook.com. I'm happy to help._
 
+## Testing
+Various tests have been performed to ensure scientific accuracy and the optimal computing performance. Everything involving unit testing can be found in this [repository](https://github.com/mikeph52/biogenie-test).
+
 ## Installation
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
