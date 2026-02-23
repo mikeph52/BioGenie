@@ -82,6 +82,7 @@ g++ main.cpp -o biogenie
 sudo mv biogenie /usr/local/bin/
 ```
 ### macOS
+It supports Intel and Apple silicon processors.
 - Download BioGenie from Releases, or with curl:
 ```
 curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.31.0/biogenie_macos_0.31.0
