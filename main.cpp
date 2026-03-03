@@ -3224,7 +3224,6 @@ class AssemblyStats{
         for (auto& t : threads)
             t.join();
 
-        // ---- Compute final statistics ----
         result.numContigs = sequences.size();
         result.meanLength =
             static_cast<double>(result.totalLength) / result.numContigs;
@@ -3235,28 +3234,15 @@ class AssemblyStats{
                 : 0.0;
 
         computeN50(lengths, result.n50, result.l50);
-
-        // ---- Print ----
+        //Results
         std::cout << "\n--------- Assembly Stats ---------\n";
         std::cout << "Number of Contigs: " << result.numContigs << "\n";
-        std::cout << "Total Length: " << result.totalLength << " bp ("
-                << std::fixed << std::setprecision(2)
-                << static_cast<double>(result.totalLength) / 1e6 << " Mb)\n";
-
-        std::cout << "GC%: " << result.gcPercent << "% (AT%: "
-                << 100.0 - result.gcPercent << "%)\n";
-
-        std::cout << "N50: " << result.n50 << " bp ("
-                << static_cast<double>(result.n50) / 1e6 << " Mb)\n";
-
+        std::cout << "Total Length: " << result.totalLength << " bp (" << std::fixed << std::setprecision(2) << static_cast<double>(result.totalLength) / 1e6 << " Mb)\n";
+        std::cout << "GC%: " << result.gcPercent << "% (AT%: " << 100.0 - result.gcPercent << "%)\n";
+        std::cout << "N50: " << result.n50 << " bp (" << static_cast<double>(result.n50) / 1e6 << " Mb)\n";
         std::cout << "L50: " << result.l50 << "\n";
-
-        std::cout << "Longest Contig: " << result.longestContig << " bp ("
-                << static_cast<double>(result.longestContig) / 1e6 << " Mb)\n";
-
-        std::cout << "Mean Contig Length: " << result.meanLength << " bp ("
-                << result.meanLength / 1e6 << " Mb)\n";
-
+        std::cout << "Longest Contig: " << result.longestContig << " bp (" << static_cast<double>(result.longestContig) / 1e6 << " Mb)\n";
+        std::cout << "Mean Contig Length: " << result.meanLength << " bp (" << result.meanLength / 1e6 << " Mb)\n";
         std::cout << "----------------------------------\n";
         std::cout << "Process completed.\n\n";        
     }
