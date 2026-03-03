@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 0.31.0 22/2/2026
+// Current version 1.0.0 3/3/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -19,10 +19,10 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 0.31.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.0.0 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme() {
-    std::cout << "NAME\n";
+    std::cout << "\n\nNAME\n";
     std::cout << "       biogenie - A complete bioinformatics command line tool, written in C++. \n\n";
     std::cout << "USAGE\n";
     std::cout << "       biogenie [function] [FASTA_file_path]\n\n";
@@ -31,8 +31,8 @@ void helpme() {
     std::cout << "       Read Documentation for more information (References included).\n\n";
     std::cout << "PIPELINES\n";
     std::cout << "       -nucleo  Nucleostats: DNA statistics (primer design)\n";
-    std::cout << "       -prot    Proteostats: protein statistics and structural properties\n";
-    std::cout << "       -asmbl   Assemblystats: genome assembly statistics\n\n";
+    std::cout << "       -prot    Proteostats: Protein statistics and structural properties\n";
+    std::cout << "       -asmbl   Assemblystats: Genome assembly statistics\n\n";
     std::cout << "DNA SEQUENCE UTILITIES\n";
     std::cout << "       -c       Get the complement DNA sequence\n";
     std::cout << "       -rc      Get the reverse complement DNA sequence\n";
@@ -3439,16 +3439,16 @@ int main(int argc, char* argv[]){
             caa.FASTA_loader(filename);
         }},
         {"-asmbl", [&](){
-            int num_threads;
+            int numThreads;
             AssemblyStats assstats;
             std::cout << "Select number of threads(default is 2): ";
-            std::cin >> num_threads;
-            if(num_threads < 2){
+            std::cin >> numThreads;
+            if(numThreads < 2){
                 std::cout << "\nWarning!This is a multithreaded function. Cannot be used with less than 2 threads.\n";
                 std::cout << "Using 2 threads. . .\n\n\n";
-                num_threads = 2;
+                numThreads = 2;
             }
-            assstats.FASTA_loader(filename, num_threads);
+            assstats.FASTA_loader(filename, numThreads);
         }},
         {"-sw", [&](){
             SmithWaterman swaterman;

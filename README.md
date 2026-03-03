@@ -1,6 +1,9 @@
 # BioGenie
 BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and MS Windows, written in C++.
 
+> [!IMPORTANT]
+> _BioGenie 1.0.0 is finally out!!!_
+
 <img width="1002" height="770" alt="Image" src="https://github.com/user-attachments/assets/4dfb77db-721d-42e0-ade9-73115f12057e" />
 
 
@@ -17,6 +20,19 @@ biogenie -gc example.fasta
 ## Documentation
 BioGenie uses functions to execute different tools for different applications.
 Read [Documentation](Documentation/documentation.md) for more information (*References included*).
+
+### Pipelines:
+- Nucleostats ---> "-nucleo". Statistics and metrics for DNA. Ideal for Primer design.
+- Proteostats ---> "-prot". Statistics and protein structural properties.
+- Assemblystats ---> "-asmbl". Statistics and metrics for genome assembly.
+- Pairwise Global Sequence Alignment with Needleman-Wunsch ---> "-nw".
+- Pairwise Local Sequence Alignment with Smith-Waterman ---> "-sw".
+
+> [!TIP]
+> _Assemblystats is in experimental phase. Always check your data first before evaluating your results._
+
+
+### Single commands:
 - Get the complement DNA sequence ---> "-c".
 - Get the reverse complement DNA sequence ---> "-rc".
 - Get the codon number ---> "-nc".
@@ -30,8 +46,6 @@ Read [Documentation](Documentation/documentation.md) for more information (*Refe
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
 - Trim DNA sequence ---> "-tr".
-- Pairwise Global Sequence Alignment with Needleman-Wunsch ---> "-nw".
-- Pairwise Local Sequence Alignment with Smith-Waterman ---> "-sw".
 - Calculate the Number of Base Pairs(bp) ---> "-bp".
 - Get the purine/pyrimidine ratio --> "-pp".
 - Calculate melting temperature (Tm) of DNA sequences using the Wallace Rule(only valid for oligos <20bp) ---> "-mt1".
@@ -48,10 +62,6 @@ Read [Documentation](Documentation/documentation.md) for more information (*Refe
 - Calculate Codon Usage Bias(CUB) ---> "-cub".
 - Export Codon Usage Bias(CUB) to CSV file ---> "-wcub".
 - Calculate Hydrogen Bonds of dsDNA ---> "-hb".
-- Nucleostats ---> "-nucleo". Statistics and metrics for DNA. Ideal for Primer design.
-- Proteostats ---> "-prot". Statistics and protein structural properties.
-- Assemblystats ---> "-asmbl". Statistics and metrics for genome assembly.
-
 
 More functions will be added in the future.
 
@@ -65,15 +75,15 @@ Various tests have been performed to ensure scientific accuracy and the optimal 
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.0.31.0/biogenie_linux_0.31.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.1.0.0/biogenie_linux_1.0.0
 ```
-- Run "chmod +x" first(Replace 0.x.x with the correct version).
+- Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_linux_0.x.x
+sudo chmod +x biogenie_linux_1.0.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_linux_0.x.x /usr/local/bin/biogenie
+sudo mv biogenie_linux_1.0.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source:
 ```
@@ -85,15 +95,15 @@ sudo mv biogenie /usr/local/bin/
 It supports Intel and Apple silicon processors.
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.0.31.0/biogenie_macos_0.31.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.0.0/biogenie_macos_1.0.0
 ```
-- Run "chmod +x" first(Replace 0.x.x with the correct version).
+- Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_macos_0.x.x
+sudo chmod +x biogenie_macos_1.0.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_macos_0.x.x /usr/local/bin/biogenie
+sudo mv biogenie_macos_1.0.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source(probably not):
 ```
@@ -115,13 +125,21 @@ It requires Windows 10 or later.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
-- 0.31.0:
+### 1.0.0 (March 3rd, 2026)
+- Issue (https://github.com/mikeph52/BioGenie/issues/42) fixed.
+- Documentation enhanced. 
+- Minor bugs and formatting issues fixed.
+
+
+
+### Pre-release changelog
+- 0.31.0 (February 22nd, 2026):
 Pipeline Assemblystats added. AT% added in GCCalc function. Smith-Waterman PSA added. Menu formatting fixed. Minor bugs fixed.
-- 0.30.2:
+- 0.30.2 (February 21st, 2026):
 Fix minor formatting issues.
-- 0.30.0:
+- 0.30.0 (February 19th, 2026):
 Add custom threads selection. Refactor pip2. Rename pip2 to Nucleostats. Rename pip3 to Proteostats. Remove pip1. Minor bugs fixed.
-- 0.29.0:
+- 0.29.0 (February 18th, 2026):
 Add the number of headers in a FASTA file in "-sh" function. Issue (https://github.com/mikeph52/BioGenie/issues/37) fixed. Minor bugs fixed.
 - 0.28.0:
 Pairwise Sequence Alignment with Needleman-Wunsch added. Issue (https://github.com/mikeph52/BioGenie/issues/34) fixed. Minor bugs fixed.
