@@ -3157,46 +3157,53 @@ class AssemblyStats{
                 std::cerr << "Error: Cannot open file " << filename << std::endl;
                 return;
             }
+
             std::vector<std::string> sequences;
             std::string line, sequence;
+
             while (std::getline(file, line)) {
                 if (line.empty()) continue;
+
                 if (line[0] == '>') {
                     if (!sequence.empty()) {
-                        sequences.push_back(cleanSequence(sequence));
+                        sequences.emplace_back(cleanSequence(sequence));
                         sequence.clear();
                     }
                 } else {
                     sequence += line;
                 }
             }
+
             if (!sequence.empty())
-                sequences.push_back(cleanSequence(sequence));
+                sequences.emplace_back(cleanSequence(sequence));
+
             file.close();
+
             if (sequences.empty()) {
                 std::cout << "No contigs found.\n";
                 return;
             }
-            // multithreaded values
+
             std::mutex mtx;
             AssemblyResult result;
             std::vector<size_t> lengths;
             size_t totalGC = 0;
             size_t index = 0;
-            numThreads = std::min(numThreads, sequences.size());
 
             auto worker = [&]() {
                 while (true) {
                     size_t i;
+
                     {
                         std::lock_guard<std::mutex> lock(mtx);
-                        if (index >= sequences.size())
-                            return;
+                        if (index >= sequences.size()) return;
                         i = index++;
                     }
+
                     const std::string& seq = sequences[i];
                     size_t len = seq.size();
                     size_t gc = countGC(seq);
+
                     {
                         std::lock_guard<std::mutex> lock(mtx);
                         lengths.push_back(len);
@@ -3206,32 +3213,39 @@ class AssemblyStats{
                             std::max(result.longestContig, len);
                     }
                 }
-            };
-            std::vector<std::thread> threads;
-            for (size_t t = 0; t < numThreads; ++t)
-                threads.emplace_back(worker);
-            for (auto& t : threads)
-                t.join();
-            result.numContigs = sequences.size();
-            result.meanLength =
-                static_cast<double>(result.totalLength) / result.numContigs;
-            result.gcPercent =
-                (result.totalLength > 0)
+    };
+
+        numThreads = std::min(numThreads, sequences.size());
+
+        std::vector<std::thread> threads;
+        for (size_t t = 0; t < numThreads; ++t)
+            threads.emplace_back(worker);
+
+        for (auto& t : threads)
+            t.join();
+
+        result.numContigs = sequences.size();
+        result.meanLength =
+            static_cast<double>(result.totalLength) / result.numContigs;
+
+        result.gcPercent =
+            (result.totalLength > 0)
                 ? (100.0 * static_cast<double>(totalGC) / result.totalLength)
                 : 0.0;
-            computeN50(lengths, result.n50, result.l50);
-    
-            std::cout << "\n--------- Assemblystats ---------\n";
-            std::cout << "Number of Contigs: " << result.numContigs << "\n";
-            std::cout << "Total Length: " << result.totalLength << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.totalLength)/1000000 << " Mb)\n";
-            std::cout << "GC%: " << std::fixed << std::setprecision(2) << result.gcPercent << "%" << " (AT%: " << std::setprecision(2) << 100 - result.gcPercent << "%)\n";
-            std::cout << "N50: " << result.n50 << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.n50)/1000000 << " Mb)\n";
-            std::cout << "L50: " << result.l50 << "\n";
-            std::cout << "Longest Contig: " << result.longestContig << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.longestContig)/1000000 << " Mb)\n";
-            std::cout << "Mean Contig Length: " << std::fixed << std::setprecision(2) << result.meanLength << " bp" << " (" << std::fixed << std::setprecision(2) << static_cast<double>(result.meanLength)/1000000 << " Mb)\n";
-            std::cout << "--------------------------------------------\n\n";
-            std::cout << "Process completed.\n\n";
-        }
+
+        computeN50(lengths, result.n50, result.l50);
+        //Results
+        std::cout << "\n--------- Assembly Stats ---------\n";
+        std::cout << "Number of Contigs: " << result.numContigs << "\n";
+        std::cout << "Total Length: " << result.totalLength << " bp (" << std::fixed << std::setprecision(2) << static_cast<double>(result.totalLength) / 1e6 << " Mb)\n";
+        std::cout << "GC%: " << result.gcPercent << "% (AT%: " << 100.0 - result.gcPercent << "%)\n";
+        std::cout << "N50: " << result.n50 << " bp (" << static_cast<double>(result.n50) / 1e6 << " Mb)\n";
+        std::cout << "L50: " << result.l50 << "\n";
+        std::cout << "Longest Contig: " << result.longestContig << " bp (" << static_cast<double>(result.longestContig) / 1e6 << " Mb)\n";
+        std::cout << "Mean Contig Length: " << result.meanLength << " bp (" << result.meanLength / 1e6 << " Mb)\n";
+        std::cout << "----------------------------------\n";
+        std::cout << "Process completed.\n\n";        
+    }
 };
 // Main Function 
 int main(int argc, char* argv[]){
