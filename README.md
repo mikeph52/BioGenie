@@ -130,7 +130,7 @@ It requires Windows 10 or later.
 - Documentation enhanced. 
 - Minor bugs and formatting issues fixed.
 
-
+A new changelog page, coming soon!
 
 ### Pre-release changelog
 - 0.31.0 (February 22nd, 2026):
