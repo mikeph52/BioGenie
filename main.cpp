@@ -19,7 +19,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 1.0.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.1.0 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme() {
     std::cout << "\n\nNAME\n";
@@ -3414,7 +3414,7 @@ int main(int argc, char* argv[]){
     title();
     std::string filename = argv[2];
     std::string function = argv[1]; 
-    // File verifier
+    // File verifier   
     FileVerifier(filename);
     // Start timer
     auto start_timer = std::chrono::high_resolution_clock::now();
