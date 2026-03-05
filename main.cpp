@@ -73,7 +73,8 @@ void helpme() {
     std::cout << "GENOME ANALYSIS\n";
     std::cout << "       -nucleo  Nucleostats: DNA statistics (primer design)\n";
     std::cout << "       -asmbl   Assemblystats: genome assembly statistics\n";
-    std::cout << "       -orf     Identify Open Reading Frames (ORFs)\n\n";
+    std::cout << "       -orf     Identify Open Reading Frames (ORFs)\n";
+    std::cout << "       -cx      Genome Coverage(x)(Depth)\n\n";
     std::cout << "AUTHOR\n";
     std::cout << "       BioGenie, developed and maintained by Mike Philippakis, Github:mikeph52,\n";
     std::cout << "       under GNU GENERAL PUBLIC LICENSE Version 3, 2025-2026.\n\n";
@@ -93,7 +94,7 @@ void message(){
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pp purine/pyrimidine ratio][-nc codon number]\n";
         std::cerr << "[-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)][-orf ORF Finder]\n";
         std::cerr << "[-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats][-mw prot kDa]\n";
-        std::cerr << "[-cub Codon Usage Bias][-mf Find MOTIFs][-pi Isoelectric Point]\n\n";
+        std::cerr << "[-cub Codon Usage Bias][-mf Find MOTIFs][-pi Isoelectric Point][-cx Coverage(x)]\n\n";
         std::cerr << "[Utilities]:\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
         std::cerr << "[-wcub Codon Usage Bias to CSV][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
@@ -129,7 +130,7 @@ const std::unordered_map<std::string, char>codonTable = {
 #define GREEN   "\033[32m"
 #define WHITE   "\033[37m"
 #define BRED    "\033[41m"
-// Arg Classes
+//File Verifiers
 class FastaVerifier {
     public:
         explicit FastaVerifier(const std::string& filePath) : filename(filePath) {}
@@ -181,6 +182,110 @@ class FastaVerifier {
             std::cerr << "Error at line " << lineNumber << ": " << message << std::endl;
         }
 };
+class FastqVerifier {
+    public:
+        struct Result {
+            bool valid = true;
+            size_t records = 0;
+            size_t line_number = 0;
+            std::string error_message;
+        };
+        Result verify(const std::string& filename) {
+            std::ifstream file(filename);
+            Result result;
+            if (!file) {
+                result.valid = false;
+                result.error_message = "Cannot open file.";
+                return result;
+            }
+            std::string line1, line2, line3, line4;
+            while (true) {
+                if (!std::getline(file, line1)) break;
+                if (!std::getline(file, line2) ||
+                    !std::getline(file, line3) ||
+                    !std::getline(file, line4)) {
+                    result.valid = false;
+                    result.error_message = "Incomplete FASTQ record.";
+                    return result;
+                }
+                result.line_number += 4;
+                if (line1.empty() || line1[0] != '@') {
+                    result.valid = false;
+                    result.error_message = "Header line does not start with '@'";
+                    return result;
+                }
+                if (line3.empty() || line3[0] != '+') {
+                    result.valid = false;
+                    result.error_message = "Separator line does not start with '+'";
+                    return result;
+                }
+                if (line2.length() != line4.length()) {
+                    result.valid = false;
+                    result.error_message = "Sequence and quality lengths differ.";
+                    return result;
+                }
+                if (!valid_sequence(line2)) {
+                    result.valid = false;
+                    result.error_message = "Invalid character in sequence.";
+                    return result;
+                }
+                result.records++;
+            }
+            return result;
+        }
+    private:
+        bool valid_sequence(const std::string& seq) {
+            for (char c : seq) {
+                switch (c) {
+                    case 'A': case 'C': case 'G': case 'T': case 'N':
+                    case 'a': case 'c': case 'g': case 't': case 'n':
+                        break;
+                    default:
+                        return false;
+                }
+            }
+            return true;
+        }
+};
+void FileVerifier(const std::string& filename) {
+    std::string line;
+    int lineNumber = 0;
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Cannot open file\n";
+        return;
+    }
+    while (std::getline(file, line)) {
+        ++lineNumber;
+        if (line.empty()) continue;
+        if (line[0] == '>') {
+            // FASTA verifier
+            FastaVerifier fastaverifier(filename);
+            if (fastaverifier.verify()) {
+                std::cout << "FASTA file status  [OK]\n";
+            } else {
+                std::cerr << "FASTA file status  [FAULT]\n";
+            }
+            return;
+        } 
+        else if (line[0] == '@') {
+            // FASTQ verifier
+            FastqVerifier verifier;
+            auto result = verifier.verify(filename);
+            if (result.valid) {
+                std::cout << "FASTQ file status  [OK]\n";
+                std::cout << "Records: " << result.records << "\n";
+            } else {
+                std::cout << "FASTQ file status  [FAULT]\n"
+                          << result.error_message
+                          << " at line " << result.line_number << "\n";
+            }
+            return;
+        }
+    }
+    std::cerr << "Unknown file format\n";
+}
+// Functions
 class GCCalc {
   private:
         double GCContent(const std::string& sequence) {
@@ -2647,6 +2752,56 @@ class SmithWaterman {
             std::cout << "Process completed.\n";
         }
 };
+class AssemblyCoverage{
+private:
+    int CountBases(const std::string& sequence) const {
+        int count = 0;
+        for (char base : sequence) {
+            char upper = std::toupper(static_cast<unsigned char>(base));
+            if (upper == 'A' || upper == 'T' || upper == 'C' || upper == 'G' || upper == 'N') {
+                count++;
+            }
+        }
+        return count;
+    }
+
+public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << "\n";
+            return;
+        }
+        size_t GenomeSize;
+        std::cout << "Enter the genome size: \n";
+        std::cin >> GenomeSize;
+        std::string line, header, sequence;
+        std::cout << "\n----- Coverage(x) -----\n";
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+            if (line[0] == '>') {
+                if (!sequence.empty()) {
+                    int bpCount = CountBases(sequence);
+                    size_t coveragex = bpCount / GenomeSize;
+                    std::cout << ">" << header << "\nCoverage: " << coveragex << "x\n";
+                    std::cout << "-----------------------------------\n";
+                    sequence.clear();
+                }
+                header = line.substr(1);
+            } else {
+                sequence += line;
+            }
+        }
+        if (!sequence.empty()) {
+            int bpCount = CountBases(sequence);
+            size_t coveragex = bpCount / GenomeSize;
+            std::cout << ">" << header << "\nCoverage: " << coveragex << "x\n";
+            std::cout << "-----------------------------------\n";
+        }
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
 // Custom Pipelines bellow:
 class Nucleostats {
      /*The old Pipeline 2. This is a pipeline that contains the following classes and functions:
@@ -3117,6 +3272,7 @@ class AssemblyStats{
             size_t l50 = 0;
             size_t longestContig = 0;
             double meanLength = 0.0;
+            int Coverage = 0.0;
         };
         std::string cleanSequence(const std::string& seq) const {
             std::string cleaned;
@@ -3173,23 +3329,18 @@ class AssemblyStats{
                     sequence += line;
                 }
             }
-
             if (!sequence.empty())
                 sequences.emplace_back(cleanSequence(sequence));
-
             file.close();
-
             if (sequences.empty()) {
                 std::cout << "No contigs found.\n";
                 return;
             }
-
             std::mutex mtx;
             AssemblyResult result;
             std::vector<size_t> lengths;
             size_t totalGC = 0;
             size_t index = 0;
-
             auto worker = [&]() {
                 while (true) {
                     size_t i;
@@ -3234,6 +3385,11 @@ class AssemblyStats{
                 : 0.0;
 
         computeN50(lengths, result.n50, result.l50);
+        size_t GenomeSize;
+        std::cout << "Enter the genome size: \n";
+        std::cin >> GenomeSize;
+        size_t Coverage = result.totalLength / GenomeSize;
+
         //Results
         std::cout << "\n--------- Assembly Stats ---------\n";
         std::cout << "Number of Contigs: " << result.numContigs << "\n";
@@ -3241,6 +3397,7 @@ class AssemblyStats{
         std::cout << "GC%: " << result.gcPercent << "% (AT%: " << 100.0 - result.gcPercent << "%)\n";
         std::cout << "N50: " << result.n50 << " bp (" << static_cast<double>(result.n50) / 1e6 << " Mb)\n";
         std::cout << "L50: " << result.l50 << "\n";
+        std::cout << "Coverage(x): " << Coverage << "x\n";                        ;
         std::cout << "Longest Contig: " << result.longestContig << " bp (" << static_cast<double>(result.longestContig) / 1e6 << " Mb)\n";
         std::cout << "Mean Contig Length: " << result.meanLength << " bp (" << result.meanLength / 1e6 << " Mb)\n";
         std::cout << "----------------------------------\n";
@@ -3257,19 +3414,12 @@ int main(int argc, char* argv[]){
     title();
     std::string filename = argv[2];
     std::string function = argv[1]; 
-    //FASTA verifier
-    FastaVerifier verifier(filename);
-    if (verifier.verify()) {
-        std::cout << "FASTA file status  [OK]\n";
-    } else {
-        std::cerr << "FASTA file status  [FAULT]\n";
-    }
+    // File verifier
+    FileVerifier(filename);
     // Start timer
     auto start_timer = std::chrono::high_resolution_clock::now();
-
     // Main dispatch map
     std::unordered_map<std::string, std::function<void()>> dispatch {
-
         {"-gc", [&]() {
             GCCalc GCcalculator;
             GCcalculator.FASTA_loader(filename);
@@ -3453,6 +3603,10 @@ int main(int argc, char* argv[]){
         {"-sw", [&](){
             SmithWaterman swaterman;
             swaterman.FASTA_loader(filename);
+        }},
+        {"-cx", [&](){
+            AssemblyCoverage coverage;
+            coverage.FASTA_loader(filename);
         }},
     };
     // Dispatch
