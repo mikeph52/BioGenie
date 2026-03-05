@@ -4,6 +4,7 @@
 - Genome Coverage(x) added.
 - Genome Coverage(x) added in "-asmbl" pipeline.
 - FASTQ support added.
+- FASTQ to FASTA function added.
 - Major file-handling improvements made.
 
 ### 1.0.0 (March 3rd, 2026)

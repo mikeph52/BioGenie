@@ -59,6 +59,8 @@ void helpme() {
     std::cout << "       -cw      Generate cDNA FASTA\n";
     std::cout << "       -rcw     Generate reverse cDNA FASTA\n";
     std::cout << "       -tw      Generate mRNA FASTA\n\n";
+    std::cout << "FASTQ UTILITIES\n";
+    std::cout << "       -ftf      Convert FASTQ to FASTA\n\n";
     std::cout << "CODON & MOTIF ANALYSIS\n";
     std::cout << "       -cub     Calculate Codon Usage Bias (CUB)\n";
     std::cout << "       -wcub    Export Codon Usage Bias (CUB) to CSV\n";
@@ -98,7 +100,7 @@ void message(){
         std::cerr << "[Utilities]:\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
         std::cerr << "[-wcub Codon Usage Bias to CSV][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
-        std::cerr << "[-pc protein chain w color][-pca protein fasta w color][-cc cDNA coloured]\n";
+        std::cerr << "[-pc protein chain w color][-pca protein fasta w color][-cc cDNA coloured][-ftf FASTQ to FASTA]\n";
         std::cerr << "[Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
@@ -3404,6 +3406,31 @@ class AssemblyStats{
         std::cout << "Process completed.\n\n";        
     }
 };
+void fastqToFasta(const std::string& filename, const std::string& outputFile) {
+    std::ifstream in(filename);
+    std::ofstream out(outputFile);
+    if (!in.is_open()) {
+        std::cerr << "Error opening FASTQ file\n";
+        return;
+    }
+    if (!out.is_open()) {
+        std::cerr << "Error creating FASTA file\n";
+        return;
+    }
+    std::string header, sequence, plus, quality;
+    while (std::getline(in, header)) {
+        std::getline(in, sequence);
+        std::getline(in, plus);
+        std::getline(in, quality);
+        if (header.empty() || header[0] != '@') {
+            std::cerr << "Invalid FASTQ format\n";
+            return;
+        }
+        out << ">" << header.substr(1) << "\n";
+        out << sequence << "\n";
+    }
+    std::cout << "Process completed.\n";
+}
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -3607,6 +3634,12 @@ int main(int argc, char* argv[]){
         {"-cx", [&](){
             AssemblyCoverage coverage;
             coverage.FASTA_loader(filename);
+        }},
+        {"-ftf", [&](){
+            std::string outputFile;
+            std::cout << "Enter output filename(specify the file type): ";
+            std::cin >> outputFile;
+            fastqToFasta(filename, outputFile );
         }},
     };
     // Dispatch

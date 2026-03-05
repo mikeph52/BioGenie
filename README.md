@@ -69,6 +69,21 @@ More functions will be added in the future.
 > [!NOTE]
 > _If you have any suggestions for new features or a bug encountered, create an Issue or send me a message at: mikeph526@outlook.com. I'm happy to help._
 
+## Examples
+In order to test BioGenie functions, example files are provided in the [sample fasta](sample_fasta) folder. In the table bellow, are all the necessary information about the said files.
+
+|Name|Description|NCBI Acc. Number|
+|----|-----------|----------------|
+|pst_dc3k.fa|Genome of P.syringae DC3000|ASM780v1|
+|hopB1.fasta|Sequence of hopB1 gene|NC_004578.1|
+|pgp_prot.faa|Protein sequence of Human PGP|NP_001035830.1|
+|primer.fasta|A selection of well-known primers| _Various_|
+|hemoglobin_pdec.fasta|P.decipiens gene for hemoglobin|Z11681.1 |
+|test.fastq| A fictional sequence to test FASTQ support| _Fictional_|
+|pwa.fasta| A test file for PGSA testing|_Fictional_|
+|pwa2.fasta| A test file for PLSA testing|_Fictional_|
+
+
 ## Testing
 Various tests have been performed to ensure scientific accuracy and the optimal computing performance. Everything involving unit testing can be found in this [repository](https://github.com/mikeph52/biogenie-test).
 
@@ -130,6 +145,7 @@ It requires Windows 10 or later.
 - Genome Coverage(x) added.
 - Genome Coverage(x) added in "-asmbl" pipeline.
 - FASTQ support added.
+- FASTQ to FASTA function added.
 - Major file-handling improvements made.
 
 ### 1.0.0 (March 3rd, 2026)
