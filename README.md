@@ -69,7 +69,10 @@ More functions will be added in the future.
 > [!NOTE]
 > _If you have any suggestions for new features or a bug encountered, create an Issue or send me a message at: mikeph526@outlook.com. I'm happy to help._
 
-## Examples
+## Testing
+Various tests have been performed to ensure scientific accuracy and the optimal computing performance. Everything involving unit testing can be found in this [repository](https://github.com/mikeph52/biogenie-test).
+
+### Examples
 In order to test BioGenie functions, example files are provided in the [sample fasta](sample_fasta) folder. In the table bellow, are all the necessary information about the said files.
 
 |Name|Description|NCBI Acc. Number|
@@ -82,10 +85,6 @@ In order to test BioGenie functions, example files are provided in the [sample f
 |test.fastq| A fictional sequence to test FASTQ support| _Fictional_|
 |pwa.fasta| A test file for PGSA testing|_Fictional_|
 |pwa2.fasta| A test file for PLSA testing|_Fictional_|
-
-
-## Testing
-Various tests have been performed to ensure scientific accuracy and the optimal computing performance. Everything involving unit testing can be found in this [repository](https://github.com/mikeph52/biogenie-test).
 
 ## Installation
 ### GNU Linux
@@ -141,7 +140,7 @@ It requires Windows 10 or later.
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
 
 ## Changelog:
-### 1.1.0 (March Xth, 2026)
+### 1.1.0 (March 6th, 2026)
 - Genome Coverage(x) added.
 - Genome Coverage(x) added in "-asmbl" pipeline.
 - FASTQ support added.
