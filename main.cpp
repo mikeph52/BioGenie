@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 1.0.0 3/3/2026
+// Current version 1.1.0 6/3/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -42,7 +42,7 @@ void helpme() {
     std::cout << "       -pp      Get the purine/pyrimidine ratio\n";
     std::cout << "       -amb     Ambiguous base statistics\n";
     std::cout << "       -bp      Calculate the number of base pairs (bp)\n";
-    std::cout << "       tr       Trim DNA (0-based indexing)\n";
+    std::cout << "       -tr       Trim DNA (0-based indexing)\n";
     std::cout << "       -sc      Get DNA sequence with colour\n";
     std::cout << "       -cc      Get complement DNA sequence with colour\n\n";
     std::cout << "PROTEIN UTILITIES\n";

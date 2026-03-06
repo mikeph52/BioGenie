@@ -147,6 +147,7 @@ It requires Windows 10 or later.
 - FASTQ support added.
 - FASTQ to FASTA function added.
 - Major file-handling improvements made.
+- Documentation enhanced.
 
 ### 1.0.0 (March 3rd, 2026)
 - Issue (https://github.com/mikeph52/BioGenie/issues/42) fixed.
