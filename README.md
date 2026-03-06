@@ -90,15 +90,15 @@ In order to test BioGenie functions, example files are provided in the [sample f
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.1.0.0/biogenie_linux_1.0.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.1.0.0/biogenie_linux_1.1.0
 ```
 - Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_linux_1.0.0
+sudo chmod +x biogenie_linux_1.1.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_linux_1.0.0 /usr/local/bin/biogenie
+sudo mv biogenie_linux_1.1.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source:
 ```
@@ -110,15 +110,15 @@ sudo mv biogenie /usr/local/bin/
 It supports Intel and Apple silicon processors.
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.0.0/biogenie_macos_1.0.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.1.0/biogenie_macos_1.1.0
 ```
 - Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_macos_1.0.0
+sudo chmod +x biogenie_macos_1.1.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_macos_1.0.0 /usr/local/bin/biogenie
+sudo mv biogenie_macos_1.1.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source(probably not):
 ```
