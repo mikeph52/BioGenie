@@ -90,7 +90,7 @@ In order to test BioGenie functions, example files are provided in the [sample f
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.1.0.0/biogenie_linux_1.1.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.1.1.0/biogenie_linux_1.1.0
 ```
 - Run "chmod +x" first.
 ```
@@ -131,9 +131,17 @@ sudo mv biogenie /usr/local/bin/
 > _Windows is back(sort of). From version v.0.28.0, windows is supported. Still, this version is not going to be prioritized._
 
 It requires Windows 10 or later.
-- Download BioGenie from Releases.
-- Add the executable to PATH(https://stackoverflow.com/questions/44272416/add-a-folder-to-the-path-environment-variable-in-windows-10-with-screenshots)
-- Run from powershell.
+- Download BioGenie from Releases or run:
+```batch
+wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.1.0/biogenie_windows_1.1.0.exe
+```
+- Open **Start** and search for `Environment Variables`. 
+- Click `Edit the system environment variables`. 
+- In the System Properties window, click `Environment Variables`. 
+- Under `User variables` (for current user) or `System variables` (for all users), select `Path` and click `Edit`. 
+- Click `New` and paste the folder path where your _biogenie_ `.exe` lives (for example `C:\Bioinfo\CLI`). 
+- Click `OK` on all open dialogs to save and close them. 
+- Close and reopen any Command Prompt/PowerShell windows so they pick up the updated PATH. 
 
 ~There's also a GUI Version Available on Alpha testing~.
 > [!CAUTION]
