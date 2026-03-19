@@ -1,0 +1,20 @@
+package:
+  name: biogenie
+  version: "1.1.0"
+
+source:
+  path: https://github.com/mikeph52/BioGenie/archive/refs/tags/v.1.1.0.tar.gz
+
+build:
+  number: 0
+  script:
+    - g++ -o $PREFIX/bin/biogenie src/main.cpp
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}    
+
+about:
+  home: https://github.com/mikeph52/BioGenie
+  license: GPL-3.0
+  summary: "BioGenie is a complete bioinformatics command line tool, written in C++."
