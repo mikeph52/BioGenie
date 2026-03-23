@@ -82,11 +82,11 @@ In order to test BioGenie functions, example files are provided in the [sample f
 
 |Name|Description|NCBI Acc. Number|
 |----|-----------|----------------|
-|pst_dc3k.fa|Genome of P.syringae DC3000|ASM780v1|
+|pst_dc3k.fa|Genome of _P.syringae DC3000_|ASM780v1|
 |hopB1.fasta|Sequence of hopB1 gene|NC_004578.1|
 |pgp_prot.faa|Protein sequence of Human PGP|NP_001035830.1|
 |primer.fasta|A selection of well-known primers| _Various_|
-|hemoglobin_pdec.fasta|P.decipiens gene for hemoglobin|Z11681.1 |
+|hemoglobin_pdec.fasta|_P.decipiens_ gene for hemoglobin|Z11681.1 |
 |test.fastq| A fictional sequence to test FASTQ support| _Fictional_|
 |pwa.fasta| A test file for PGSA testing|_Fictional_|
 |pwa2.fasta| A test file for PLSA testing|_Fictional_|
