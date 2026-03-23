@@ -2,7 +2,7 @@
 BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and MS Windows, written in C++.
 
 > [!IMPORTANT]
-> _BioGenie 1.0.0 is finally out!!!_
+> _BioGenie is now available on Conda. [Visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview)._
 
 <img width="1002" height="770" alt="Image" src="https://github.com/user-attachments/assets/4dfb77db-721d-42e0-ade9-73115f12057e" />
 
@@ -103,7 +103,7 @@ sudo mv biogenie_linux_1.1.0 /usr/local/bin/biogenie
 - If you need to build from source:
 ```
 git clone https://github.com/mikeph52/BioGenie.git
-g++ main.cpp -o biogenie
+clang++ main.cpp -o biogenie
 sudo mv biogenie /usr/local/bin/
 ```
 ### macOS
@@ -123,7 +123,7 @@ sudo mv biogenie_macos_1.1.0 /usr/local/bin/biogenie
 - If you need to build from source(probably not):
 ```
 git clone https://github.com/mikeph52/BioGenie.git
-g++ -std=c++17 main.cpp -o biogenie
+clang++ -std=c++17 main.cpp -o biogenie
 sudo mv biogenie /usr/local/bin/
 ```
 ### MS Windows
@@ -146,6 +146,20 @@ wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.1.0/biogenie
 ~There's also a GUI Version Available on Alpha testing~.
 > [!CAUTION]
 > This is an Alpha testing version. It is not functional. Not for scientific use. I don't think it is possible to make and maintain a gui version for windows. The code is complicated already. It's time to move on.
+
+### Instal with conda
+From version 1.1.0 BioGenie is available on conda, [visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview).
+> [!NOTE]
+> _Biogenie on conda currently supports only macOS-arm64. Support for multiple platforms will be released on the next update._
+- Run this command:
+```bash
+conda install mikeph52::biogenie
+```
+- It is highly advisable to create a conda environment first:
+```bash
+conda create -n biogenie
+```
+_Soon it will uploaded on bioconda._
 
 ## Changelog:
 ### 1.1.0 (March 6th, 2026)

@@ -1,5 +1,4 @@
 # Ignore object files
-*.cpp
 *.o
 *.obj
 

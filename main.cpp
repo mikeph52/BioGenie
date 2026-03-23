@@ -3658,7 +3658,7 @@ int main(int argc, char* argv[]){
         auto elapsed_time = elapsed_timer_s.count();
         if (elapsed_time >= 60){
             auto elapsed_time_corrected = elapsed_time / 60;
-            std::cout << "Time elapsed: " << elapsed_time_corrected << " m\n";
+            std::cout << "Time elapsed: " << elapsed_time_corrected << " m\n"; // <--- make it decimal
         }else {
             std::cout << "Time elapsed: " << elapsed_time << " s\n";
         }
