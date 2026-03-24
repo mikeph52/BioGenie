@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 1.2.0 24/3/2026
+// Current version 1.2.2 24/3/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -16,6 +16,7 @@
 #include <queue> //for thread pool
 #include <condition_variable> //synchronization primitive
 #include <map>
+#include <climits> // for INT_MAX --> v.1.2.2 fix
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";

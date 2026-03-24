@@ -1,5 +1,8 @@
 # BioGenie changelog
 ## Releases:
+### 1.2.2 (March 24th, 2026)
+- Issue (https://github.com/mikeph52/BioGenie/issues/50) fixed.
+
 ### 1.2.0 (March 24th, 2026)
 - Quality control for FASTQ files added.
 - Conda support added.
