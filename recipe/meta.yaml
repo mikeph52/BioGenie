@@ -4,7 +4,7 @@ package:
 
 source:
   url: https://github.com/mikeph52/BioGenie/archive/refs/tags/v.1.2.2.tar.gz
-  sha256: 0c3edd66e995433f7c186507e54c5d06748c84d3d1f5589415d7d9ff743e29e4
+  sha256: 384ce261f12facce28ef0c6061aae666c6959e97ffbcb05fbfe0fa53e767cf35
 
 build:
   number: 1
