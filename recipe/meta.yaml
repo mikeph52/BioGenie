@@ -7,7 +7,7 @@ source:
   sha256: 0c3edd66e995433f7c186507e54c5d06748c84d3d1f5589415d7d9ff743e29e4
 
 build:
-  number: 0
+  number: 1
   script:
     - mkdir -p $PREFIX/bin
     - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp 
