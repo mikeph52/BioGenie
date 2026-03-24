@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 1.1.0 6/3/2026
+// Current version 1.2.0 24/3/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -19,7 +19,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 1.1.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.2.0 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme() {
     std::cout << "\n\nNAME\n";
@@ -60,7 +60,8 @@ void helpme() {
     std::cout << "       -rcw     Generate reverse cDNA FASTA\n";
     std::cout << "       -tw      Generate mRNA FASTA\n\n";
     std::cout << "FASTQ UTILITIES\n";
-    std::cout << "       -ftf      Convert FASTQ to FASTA\n\n";
+    std::cout << "       -ftf      Convert FASTQ to FASTA\n";
+    std::cout << "       -fqc      FASTQ quality control\n\n";
     std::cout << "CODON & MOTIF ANALYSIS\n";
     std::cout << "       -cub     Calculate Codon Usage Bias (CUB)\n";
     std::cout << "       -wcub    Export Codon Usage Bias (CUB) to CSV\n";
@@ -96,7 +97,7 @@ void message(){
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pp purine/pyrimidine ratio][-nc codon number]\n";
         std::cerr << "[-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)][-orf ORF Finder]\n";
         std::cerr << "[-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats][-mw prot kDa]\n";
-        std::cerr << "[-cub Codon Usage Bias][-mf Find MOTIFs][-pi Isoelectric Point][-cx Coverage(x)]\n\n";
+        std::cerr << "[-cub Codon Usage Bias][-mf Find MOTIFs][-pi Isoelectric Point][-cx Coverage(x)][-fqc FASTQ QC]\n\n";
         std::cerr << "[Utilities]:\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
         std::cerr << "[-wcub Codon Usage Bias to CSV][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";

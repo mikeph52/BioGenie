@@ -1,5 +1,10 @@
 # BioGenie changelog
 ## Releases:
+### 1.2.0 (March 24th, 2026)
+- Quality control for FASTQ files added.
+- Conda support added.
+- Minor bugs fixed.
+
 ### 1.1.0 (March 6th, 2026)
 - Genome Coverage(x) added.
 - Genome Coverage(x) added in "-asmbl" pipeline.
