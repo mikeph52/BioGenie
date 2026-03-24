@@ -2804,6 +2804,154 @@ public:
         fastaFile.close();
     }
 };
+class FastqQC {
+private:
+    struct QCStats {
+        long long totalReads  = 0;
+        long long totalBases  = 0;
+        long long basesQ20    = 0;
+        long long basesQ30    = 0;
+        long long nBases      = 0;
+        long long gcBases     = 0;
+        int       minLen      = INT_MAX;
+        int       maxLen      = 0;
+        double    meanLen     = 0.0;
+        double    meanQ       = 0.0;
+        double    medianQ     = 0.0;
+        std::vector<long long>      posQSum;
+        std::vector<long long>      posCount;
+        std::map<int, long long>    qDist;
+    };
+    int PhredScore(char c) const {
+        return static_cast<int>(static_cast<unsigned char>(c)) - 33;
+    }
+    bool IsGC(char base) const {
+        char b = std::toupper(static_cast<unsigned char>(base));
+        return b == 'G' || b == 'C';
+    }
+    bool IsN(char base) const {
+        return std::toupper(static_cast<unsigned char>(base)) == 'N';
+    }
+    std::string Bar(double fraction, int width = 28) const {
+        int filled = static_cast<int>(std::round(fraction * width));
+        filled = std::max(0, std::min(width, filled));
+        return std::string(filled, '#') + std::string(width - filled, '-');
+    }
+    void PrintStats(const QCStats& s) const {
+        if (s.totalReads == 0) {
+            std::cout << "No valid FASTQ records found.\n";
+            return;
+        }
+        double pctQ20 = 100.0 * s.basesQ20 / s.totalBases;
+        double pctQ30 = 100.0 * s.basesQ30 / s.totalBases;
+        double pctN   = 100.0 * s.nBases   / s.totalBases;
+        double pctGC  = 100.0 * s.gcBases  / s.totalBases;
+
+        std::cout << "\n----- FASTQ Quality Control -----\n\n";
+        std::cout << "[Basic Statistics]\n";
+        std::cout << "Total reads   : " << s.totalReads << "\n";
+        std::cout << "Total bases   : " << s.totalBases << " bp\n";
+        std::cout << "Read length   : min=" << s.minLen
+                  << "  max=" << s.maxLen
+                  << "  mean=" << std::fixed << std::setprecision(1) << s.meanLen << "\n";
+        std::cout << "-----------------------------------\n";
+        std::cout << "[Quality Scores]\n";
+        std::cout << "Mean Q        : " << std::fixed << std::setprecision(2) << s.meanQ   << "\n";
+        std::cout << "Median Q      : " << std::fixed << std::setprecision(1) << s.medianQ  << "\n";
+        std::cout << "Bases >= Q20  : " << s.basesQ20 << " (" << std::fixed << std::setprecision(1) << pctQ20 << "%)\n";
+        std::cout << "Bases >= Q30  : " << s.basesQ30 << " (" << std::fixed << std::setprecision(1) << pctQ30 << "%)\n";
+        std::cout << "-----------------------------------\n";
+        std::cout << "[Base Composition]\n";
+        std::cout << "GC content    : " << std::fixed << std::setprecision(1) << pctGC << "%\n";
+        std::cout << "N bases       : " << s.nBases << " (" << std::fixed << std::setprecision(2) << pctN << "%)\n";
+        std::cout << "-----------------------------------\n";
+        std::cout << "[Mean Q per Cycle - first 40 positions]\n";
+        int showPos = std::min(40, static_cast<int>(s.posQSum.size()));
+        for (int i = 0; i < showPos; ++i) {
+            double mq = static_cast<double>(s.posQSum[i]) / s.posCount[i];
+            std::cout << "Pos " << std::setw(3) << (i + 1) << " | "
+                      << Bar(mq / 40.0)
+                      << " " << std::fixed << std::setprecision(1) << mq << "\n";
+        }
+        if (static_cast<int>(s.posQSum.size()) > 40)
+            std::cout << "... (" << (s.posQSum.size() - 40) << " more positions)\n";
+        std::cout << "-----------------------------------\n";
+
+        std::cout << "[Q Score Distribution]\n";
+        long long maxCount = 0;
+        for (auto& [q, cnt] : s.qDist)
+            maxCount = std::max(maxCount, cnt);
+        for (auto& [q, cnt] : s.qDist) {
+            if (cnt == 0) continue;
+            double pct = 100.0 * cnt / s.totalBases;
+            std::cout << "Q" << std::setw(2) << q << " | "
+                      << Bar(static_cast<double>(cnt) / maxCount)
+                      << " " << std::fixed << std::setprecision(1) << pct << "%\n";
+        }
+        std::cout << "-----------------------------------\n";
+        std::cout << "Process completed.\n";
+    }
+
+public:
+    void FASTQ_loader(const std::string& filename) const {
+        std::ifstream fastqFile(filename);
+        if (!fastqFile.is_open()) {
+            std::cerr << "Error: Unable to open file " << filename << "\n";
+            return;
+        }
+        QCStats s;
+        long long totalQ = 0;
+        std::string header, seq, plus, qual;
+        std::cout << filename << "\n";
+        while (std::getline(fastqFile, header) &&
+               std::getline(fastqFile, seq)    &&
+               std::getline(fastqFile, plus)   &&
+               std::getline(fastqFile, qual))
+        {
+            if (header.empty() || header[0] != '@') continue;
+            if (seq.size() != qual.size())           continue;
+            int len = static_cast<int>(seq.size());
+            s.totalReads++;
+            s.totalBases += len;
+
+            s.minLen = std::min(s.minLen, len);
+            s.maxLen = std::max(s.maxLen, len);
+
+            if (static_cast<int>(s.posQSum.size()) < len) {
+                s.posQSum.resize(len, 0);
+                s.posCount.resize(len, 0);
+            }
+            for (int i = 0; i < len; ++i) {
+                int q = PhredScore(qual[i]);
+
+                s.posQSum[i]  += q;
+                s.posCount[i] += 1;
+                totalQ        += q;
+                s.qDist[q]++;
+
+                if (q >= 20) s.basesQ20++;
+                if (q >= 30) s.basesQ30++;
+                if (IsN(seq[i]))  s.nBases++;
+                if (IsGC(seq[i])) s.gcBases++;
+            }
+        }
+        fastqFile.close();
+        if (s.totalBases == 0) {
+            std::cout << "No valid FASTQ records found.\n";
+            return;
+        }
+        s.meanQ   = static_cast<double>(totalQ) / s.totalBases;
+        s.meanLen = static_cast<double>(s.totalBases) / s.totalReads;
+
+        long long half = s.totalBases / 2;
+        long long cum  = 0;
+        for (auto& [q, cnt] : s.qDist) {
+            cum += cnt;
+            if (cum >= half) { s.medianQ = q; break; }
+        }
+        PrintStats(s);
+    }
+};
 // Custom Pipelines bellow:
 class Nucleostats {
      /*The old Pipeline 2. This is a pipeline that contains the following classes and functions:
@@ -3640,6 +3788,10 @@ int main(int argc, char* argv[]){
             std::cout << "Enter output filename(specify the file type): ";
             std::cin >> outputFile;
             fastqToFasta(filename, outputFile );
+        }},
+        {"-fqc", [&](){
+            FastqQC qc;
+            qc.FASTQ_loader(filename);
         }},
     };
     // Dispatch
