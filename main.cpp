@@ -20,7 +20,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 1.2.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.2.2 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme() {
     std::cout << "\n\nNAME\n";
