@@ -189,5 +189,5 @@ _Soon it will uploaded on bioconda._
 - Documentation enhanced. 
 - Minor bugs and formatting issues fixed.
 
-_For more info checkout the [changelog](Documentation/changelog.md)._
+_For more info check out the [changelog](Documentation/changelog.md)._
 
