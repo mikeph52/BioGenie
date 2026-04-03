@@ -4,7 +4,7 @@ BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and
 > [!IMPORTANT]
 > _BioGenie is now available on Conda. [Visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview)._
 
-<img width="1002" height="770" alt="Image" src="https://github.com/user-attachments/assets/4dfb77db-721d-42e0-ade9-73115f12057e" />
+<img width="912" height="740" alt="Image" src="https://github.com/user-attachments/assets/3a5cc84b-1197-47ec-9638-068abe844c39" />
 
 [![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/version.svg)](https://anaconda.org/mikeph52/biogenie)
 [![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/platforms.svg)](https://anaconda.org/mikeph52/biogenie)
