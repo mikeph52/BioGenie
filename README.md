@@ -96,7 +96,7 @@ In order to test BioGenie functions, example files are provided in the [sample f
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.1.2.0/biogenie_linux_1.2.2
+wget https://github.com/mikeph52/BioGenie/releases/download/v.1.2.2/biogenie_linux_1.2.2
 ```
 - Run "chmod +x" first.
 ```
