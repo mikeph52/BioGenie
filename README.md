@@ -69,6 +69,7 @@ Read [Documentation](Documentation/documentation.md) for more information (*Refe
 - Calculate Hydrogen Bonds of dsDNA ---> "-hb".
 - Caclulate the Genome coverage(x) ---> "-cx".
 - Calculate FASTQ quality control ---> "-fqc".
+- K-mer Frequency Analysis ---> "-kmer".
 
 More functions will be added in the future.
 
@@ -155,8 +156,6 @@ wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.2.2/biogenie
 
 ### Instal with conda
 From version 1.1.0 BioGenie is available on conda, [visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview).
-> [!NOTE]
-> _Biogenie on conda currently supports only macOS-arm64. Support for multiple platforms will be released on the next update._
 - Run this command:
 ```bash
 conda install mikeph52::biogenie
@@ -168,6 +167,11 @@ conda create -n biogenie
 _Soon it will uploaded on bioconda._
 
 ## Changelog:
+### 1.3.0 (April 20th, 2026)
+- Conda support for multiple platforms.
+- K-mer Frequency Analysis function added.
+- Small formating bugs fixed.
+
 ### 1.2.2 (March 24th, 2026)
 - Issue (https://github.com/mikeph52/BioGenie/issues/50) fixed.
 

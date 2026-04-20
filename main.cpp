@@ -3581,6 +3581,115 @@ void fastqToFasta(const std::string& filename, const std::string& outputFile) {
     }
     std::cout << "Process completed.\n";
 }
+class KmerAnalysis {
+    private:
+        struct KmerResult {
+            std::string sequence_header;
+            int sequence_length;
+            int k;
+            int total_kmers;
+            int unique_kmers;
+            std::vector<std::pair<std::string, int>> sorted_freq;
+        };
+        std::map<std::string, int> countKmers(const std::string& sequence, int k) const {
+            std::map<std::string, int> freq;
+            int len = sequence.length();
+
+            if (k <= 0 || k > len) {
+                std::cerr << "Error: Invalid k value (" << k << ") for sequence of length " << len << "\n";
+                return freq;
+            }
+
+            for (int i = 0; i <= len - k; i++) {
+                freq[sequence.substr(i, k)]++;
+            }
+            return freq;
+        }
+        std::vector<std::pair<std::string, int>> sortByFrequency(
+            const std::map<std::string, int>& freq) const {
+            std::vector<std::pair<std::string, int>> sorted(freq.begin(), freq.end());
+            std::sort(sorted.begin(), sorted.end(),
+                [](const auto& a, const auto& b) {
+                    return a.second > b.second;
+                });
+            return sorted;
+        }
+        std::string cleanSequence(const std::string& sequence) const {
+            std::string clean;
+            clean.reserve(sequence.size());
+            for (char base : sequence) {
+                clean += std::toupper(static_cast<unsigned char>(base));
+            }
+            return clean;
+        }
+        void printResult(const KmerResult& result) const {
+            std::cout << "\n-----------------------------------\n";
+            std::cout << ">" << result.sequence_header << "\n";
+            std::cout << "Sequence length : " << result.sequence_length << " bp\n";
+            std::cout << "K value         : " << result.k << "\n";
+            std::cout << "Total k-mers    : " << result.total_kmers << "\n";
+            std::cout << "Unique k-mers   : " << result.unique_kmers << "\n";
+            std::cout << "\nRank\tK-mer\t\tCount\tFreq(%)\n";
+            std::cout << "----\t-----\t\t-----\t-------\n";
+
+            int rank = 1;
+            for (const auto& pair : result.sorted_freq) {
+                double pct = (double)pair.second / result.total_kmers * 100.0;
+                std::cout << rank++ << "\t"
+                          << pair.first << "\t\t"
+                          << pair.second << "\t"
+                          << std::fixed << std::setprecision(2) << pct << "%\n";
+            }
+        }
+        KmerResult analyzeSequence(const std::string& header,
+                                   const std::string& sequence, int k) const {
+            std::string clean = cleanSequence(sequence);
+            auto freq        = countKmers(clean, k);
+            auto sorted      = sortByFrequency(freq);
+
+            KmerResult result;
+            result.sequence_header = header;
+            result.sequence_length = clean.length();
+            result.k               = k;
+            result.total_kmers     = clean.length() - k + 1;
+            result.unique_kmers    = freq.size();
+            result.sorted_freq     = sorted;
+            return result;
+        }
+    public:
+        void FASTA_loader(const std::string& filename, int k) const {
+            std::ifstream fastaFile(filename);
+            if (!fastaFile.is_open()) {
+                std::cerr << "Error: Unable to open file " << filename << "\n";
+                return;
+            }
+            std::string line;
+            std::string header;
+            std::string sequence;
+            std::cout << "\n=== K-mer Frequency Analysis (k=" << k << ") ===\n";
+            while (std::getline(fastaFile, line)) {
+                if (line.empty()) continue;
+
+                if (line[0] == '>') {
+                    if (!sequence.empty()) {
+                        KmerResult result = analyzeSequence(header, sequence, k);
+                        printResult(result);
+                        sequence.clear();
+                    }
+                    header = line.substr(1);
+                } else {
+                    sequence += line;
+                }
+            }
+            if (!sequence.empty()) {
+                KmerResult result = analyzeSequence(header, sequence, k);
+                printResult(result);
+            }
+            std::cout << "\n-----------------------------------\n\n";
+            std::cout << "Process completed.\n";
+            fastaFile.close();
+        }
+};
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -3794,6 +3903,13 @@ int main(int argc, char* argv[]){
         {"-fqc", [&](){
             FastqQC qc;
             qc.FASTQ_loader(filename);
+        }},
+        {"-kmer", [&](){
+            int k;
+            std::cout << "Enter the k: ";
+            std::cin >> k;
+            KmerAnalysis kmer;
+            kmer.FASTA_loader(filename, k);
         }},
     };
     // Dispatch
