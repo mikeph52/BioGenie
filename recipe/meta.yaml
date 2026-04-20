@@ -9,14 +9,20 @@ source:
 build:
   number: 1
   script:
-    - mkdir -p $PREFIX/bin
-    - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp 
+    - mkdir -p $PREFIX/bin                                              
+    - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp                 
+    - if not exist %LIBRARY_BIN% mkdir %LIBRARY_BIN%                   
+    - '%CXX% -std=c++17 -Fe:%LIBRARY_BIN%\biogenie.exe main.cpp'    
 
 requirements:
   build:
-    - {{ compiler('cxx') }}    
+    - {{ compiler('cxx') }}
 
 about:
   home: https://github.com/mikeph52/BioGenie
   license: GPL-3.0
   summary: "BioGenie is a complete bioinformatics command line tool, written in C++."
+
+extra:
+  recipe-maintainers:
+    - mikeph52
