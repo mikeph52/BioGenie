@@ -69,6 +69,7 @@ Read [Documentation](Documentation/documentation.md) for more information (*Refe
 - Calculate Hydrogen Bonds of dsDNA ---> "-hb".
 - Caclulate the Genome coverage(x) ---> "-cx".
 - Calculate FASTQ quality control ---> "-fqc".
+- K-mer Frequency Analysis ---> "-kmer".
 
 More functions will be added in the future.
 
@@ -96,15 +97,15 @@ In order to test BioGenie functions, example files are provided in the [sample f
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.1.2.2/biogenie_linux_1.2.2
+wget https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie_linux_1.3.0
 ```
 - Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_linux_1.2.2
+sudo chmod +x biogenie_linux_1.3.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_linux_1.2.2 /usr/local/bin/biogenie
+sudo mv biogenie_linux_1.3.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source:
 ```
@@ -116,15 +117,15 @@ sudo mv biogenie /usr/local/bin/
 It supports Intel and Apple silicon processors.
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.2.2/biogenie_macos_1.2.2
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie_macos_1.3.0
 ```
 - Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_macos_1.2.2
+sudo chmod +x biogenie_macos_1.3.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_macos_1.2.2 /usr/local/bin/biogenie
+sudo mv biogenie_macos_1.3.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source(probably not):
 ```
@@ -139,7 +140,7 @@ sudo mv biogenie /usr/local/bin/
 It requires Windows 10 or later.
 - Download BioGenie from Releases or run:
 ```batch
-wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.2.2/biogenie_windows_1.2.2.exe
+wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie_windows_1.3.0.exe
 ```
 - Open **Start** and search for `Environment Variables`. 
 - Click `Edit the system environment variables`. 
@@ -155,8 +156,6 @@ wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.2.2/biogenie
 
 ### Instal with conda
 From version 1.1.0 BioGenie is available on conda, [visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview).
-> [!NOTE]
-> _Biogenie on conda currently supports only macOS-arm64. Support for multiple platforms will be released on the next update._
 - Run this command:
 ```bash
 conda install mikeph52::biogenie
@@ -168,6 +167,11 @@ conda create -n biogenie
 _Soon it will uploaded on bioconda._
 
 ## Changelog:
+### 1.3.0 (April 20th, 2026)
+- Conda support for multiple platforms.
+- K-mer Frequency Analysis function added.
+- Small formating bugs fixed.
+
 ### 1.2.2 (March 24th, 2026)
 - Issue (https://github.com/mikeph52/BioGenie/issues/50) fixed.
 

@@ -1,5 +1,10 @@
 # BioGenie changelog
 ## Releases:
+### 1.3.0 (April 20th, 2026)
+- Conda support for multiple platforms.
+- K-mer Frequency Analysis function added.
+- Small formating bugs fixed.
+
 ### 1.2.2 (March 24th, 2026)
 - Issue (https://github.com/mikeph52/BioGenie/issues/50) fixed.
 
