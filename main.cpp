@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 1.2.2 24/3/2026
+// Current version 1.3.0 20/4/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -20,7 +20,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 1.2.2 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.3.0 \nby mikeph_ 2025-2026\n\n";    
 }
 void helpme() {
     std::cout << "\n\nNAME\n";
@@ -78,7 +78,8 @@ void helpme() {
     std::cout << "       -nucleo  Nucleostats: DNA statistics (primer design)\n";
     std::cout << "       -asmbl   Assemblystats: genome assembly statistics\n";
     std::cout << "       -orf     Identify Open Reading Frames (ORFs)\n";
-    std::cout << "       -cx      Genome Coverage(x)(Depth)\n\n";
+    std::cout << "       -cx      Genome Coverage(x)(Depth)\n";
+    std::cout << "       -kmer    K-mer Analysis\n\n";
     std::cout << "AUTHOR\n";
     std::cout << "       BioGenie, developed and maintained by Mike Philippakis, Github:mikeph52,\n";
     std::cout << "       under GNU GENERAL PUBLIC LICENSE Version 3, 2025-2026.\n\n";
@@ -97,7 +98,7 @@ void message(){
         std::cerr << "[-c complement DNA sequence][-rc reverse complement DNA sequence][-t RNA][-bp Base Pairs]\n";
         std::cerr << "[-gc GC percentage calculator][-p protein chain][-pp purine/pyrimidine ratio][-nc codon number]\n";
         std::cerr << "[-mt1 melting temp.(Wallace rule)][-mt2 melting temp.(Nearest-neighbour)][-orf ORF Finder]\n";
-        std::cerr << "[-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats][-mw prot kDa]\n";
+        std::cerr << "[-ec Extinction Coefficient][-hb Hydrogen Bonds][-amb Ambiguous stats][-mw prot kDa][-kmer K-mer analysis]\n";
         std::cerr << "[-cub Codon Usage Bias][-mf Find MOTIFs][-pi Isoelectric Point][-cx Coverage(x)][-fqc FASTQ QC]\n\n";
         std::cerr << "[Utilities]:\n";
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
