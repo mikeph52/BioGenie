@@ -1,18 +1,18 @@
 package:
   name: biogenie
-  version: "1.2.2"
+  version: "1.3.0"
 
 source:
-  url: https://github.com/mikeph52/BioGenie/archive/refs/tags/v.1.2.2.tar.gz
-  sha256: 384ce261f12facce28ef0c6061aae666c6959e97ffbcb05fbfe0fa53e767cf35
+  url: https://github.com/mikeph52/BioGenie/archive/refs/tags/v.1.3.0.tar.gz
+  sha256: 23d9a40e6f4809c0db53a5efffb531954d679ca905112a465f7ba8734ab815af
 
 build:
   number: 1
   script:
-    - mkdir -p $PREFIX/bin                                              
-    - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp                 
-    - if not exist %LIBRARY_BIN% mkdir %LIBRARY_BIN%                   
-    - '%CXX% -std=c++17 -Fe:%LIBRARY_BIN%\biogenie.exe main.cpp'    
+    - mkdir -p $PREFIX/bin # [not win]                       
+    - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp  # [not win]             
+    - if not exist %LIBRARY_BIN% mkdir %LIBRARY_BIN%    # [win]  
+    - '%CXX% -std=c++17 -Fe:%LIBRARY_BIN%\biogenie.exe main.cpp' # [win]  
 
 requirements:
   build:
