@@ -156,11 +156,17 @@ wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie
 
 ### Instal with conda
 From version 1.1.0 BioGenie is available on conda, [visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview).
+
+**Supported architectures:**
+- MacOS: Intel, ARM
+- Linux: x64, aarch64
+- Windows: x64
+
 - Run this command:
 ```bash
 conda install mikeph52::biogenie
 ```
-- It is highly advisable to create a conda environment first:
+- It is highly advisable to create a conda environment first, even though BioGenie doesn't have any depedencies:
 ```bash
 conda create -n biogenie
 ```
