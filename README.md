@@ -158,8 +158,8 @@ wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie
 From version 1.1.0 BioGenie is available on conda, [visit the conda page](https://anaconda.org/channels/mikeph52/packages/biogenie/overview).
 
 **Supported architectures:**
-- MacOS: Intel, ARM
-- Linux: x64, aarch64
+- MacOS: Intel x86-64, Apple Silicon
+- Linux: x86-64, aarch64
 - Windows: x64
 
 - Run this command:
