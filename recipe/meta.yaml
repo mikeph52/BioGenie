@@ -9,10 +9,11 @@ source:
 build:
   number: 1
   script:
-    - mkdir -p $PREFIX/bin # [not win]                       
-    - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp  # [not win]             
-    - if not exist %LIBRARY_BIN% mkdir %LIBRARY_BIN%    # [win]  
-    - '%CXX% -std=c++17 -Fe:%LIBRARY_BIN%\biogenie.exe main.cpp' # [win]  
+    - mkdir -p $PREFIX/bin # [not win]
+    - x86_64-linux-gnu-g++ -std=c++17 -o biogenie_x64 main.cpp -lpthread  # [not win]
+    - $CXX -std=c++17 -o $PREFIX/bin/biogenie main.cpp -lpthread  # [not win]
+    - if not exist %LIBRARY_BIN% mkdir %LIBRARY_BIN%    # [win]
+    - '%CXX% -std=c++17 -Fe:%LIBRARY_BIN%\biogenie.exe main.cpp' # [win]
 
 requirements:
   build:
