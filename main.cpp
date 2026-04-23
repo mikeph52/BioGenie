@@ -57,6 +57,7 @@ void helpme() {
     std::cout << "FASTA UTILITIES\n";
     std::cout << "       -ss      Separate sequences in a FASTA file\n";
     std::cout << "       -sh      Print FASTA sequence headers\n";
+    std::cout << "       -shn     Print the number of FASTA sequence headers\n";
     std::cout << "       -cw      Generate cDNA FASTA\n";
     std::cout << "       -rcw     Generate reverse cDNA FASTA\n";
     std::cout << "       -tw      Generate mRNA FASTA\n\n";
@@ -3691,6 +3692,28 @@ class KmerAnalysis {
             fastaFile.close();
         }
 };
+class FASTAHeaderNum {
+public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+        std::string line;
+        int total_heads = 0;
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+            if (line[0] == '>') {
+                total_heads++;
+            }
+        }
+        std::cout << "\n--------- Seq headers ---------\n";
+        std::cout << "Number of headers: " << total_heads << "\n\n\n";
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -3911,6 +3934,10 @@ int main(int argc, char* argv[]){
             std::cin >> k;
             KmerAnalysis kmer;
             kmer.FASTA_loader(filename, k);
+        }},
+        {"-shn", [&](){
+            FASTAHeaderNum headernum;
+            headernum.FASTA_loader(filename);
         }},
     };
     // Dispatch
