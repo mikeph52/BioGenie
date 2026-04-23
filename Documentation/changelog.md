@@ -1,5 +1,8 @@
 # BioGenie changelog
 ## Releases:
+### 1.4.0 (April 23th, 2026)
+- Print number of sequence headers function added.
+
 ### 1.3.0 (April 20th, 2026)
 - Conda support for multiple platforms.
 - K-mer Frequency Analysis function added.

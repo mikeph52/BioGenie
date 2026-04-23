@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 1.3.0 20/4/2026
+// Current version 1.4.0 23/4/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -20,7 +20,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 1.3.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.4.0 \nby mikeph_ 2025-2026\n\n";
 }
 void helpme() {
     std::cout << "\n\nNAME\n";
@@ -105,7 +105,7 @@ void message(){
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
         std::cerr << "[-wcub Codon Usage Bias to CSV][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-pc protein chain w color][-pca protein fasta w color][-cc cDNA coloured][-ftf FASTQ to FASTA]\n";
-        std::cerr << "[Use '-help me' for documentation.]\n\n\n";
+        std::cerr << "[-shn FASTA sequencies headers number][Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
 //Genetic code

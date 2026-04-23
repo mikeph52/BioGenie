@@ -50,6 +50,7 @@ Read [Documentation](Documentation/documentation.md) for more information (*Refe
 - Color the protein chain from a FASTA file ---> "-pca".
 - Separate different sequencies in a FASTA file ---> "-ss".
 - Print the different sequence headers from a FASTA file ---> "-sh".
+- Print the number of FASTA sequence headers ---> "-shn".
 - Trim DNA sequence ---> "-tr".
 - Calculate the Number of Base Pairs(bp) ---> "-bp".
 - Get the purine/pyrimidine ratio --> "-pp".
@@ -97,15 +98,15 @@ In order to test BioGenie functions, example files are provided in the [sample f
 ### GNU Linux
 - Download BioGenie from Releases, or with wget:
 ```
-wget https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie_linux_1.3.0
+wget https://github.com/mikeph52/BioGenie/releases/download/v.1.4.0/biogenie_linux_1.4.0
 ```
 - Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_linux_1.3.0
+sudo chmod +x biogenie_linux_1.4.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_linux_1.3.0 /usr/local/bin/biogenie
+sudo mv biogenie_linux_1.4.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source:
 ```
@@ -117,15 +118,15 @@ sudo mv biogenie /usr/local/bin/
 It supports Intel and Apple silicon processors.
 - Download BioGenie from Releases, or with curl:
 ```
-curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie_macos_1.3.0
+curl -l https://github.com/mikeph52/BioGenie/releases/download/v.1.4.0/biogenie_macos_1.4.0
 ```
 - Run "chmod +x" first.
 ```
-sudo chmod +x biogenie_macos_1.3.0
+sudo chmod +x biogenie_macos_1.4.0
 ```
 - Move it to bin folder by executing the following command:
 ```
-sudo mv biogenie_macos_1.3.0 /usr/local/bin/biogenie
+sudo mv biogenie_macos_1.4.0 /usr/local/bin/biogenie
 ```
 - If you need to build from source(probably not):
 ```
@@ -140,7 +141,7 @@ sudo mv biogenie /usr/local/bin/
 It requires Windows 10 or later.
 - Download BioGenie from Releases or run:
 ```batch
-wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.3.0/biogenie_windows_1.3.0.exe
+wget.exe https://github.com/mikeph52/BioGenie/releases/download/v.1.4.0/biogenie_windows_1.4.0.exe
 ```
 - Open **Start** and search for `Environment Variables`. 
 - Click `Edit the system environment variables`. 
@@ -173,6 +174,9 @@ conda create -n biogenie
 _Soon it will uploaded on bioconda._
 
 ## Changelog:
+### 1.4.0 (April 23th, 2026)
+- Print number of sequence headers function added.
+
 ### 1.3.0 (April 20th, 2026)
 - Conda support for multiple platforms.
 - K-mer Frequency Analysis function added.
