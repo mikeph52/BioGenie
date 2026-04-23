@@ -1,5 +1,5 @@
 // BioGenie by mikeph_ 2025-2026
-// Current version 1.3.0 20/4/2026
+// Current version 1.4.0 23/4/2026
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -20,7 +20,7 @@
 // Public Functions 
 void title(){
     std::cout << "-----------------------\n";
-    std::cout << "BioGenie 1.3.0 \nby mikeph_ 2025-2026\n\n";    
+    std::cout << "BioGenie 1.4.0 \nby mikeph_ 2025-2026\n\n";
 }
 void helpme() {
     std::cout << "\n\nNAME\n";
@@ -57,6 +57,7 @@ void helpme() {
     std::cout << "FASTA UTILITIES\n";
     std::cout << "       -ss      Separate sequences in a FASTA file\n";
     std::cout << "       -sh      Print FASTA sequence headers\n";
+    std::cout << "       -shn     Print the number of FASTA sequence headers\n";
     std::cout << "       -cw      Generate cDNA FASTA\n";
     std::cout << "       -rcw     Generate reverse cDNA FASTA\n";
     std::cout << "       -tw      Generate mRNA FASTA\n\n";
@@ -104,7 +105,7 @@ void message(){
         std::cerr << "[-ss FASTA sequencies separator][-sh FASTA sequencies headers][-tr DNA Trimmer][-sc colour sequence]\n";
         std::cerr << "[-wcub Codon Usage Bias to CSV][-cw generate cDNA fasta][-rcw Reverse cDNA fasta][-tw mRNA fasta]\n";
         std::cerr << "[-pc protein chain w color][-pca protein fasta w color][-cc cDNA coloured][-ftf FASTQ to FASTA]\n";
-        std::cerr << "[Use '-help me' for documentation.]\n\n\n";
+        std::cerr << "[-shn FASTA sequencies headers number][Use '-help me' for documentation.]\n\n\n";
         std::cerr << "For more info visit the github page:\nhttps://github.com/mikeph52/BioGenie\n\n";
 }
 //Genetic code
@@ -3691,6 +3692,28 @@ class KmerAnalysis {
             fastaFile.close();
         }
 };
+class FASTAHeaderNum {
+public:
+    void FASTA_loader(const std::string& filename) const {
+        std::ifstream fastaFile(filename);
+        if (!fastaFile.is_open()) {
+            std::cerr << "Error: Unable to open file: " << filename << "\n";
+            return;
+        }
+        std::string line;
+        int total_heads = 0;
+        while (std::getline(fastaFile, line)) {
+            if (line.empty()) continue;
+            if (line[0] == '>') {
+                total_heads++;
+            }
+        }
+        std::cout << "\n--------- Seq headers ---------\n";
+        std::cout << "Number of headers: " << total_heads << "\n\n\n";
+        std::cout << "Process completed.\n";
+        fastaFile.close();
+    }
+};
 // Main Function 
 int main(int argc, char* argv[]){
     if (argc != 3){
@@ -3911,6 +3934,10 @@ int main(int argc, char* argv[]){
             std::cin >> k;
             KmerAnalysis kmer;
             kmer.FASTA_loader(filename, k);
+        }},
+        {"-shn", [&](){
+            FASTAHeaderNum headernum;
+            headernum.FASTA_loader(filename);
         }},
     };
     // Dispatch
