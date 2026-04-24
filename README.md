@@ -6,6 +6,11 @@ BioGenie is a complete bioinformatics command line tool for macOS, GNU Linux and
 
 <img width="912" height="740" alt="Image" src="https://github.com/user-attachments/assets/3a5cc84b-1197-47ec-9638-068abe844c39" />
 
+[![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/version.svg)](https://anaconda.org/mikeph52/biogenie)
+[![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/platforms.svg)](https://anaconda.org/mikeph52/biogenie)
+[![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/downloads.svg)](https://anaconda.org/mikeph52/biogenie)
+[![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/latest_release_date.svg)](https://anaconda.org/mikeph52/biogenie)
+[![Anaconda-Server Badge](https://anaconda.org/mikeph52/biogenie/badges/license.svg)](https://anaconda.org/mikeph52/biogenie)
 
 It currently supports FASTA formats(.fasta, .faa, .fa) and FASTQ.
 - To run the app, simply type:
