@@ -3191,7 +3191,7 @@ class Nucleostats {
             std::cout << "-----------------------------------\n";
         }
         std::cout << "Process completed.\n";
-}
+    }
 
 };
 class Proteostats{
@@ -3209,7 +3209,6 @@ private:
     const double pKa_E = 4.1;
     const double pKa_C = 8.3;
     const double pKa_Y = 10.1;
-
     struct SeqResult {
             std::string header;
             std::string protein;
@@ -3396,10 +3395,8 @@ public:
         };
         std::vector<std::thread> threads;
         numThreads = std::min(numThreads, sequences.size());
-        for (size_t t = 0; t < numThreads; ++t)
-            threads.emplace_back(worker);
-        for (auto& t : threads)
-            t.join();
+        for (size_t t = 0; t < numThreads; ++t) threads.emplace_back(worker);
+        for (auto& t : threads) t.join();
         for (const auto& r : results) {
             std::cout << r.header << "\n";
             std::cout << "-----------------------------------\n";
@@ -3551,11 +3548,11 @@ class AssemblyStats{
         std::cout << "GC%: " << result.gcPercent << "% (AT%: " << 100.0 - result.gcPercent << "%)\n";
         std::cout << "N50: " << result.n50 << " bp (" << static_cast<double>(result.n50) / 1e6 << " Mb)\n";
         std::cout << "L50: " << result.l50 << "\n";
-        std::cout << "Coverage(x): " << Coverage << "x\n";                        ;
+        std::cout << "Coverage(x): " << Coverage << "x\n";
         std::cout << "Longest Contig: " << result.longestContig << " bp (" << static_cast<double>(result.longestContig) / 1e6 << " Mb)\n";
         std::cout << "Mean Contig Length: " << result.meanLength << " bp (" << result.meanLength / 1e6 << " Mb)\n";
         std::cout << "----------------------------------\n";
-        std::cout << "Process completed.\n\n";        
+        std::cout << "Process completed.\n\n";
     }
 };
 void fastqToFasta(const std::string& filename, const std::string& outputFile) {
